@@ -36,18 +36,4 @@ board.on('ready', () => {
         console.log('>>> curLine:', curLine);
         console.log('------------');
     });
-
-    // let curPos = 0;
-    // board.loop(1, () => {
-    //     lcd.cursor(0, 0).print(message.slice(curPos, curPos + LINE_LENGTH));
-    //     lcd.cursor(1, 0).print(
-    //         message.slice(curPos + LINE_LENGTH, curPos + LINE_LENGTH * 2),
-    //     );
-
-    //     curPos += 5;
-
-    //     if (curPos + LINE_LENGTH * 2 > message.length) {
-    //         curPos = 0;
-    //     }
-    // });
 });

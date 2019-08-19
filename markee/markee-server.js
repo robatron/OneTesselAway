@@ -41,8 +41,6 @@ router.get('/message', (req, res) => {
 });
 
 router.post('/message', (req, res) => {
-    console.log('>>>', req);
-    console.log('>>>', req.body);
     const msg = req.body.newMessage;
     setCurrentMessage(msg);
     console.log(`${req.method} ${req.path}: ${msg.slice(0, 20)}...`);

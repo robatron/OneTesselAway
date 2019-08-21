@@ -1,2 +1,3 @@
-app/
-node_modules/justgage/*.js
+static/
+views/
+node_modules/pug/

@@ -9,7 +9,7 @@ var pug = require('pug');
 // Settings ------------------------------------------------------------
 
 // Server settings
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 const ADDRESS = `http://${os.networkInterfaces().wlan0[0].address}`;
 
 // Default messages

@@ -1,10 +1,10 @@
-var Express = require('express');
-var five = require('johnny-five');
 var http = require('http');
 var os = require('os');
 var path = require('path');
+
+var Express = require('express');
+var five = require('johnny-five');
 var Tessel = require('tessel-io');
-var pug = require('pug');
 
 // Settings ------------------------------------------------------------
 
@@ -71,7 +71,8 @@ router.post('/message', (req, res) => {
 // Start ---------------------------------------------------------------
 
 // Globals
-let currentMessage = DEFAULT_MESSAGE;
+// let currentMessage = DEFAULT_MESSAGE;
+let currentMessage = MARINE_MESSAGE;
 let currentLine = 0;
 
 // Global getters/setters to avoid closures

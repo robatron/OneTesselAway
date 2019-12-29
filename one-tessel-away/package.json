@@ -6,11 +6,13 @@
     "engine": "^8",
     "scripts": {
         "deploy": "echo 'Deploying via USB...' && t2 push --usb index.js",
+        "start": "echo 'Starting dev server...' && ADDR=localhost node index.js",
         "test": "jest"
     },
     "author": "Robert McGuire <robert.mcgui@gmail.com>",
     "license": "ISC",
     "dependencies": {
+        "ejs": "^3.0.1",
         "express": "^4.17.1",
         "johnny-five": "^1.3.1",
         "node-fetch": "^2.6.0",

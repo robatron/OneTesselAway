@@ -12,10 +12,7 @@
  */
 var http = require('http');
 var os = require('os');
-
 var Express = require('express');
-var five = require('johnny-five');
-var Tessel = require('tessel-io');
 
 // Settings ------------------------------------------------------------
 
@@ -40,105 +37,32 @@ const ROUTES_AND_STOPS = [
 ];
 
 // Server settings
-const PORT = process.env.PORT || 80;
-const ADDRESS = `http://${os.networkInterfaces().wlan0[0].address}`;
-
-// Default messages
-const DEFAULT_MESSAGE = 'OneBusAway Display!';
-
-// LCD screen line length
-const LINE_LENGTH = 16;
+const PORT = process.env.PORT || 8080;
+const ADDRESS = `http://${process.env.ADDR ||
+    os.networkInterfaces().wlan0[0].address}`;
 
 // Init ----------------------------------------------------------------
 
 // Express server
 var app = new Express();
-var router = Express.Router();
 var server = new http.Server(app);
-
-// Tessel hardware
-var board = new five.Board({ io: new Tessel() });
 
 // Setup ---------------------------------------------------------------
 
+// Set up the templating engine
+app.set('view engine', 'ejs');
+
 // Web UI
 app.get('/', (req, res) => {
-    res.body = 'Sup';
-});
-
-// API routes
-app.use('/api', router);
-
-router.get('/message', (req, res) => {
-    const msg = getCurrentMessage();
-    console.log(`${req.method} ${req.path}: ${msg.slice(0, 20)}...`);
-    res.json({ message: msg });
-});
-
-router.post('/message', (req, res) => {
-    const msg = req.body.newMessage;
-    setCurrentMessage(msg);
-    resetCurrentLine();
-    console.log(`${req.method} ${req.path}: ${msg.slice(0, 20)}...`);
-    res.json({ message: msg });
+    res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
 
 // Start ---------------------------------------------------------------
 
-// Globals
-let currentMessage = DEFAULT_MESSAGE;
-let currentLine = 0;
+// Start up web UI server
+server = app.listen(PORT);
+console.log(`OneTesselAway web server running on: ${ADDRESS}:${PORT}`);
 
-// Global getters/setters to avoid closures
-const getCurrentMessage = () => currentMessage;
-const setCurrentMessage = newMessage => {
-    currentMessage = newMessage;
-};
-const getCurrentLine = () => currentLine;
-const setCurrentLine = newCurrentLine => {
-    currentLine = newCurrentLine;
-};
-const resetCurrentLine = () => {
-    currentLine = 0;
-};
-
-board.on('ready', () => {
-    const lcd = new five.LCD({
-        pins: ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'],
-    });
-
-    board.loop(2000, () => {
-        const message = getCurrentMessage().concat(' '.repeat(LINE_LENGTH * 2));
-
-        const lines = [
-            message.slice(getCurrentLine(), getCurrentLine() + LINE_LENGTH),
-            message.slice(
-                getCurrentLine() + LINE_LENGTH,
-                getCurrentLine() + LINE_LENGTH * 2,
-            ),
-        ];
-
-        lines.forEach((line, i) => {
-            lcd.cursor(i, 0).print(line);
-        });
-
-        setCurrentLine(getCurrentLine() + LINE_LENGTH * 2);
-
-        if (getCurrentLine() + LINE_LENGTH * 2 > message.length) {
-            resetCurrentLine();
-        }
-
-        console.log('>>> line 0: ', lines[0]);
-        console.log('>>> line 1: ', lines[1]);
-        console.log('>>> curLine:', getCurrentLine());
-        console.log('------------');
-    });
-
-    // Start up server
-    server = app.listen(PORT);
-    console.log(`Markee server running on: ${ADDRESS}:${PORT}`);
-
-    process.on('SIGINT', () => {
-        server.close();
-    });
+process.on('SIGINT', () => {
+    server.close();
 });

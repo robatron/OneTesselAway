@@ -23,10 +23,10 @@ const getArrivalsForRoute = async (stopId, routeId) => {
     const arrivalsAndDeparturesForStop = await _getArrivalsAndDeparturesForStop(
         stopId,
     );
-
     const arrivalsAndDepartures =
         ((arrivalsAndDeparturesForStop.data || {}).entry || {})
             .arrivalsAndDepartures || [];
+
     const arrivalsForRoute = arrivalsAndDepartures.filter(
         arrival => arrival.routeId === routeId,
     );

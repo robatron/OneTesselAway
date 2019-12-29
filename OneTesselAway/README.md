@@ -19,3 +19,4 @@ npm test
 
 -   https://nodejs.org/docs/latest-v8.x/api/index.html (Latest supported by Tessel 2)
 -   https://github.com/mde/ejs/tree/v3.0.1
+-   https://github.com/rwaldron/johnny-five/blob/master/docs/lcd-16x2-tessel.md

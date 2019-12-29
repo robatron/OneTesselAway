@@ -1,6 +1,7 @@
 const {
-    getArrivalsAndDeparturesForStop,
     extractArrivalsForRoute,
+    getArrivalsAndDeparturesForStop,
+    getUpcommingArrivalsForRouteAtStop,
 } = require('../ArrivalsAndStops');
 const { apiKey } = require('../../oba-api-key.json');
 const {
@@ -12,9 +13,8 @@ jest.mock('node-fetch');
 const fetch = require('node-fetch');
 const { Response } = jest.requireActual('node-fetch');
 
-const DEFAULT_TEST_STOP_ID = '1_12351';
+const DEFAULT_TEST_STOP_ID = '1_12353';
 const DEFAULT_TEST_ROUTE_ID = '1_100009';
-
 const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
 describe('ArrivalsAndStops', () => {
@@ -58,14 +58,37 @@ describe('ArrivalsAndStops', () => {
                 DEFAULT_ARRIVALS_AND_DEPARTURES_FOR_STOP_RESPONSE,
                 DEFAULT_TEST_ROUTE_ID,
             );
-            expect(arrivals.length).toEqual(1);
-            expect(arrivals[0].routeId).toEqual(DEFAULT_TEST_ROUTE_ID);
+            expect(arrivals.length).toEqual(2);
+            arrivals.forEach(arrival =>
+                expect(arrival.routeId).toEqual(DEFAULT_TEST_ROUTE_ID),
+            );
         });
 
         it('throws an error if the data object is malformed', () => {
             expect(() => {
                 extractArrivalsForRoute({});
             }).toThrow();
+        });
+    });
+
+    describe('getUpcommingArrivalsForRouteAtStop', () => {
+        it('gets upcomming arrivals for a route at a stop', async () => {
+            fetch.mockReturnValue(
+                Promise.resolve(
+                    new Response(
+                        JSON.stringify(
+                            DEFAULT_ARRIVALS_AND_DEPARTURES_FOR_STOP_RESPONSE,
+                        ),
+                    ),
+                ),
+            );
+
+            const upcommingArrivalTimes = await getUpcommingArrivalsForRouteAtStop(
+                DEFAULT_TEST_STOP_ID,
+                DEFAULT_TEST_ROUTE_ID,
+            );
+
+            expect(upcommingArrivalTimes).toEqual(['12:39', '13:06']);
         });
     });
 });

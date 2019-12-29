@@ -10,9 +10,14 @@
  *
  * Supports up to two routes and two stops.
  */
-var http = require('http');
-var os = require('os');
-var Express = require('express');
+const http = require('http');
+const os = require('os');
+const Express = require('express');
+
+const {
+    getArrivalsAndDeparturesForStop,
+    extractArrivalsForRoute,
+} = require('./src/ArrivalsAndStops');
 
 // Settings ------------------------------------------------------------
 
@@ -66,6 +71,10 @@ app.get('/', (req, res) => {
 });
 
 // Start ---------------------------------------------------------------
+
+const updateArrivalData = async () => {
+    ROUTES_AND_STOPS.forEach(routeAndStop => {});
+};
 
 // Start up web UI server
 server = app.listen(PORT);

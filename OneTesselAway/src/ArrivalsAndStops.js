@@ -38,7 +38,34 @@ const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     return arrivalsForRoute;
 };
 
+// Return a list of upcoming arrival times for the given stop and route. Arrival
+// times will be two-digit 24-hour time in the current timezone
+const getUpcommingArrivalsForRouteAtStop = async (stopId, routeId) => {
+    const arrivalsForRoute = extractArrivalsForRoute(
+        await getArrivalsAndDeparturesForStop(stopId),
+        routeId,
+    );
+
+    // Create date objects from predicted or scheduled arrival times. If
+    // predicted arrival time is 0, use scheduled arrival time
+    const arrivalDates = arrivalsForRoute.map(
+        arrival =>
+            new Date(
+                arrival.predictedArrivalTime || arrival.scheduledArrivalTime,
+            ),
+    );
+
+    const arrivalLocalTimeStrings = arrivalDates.map(d =>
+        [d.getHours(), d.getMinutes()]
+            .map(t => String(t).padStart(2, 0))
+            .join(':'),
+    );
+
+    return arrivalLocalTimeStrings;
+};
+
 module.exports = {
-    getArrivalsAndDeparturesForStop,
     extractArrivalsForRoute,
+    getArrivalsAndDeparturesForStop,
+    getUpcommingArrivalsForRouteAtStop,
 };

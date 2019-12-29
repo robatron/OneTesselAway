@@ -1,4 +1,14 @@
-<html>
+<html data-refresh-interval="<%= refreshInterval %>">
     <h1><%= title %></h1>
     <h2><%= message %></h2>
+    <body>
+        <script>
+            const refreshInterval = parseInt(
+                document.querySelector('html').dataset.refreshInterval,
+            );
+            setInterval(() => {
+                location.reload();
+            }, refreshInterval);
+        </script>
+    </body>
 </html>

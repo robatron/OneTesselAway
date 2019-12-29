@@ -36,7 +36,11 @@ const ROUTES_AND_STOPS = [
     },
 ];
 
-// Server settings
+// How often to request updates from OneBusAway (in milliseconds)
+const UPDATE_INTERVAL = 1000;
+
+// Server settings. If started locally w/ `npm start`, it'll serve from
+// localhost. If running on the Tessel 2, it'll run from its WiFi IP
 const PORT = process.env.PORT || 8080;
 const ADDRESS = `http://${process.env.ADDR ||
     os.networkInterfaces().wlan0[0].address}`;
@@ -54,7 +58,11 @@ app.set('view engine', 'ejs');
 
 // Web UI
 app.get('/', (req, res) => {
-    res.render('index', { title: 'Hey', message: 'Hello there!' });
+    res.render('index', {
+        title: 'Hey',
+        message: 'Hello there!',
+        refreshInterval: UPDATE_INTERVAL,
+    });
 });
 
 // Start ---------------------------------------------------------------

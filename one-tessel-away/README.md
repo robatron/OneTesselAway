@@ -4,7 +4,8 @@
 
 ## Prerequisites
 
-Install the t2 CLI: https://tessel.gitbooks.io/t2-docs/content/API/CLI.html#installation
+1. Get a OneBusAway API key and put it in `oba-api-key.json` under `apiKey`
+2. Install the t2 CLI: https://tessel.gitbooks.io/t2-docs/content/API/CLI.html#installation
 
 ## References
 

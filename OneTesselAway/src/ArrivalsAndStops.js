@@ -1,31 +1,35 @@
 const fetch = require('node-fetch');
 const { apiKey } = require('../oba-api-key.json');
 
-const API_BASE = 'http://api.pugetsound.onebusaway.org/api/where';
-const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `${API_BASE}/arrivals-and-departures-for-stop`;
+const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
-// Raw response from OneBusAway
-const _getArrivalsAndDeparturesForStop = async stopId =>
-    await fetch(
+// JSON response from OneBusAway
+const getArrivalsAndDeparturesForStop = async stopId => {
+    const response = await fetch(
         `${API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
-    )
-        .then(res => {
-            if (res.ok) {
-                // res.status >= 200 && res.status < 300
-                return res;
-            } else {
-                throw new Error('Fetch error:' + res.statusText);
-            }
-        })
-        .then(res => res.json());
-
-const getArrivalsForRoute = async (stopId, routeId) => {
-    const arrivalsAndDeparturesForStop = await _getArrivalsAndDeparturesForStop(
-        stopId,
     );
-    const arrivalsAndDepartures =
-        ((arrivalsAndDeparturesForStop.data || {}).entry || {})
-            .arrivalsAndDepartures || [];
+
+    // If response is not a 200, throw an error
+    if (!response.ok) {
+        throw new Error(
+            'Fetch error. Raw response:' + JSON.stringify(response, null, 2),
+        );
+    }
+
+    return await response.json();
+};
+
+const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
+    let arrivalsAndDepartures;
+    try {
+        arrivalsAndDepartures =
+            arrivalsAndDeparturesForStop.data.entry.arrivalsAndDepartures;
+    } catch (e) {
+        throw new Error(
+            'Malformed arrivalsAndDeparturesForStop object:',
+            JSON.stringify(arrivalsAndDeparturesForStop, null, 2),
+        );
+    }
 
     const arrivalsForRoute = arrivalsAndDepartures.filter(
         arrival => arrival.routeId === routeId,
@@ -35,6 +39,6 @@ const getArrivalsForRoute = async (stopId, routeId) => {
 };
 
 module.exports = {
-    _getArrivalsAndDeparturesForStop,
-    getArrivalsForRoute,
+    getArrivalsAndDeparturesForStop,
+    extractArrivalsForRoute,
 };

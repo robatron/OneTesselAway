@@ -1,7 +1,7 @@
 const {
     extractArrivalsForRoute,
     getArrivalsAndDeparturesForStop,
-    getUpcommingArrivalsForRouteAtStop,
+    getUpcommingArrivalDates,
 } = require('../ArrivalsAndStops');
 const { apiKey } = require('../../oba-api-key.json');
 const {
@@ -71,8 +71,8 @@ describe('ArrivalsAndStops', () => {
         });
     });
 
-    describe('getUpcommingArrivalsForRouteAtStop', () => {
-        it('gets upcomming arrivals for a route at a stop', async () => {
+    describe('getUpcommingArrivalDates', () => {
+        beforeEach(() => {
             fetch.mockReturnValue(
                 Promise.resolve(
                     new Response(
@@ -82,13 +82,17 @@ describe('ArrivalsAndStops', () => {
                     ),
                 ),
             );
+        });
 
-            const upcommingArrivalTimes = await getUpcommingArrivalsForRouteAtStop(
+        it('gets upcomming arrival times for a route at a stop', async () => {
+            const upcommingArrivalTimes = await getUpcommingArrivalDates(
                 DEFAULT_TEST_STOP_ID,
                 DEFAULT_TEST_ROUTE_ID,
             );
-
-            expect(upcommingArrivalTimes).toEqual(['12:39', '13:06']);
+            expect(upcommingArrivalTimes).toEqual([
+                new Date(1577651984000),
+                new Date(1577653615000),
+            ]);
         });
     });
 });

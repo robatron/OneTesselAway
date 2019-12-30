@@ -1,4 +1,8 @@
 const fetch = require('node-fetch');
+const {
+    dateTo24HourClockString,
+    getMinutesBetweenMsEpochs,
+} = require('./TimeUtils');
 const { apiKey } = require('../oba-api-key.json');
 
 const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
@@ -21,6 +25,7 @@ const getArrivalsAndDeparturesForStop = async stopId => {
 
 const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     let arrivalsAndDepartures;
+
     try {
         arrivalsAndDepartures =
             arrivalsAndDeparturesForStop.data.entry.arrivalsAndDepartures;
@@ -38,34 +43,39 @@ const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     return arrivalsForRoute;
 };
 
-// Return a list of upcoming arrival times for the given stop and route. Arrival
-// times will be two-digit 24-hour time in the current timezone
-const getUpcommingArrivalsForRouteAtStop = async (stopId, routeId) => {
+// Return a sorted list (ascending) of upcoming arrival times as Date objects
+// for the given stop and route. Predicted time will be used when possible,
+// otherwise the scheduled time will be used.
+const getUpcommingArrivalDates = async (stopId, routeId) => {
     const arrivalsForRoute = extractArrivalsForRoute(
         await getArrivalsAndDeparturesForStop(stopId),
         routeId,
     );
 
-    // Create date objects from predicted or scheduled arrival times. If
-    // predicted arrival time is 0, use scheduled arrival time
-    const arrivalDates = arrivalsForRoute.map(
-        arrival =>
-            new Date(
-                arrival.predictedArrivalTime || arrival.scheduledArrivalTime,
-            ),
-    );
-
-    const arrivalLocalTimeStrings = arrivalDates.map(d =>
-        [d.getHours(), d.getMinutes()]
-            .map(t => String(t).padStart(2, 0))
-            .join(':'),
-    );
-
-    return arrivalLocalTimeStrings;
+    return arrivalsForRoute
+        .map(
+            arrival =>
+                new Date(
+                    arrival.predictedArrivalTime ||
+                        arrival.scheduledArrivalTime,
+                ),
+        )
+        .sort();
 };
+
+const getUpcommingArrivalTimes = async (stopId, routeId) =>
+    (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
+        dateTo24HourClockString(arrivalDate),
+    );
+
+// const getUpcommingArrivalMinsUntil = async (stopId, routeId) =>
+//     (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
+//         getMinutesBetweenMsEpochs(arrivalDate),
+//     );
 
 module.exports = {
     extractArrivalsForRoute,
     getArrivalsAndDeparturesForStop,
-    getUpcommingArrivalsForRouteAtStop,
+    getUpcommingArrivalDates,
+    getUpcommingArrivalTimes,
 };

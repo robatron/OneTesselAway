@@ -14,10 +14,7 @@ const http = require('http');
 const os = require('os');
 const Express = require('express');
 
-const {
-    getArrivalsAndDeparturesForStop,
-    extractArrivalsForRoute,
-} = require('./src/ArrivalsAndStops');
+const { getUpcommingArrivalTimes } = require('./src/ArrivalsAndStops');
 
 // Settings ------------------------------------------------------------
 
@@ -62,18 +59,37 @@ var server = new http.Server(app);
 app.set('view engine', 'ejs');
 
 // Web UI
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+    const arrivalInfo = await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
+    // const arrivalInfo = await getUpcommingArrivalTimes('1_12351', '1_100009');
+
+    console.log('>>>', arrivalInfo); // DEBUGGGG
+
     res.render('index', {
         title: 'Hey',
         message: 'Hello there!',
         refreshInterval: UPDATE_INTERVAL,
+        arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
     });
 });
 
 // Start ---------------------------------------------------------------
 
-const updateArrivalData = async () => {
-    ROUTES_AND_STOPS.forEach(routeAndStop => {});
+const getUpdatedArrivalInfo = async routesAndStops => {
+    const updatedInfo = [];
+
+    for (let i = 0; i < routesAndStops.length; ++i) {
+        upcommingArrivalTimes = await getUpcommingArrivalTimes(
+            routesAndStops[i].stopId,
+            routesAndStops[i].routeId,
+        );
+        updatedInfo.push({
+            routeName: routesAndStops[i].routeName,
+            upcommingArrivalTimes,
+        });
+    }
+
+    return updatedInfo;
 };
 
 // Start up web UI server

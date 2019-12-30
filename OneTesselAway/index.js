@@ -21,6 +21,7 @@ const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { arrivalInfoToDisplayLines } = require('./src/DisplayUtils');
+const { initHardware } = require('./src/Hardware');
 
 // Settings ------------------------------------------------------------
 
@@ -53,6 +54,9 @@ const LOGFILE = './logs/device.log';
 const PORT = process.env.PORT || 8080;
 const ADDRESS = `http://${process.env.ADDR ||
     os.networkInterfaces().wlan0[0].address}`;
+
+// Which pins on the Tessel is the LCD plugged into?
+const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
 // Setup ---------------------------------------------------------------
 
@@ -90,7 +94,11 @@ if (process.env.WEB_ONLY === '1') {
     log.info('Running in WEB-ONLY mode. Skipping device initialization.');
 } else {
     log.info('Initializing device...');
-    // TODO: Actual device setup
+    initHardware(
+        UPDATE_INTERVAL,
+        LCD_DISPLAY_PINS,
+        arrivalInfoToDisplayLines.bind(this, getArrivalInfo()),
+    );
 }
 
 // Begin updating arrival info regularly

@@ -6,6 +6,7 @@
     "engine": "^8",
     "scripts": {
         "deploy": "echo 'Deploying via USB...' && t2 push --usb index.js",
+        "start:device": "echo 'Running on Tessel device via USB...' && t2 run --usb index.js",
         "start": "echo 'Starting web UI...' && ADDR=0.0.0.0 WEB_ONLY=1 node index.js",
         "test": "jest",
         "test:watch": "npm test -- --watch"

@@ -1,1 +1,7 @@
 index.js
+node_modules/logform/combine.js
+node_modules/logform/errors.js
+node_modules/logform/printf.js
+node_modules/logform/timestamp.js
+node_modules/logform/node_modules/fecha
+views/*

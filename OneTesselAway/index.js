@@ -8,6 +8,11 @@
  *  12  08:11 06:47
  *  ----------------
  *
+ *  ----------------
+ *  11: 03!  15  45
+ *  12: 18   32  51
+ *  ----------------
+ *
  * Supports up to two routes and two stops.
  */
 const http = require('http');
@@ -86,16 +91,12 @@ app.set('view engine', 'ejs');
 
 // Route to index
 app.get('/', async (req, res) => {
-    const callTimeMsEpoch = Date.now();
     let arrivalInfo;
 
     log.info("Getting '/' ... ");
 
     try {
-        arrivalInfo = await getUpdatedArrivalInfo(
-            ROUTES_AND_STOPS,
-            callTimeMsEpoch,
-        );
+        arrivalInfo = await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
     } catch (e) {
         log.error(e);
     }
@@ -103,13 +104,21 @@ app.get('/', async (req, res) => {
     res.render('index', {
         arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
         logs: fs.readFileSync(LATEST_LOGFILE),
-        updateTime: new Date(callTimeMsEpoch),
     });
 });
 
 // Start ---------------------------------------------------------------
 
-const getUpdatedArrivalInfo = async (routesAndStops, callTimeMsEpoch) => {
+// Main arrival info cache
+const arrivalInfo = {};
+
+// Updates the arrival info in memory. If an update fails, log an error
+// and move on.
+const getUpdatedArrivalInfo = async routesAndStops => {
+    log.info('Updating arrival info...');
+
+    const currentDate = new Date();
+
     const updatedInfo = [];
 
     for (let i = 0; i < routesAndStops.length; ++i) {
@@ -124,7 +133,7 @@ const getUpdatedArrivalInfo = async (routesAndStops, callTimeMsEpoch) => {
             upcommingArrivalTimes: await getUpcommingArrivalTimes(
                 stopId,
                 routeId,
-                callTimeMsEpoch,
+                currentDate,
             ),
         });
     }

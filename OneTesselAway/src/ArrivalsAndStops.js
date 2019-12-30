@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const {
     dateTo24HourClockString,
-    getMinutesBetweenMsEpochs,
+    getMinutesBetweenDates,
 } = require('./TimeUtils');
 const { apiKey } = require('../oba-api-key.json');
 
@@ -20,11 +20,17 @@ const getArrivalsAndDeparturesForStop = async stopId => {
         );
     }
 
-    const responseJson = await response.text();
+    // Returning text is safer and more versitale than returning JSON in case
+    // invalid JSON is returned from service. We'll manually parse JSON below.
+    const responseText = await response.text();
 
-    console.log('>>> JSON:', responseJson); // DEBUGGGG
-
-    return JSON.parse(responseJson);
+    try {
+        return JSON.parse(responseText);
+    } catch (e) {
+        throw new Error(
+            `Unable to parse JSON response. Response text (might be blank): ${responseText}`,
+        );
+    }
 };
 
 const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
@@ -61,18 +67,29 @@ const getUpcommingArrivalDates = arrivalsForRoute =>
         )
         .sort();
 
-const getUpcommingArrivalTimes = async (stopId, routeId, relDateMsEpoch) => {
+// Return a dictionary of trip IDs to arrival dates given an array of arrivals
+const getArrivalDatesByTripId = arrivals =>
+    arrivals.reduce((arrivalDates, arrival) => {
+        arrivalDates[arrival.tripId] = new Date(
+            arrival.predictedArrivalTime || arrival.scheduledArrivalTime,
+        );
+        return arrivalDates;
+    }, {});
+
+// Returns a list of upcomming arrival times for the specified stop and route
+const getUpcommingArrivalTimes = async (stopId, routeId, currentDate) => {
     const arrivalsForStop = await getArrivalsAndDeparturesForStop(stopId);
     const arrivalsForRoute = extractArrivalsForRoute(arrivalsForStop, routeId);
-    const arrivalDates = getUpcommingArrivalDates(arrivalsForRoute);
+    const arrivalDates = getArrivalDatesByTripId(arrivalsForRoute);
 
-    return arrivalDates.map(arrivalDate => ({
-        arrivalTime: dateTo24HourClockString(arrivalDate),
-        minsUntilArrival: getMinutesBetweenMsEpochs(
-            arrivalDate.getTime(),
-            relDateMsEpoch,
-        ),
-    }));
+    return Object.keys(arrivalDates).map(tripId => {
+        const arrivalDate = arrivalDates[tripId];
+        return {
+            arrivalTime: dateTo24HourClockString(arrivalDate),
+            minsUntilArrival: getMinutesBetweenDates(arrivalDate, currentDate),
+            tripId,
+        };
+    });
 };
 
 module.exports = {

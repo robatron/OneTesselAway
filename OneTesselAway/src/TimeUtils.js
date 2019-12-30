@@ -5,12 +5,12 @@ const dateTo24HourClockString = d => {
         .join(':');
 };
 
-// Calculate the number of minutes between two millisecond UNIX epoch times, and
-// return the floored value
-const getMinutesBetweenMsEpochs = (minuend, subtrahend) =>
-    Math.floor((minuend - subtrahend) / 1000 / 60);
+// Calculate the number of minutes between two dates, and return the
+// floored value
+const getMinutesBetweenDates = (minuend, subtrahend) =>
+    Math.floor((minuend.getTime() - subtrahend.getTime()) / 1000 / 60);
 
 module.exports = {
     dateTo24HourClockString,
-    getMinutesBetweenMsEpochs,
+    getMinutesBetweenDates,
 };

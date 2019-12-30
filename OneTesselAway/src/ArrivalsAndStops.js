@@ -68,14 +68,15 @@ const getUpcommingArrivalTimes = async (stopId, routeId) =>
         dateTo24HourClockString(arrivalDate),
     );
 
-// const getUpcommingArrivalMinsUntil = async (stopId, routeId) =>
-//     (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
-//         getMinutesBetweenMsEpochs(arrivalDate),
-//     );
+const getUpcommingArrivalMinsUntil = async (stopId, routeId, relDateMsEpoch) =>
+    (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
+        getMinutesBetweenMsEpochs(arrivalDate.getTime(), relDateMsEpoch),
+    );
 
 module.exports = {
     extractArrivalsForRoute,
     getArrivalsAndDeparturesForStop,
     getUpcommingArrivalDates,
     getUpcommingArrivalTimes,
+    getUpcommingArrivalMinsUntil,
 };

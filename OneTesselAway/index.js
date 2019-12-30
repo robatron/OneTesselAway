@@ -14,7 +14,10 @@ const http = require('http');
 const os = require('os');
 const Express = require('express');
 
-const { getUpcommingArrivalTimes } = require('./src/ArrivalsAndStops');
+const {
+    getUpcommingArrivalTimes,
+    getUpcommingArrivalMinsUntil,
+} = require('./src/ArrivalsAndStops');
 
 // Settings ------------------------------------------------------------
 
@@ -61,9 +64,6 @@ app.set('view engine', 'ejs');
 // Web UI
 app.get('/', async (req, res) => {
     const arrivalInfo = await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
-    // const arrivalInfo = await getUpcommingArrivalTimes('1_12351', '1_100009');
-
-    console.log('>>>', arrivalInfo); // DEBUGGGG
 
     res.render('index', {
         title: 'Hey',
@@ -79,13 +79,20 @@ const getUpdatedArrivalInfo = async routesAndStops => {
     const updatedInfo = [];
 
     for (let i = 0; i < routesAndStops.length; ++i) {
-        upcommingArrivalTimes = await getUpcommingArrivalTimes(
-            routesAndStops[i].stopId,
-            routesAndStops[i].routeId,
-        );
+        const routeName = routesAndStops[i].routeName;
+        const stopId = routesAndStops[i].stopId;
+        const routeId = routesAndStops[i].routeId;
         updatedInfo.push({
-            routeName: routesAndStops[i].routeName,
-            upcommingArrivalTimes,
+            routeName,
+            upcommingArrivalTimes: await getUpcommingArrivalTimes(
+                stopId,
+                routeId,
+            ),
+            upcommingArrivalMinsUntil: await getUpcommingArrivalMinsUntil(
+                stopId,
+                routeId,
+                Date.now(),
+            ),
         });
     }
 

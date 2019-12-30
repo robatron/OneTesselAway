@@ -12,6 +12,8 @@
  */
 const http = require('http');
 const os = require('os');
+const { createLogger, transports } = require('winston');
+const { format } = require('logform');
 const Express = require('express');
 
 const { getUpcommingArrivalTimes } = require('./src/ArrivalsAndStops');
@@ -47,18 +49,40 @@ const PORT = process.env.PORT || 8080;
 const ADDRESS = `http://${process.env.ADDR ||
     os.networkInterfaces().wlan0[0].address}`;
 
-// Init ----------------------------------------------------------------
+// Setup ---------------------------------------------------------------
 
-// Express server
+// Set up logger
+const log = createLogger({
+    level: 'info',
+    format: format.combine(
+        format.timestamp(),
+        format.errors({ stack: true }),
+        format.printf(
+            info =>
+                `${info.timestamp} [${info.level}] ${info.message} ${
+                    info.stack ? '\n' + info.stack : ''
+                }`,
+        ),
+    ),
+    transports: [
+        new transports.File({
+            filename: './logs/app.log',
+            maxFiles: 10,
+            maxsize: 1024 * 1024, // 1 MiB
+            tailable: true,
+        }),
+        new transports.Console(),
+    ],
+});
+
+// Set up Express server for the web UI
 var app = new Express();
 var server = new http.Server(app);
-
-// Setup ---------------------------------------------------------------
 
 // Set up the templating engine
 app.set('view engine', 'ejs');
 
-// Web UI
+// Route to index
 app.get('/', async (req, res) => {
     const callTimeMsEpoch = Date.now();
     const arrivalInfo = await getUpdatedArrivalInfo(
@@ -99,8 +123,9 @@ const getUpdatedArrivalInfo = async (routesAndStops, callTimeMsEpoch) => {
 
 // Start up web UI server
 server = app.listen(PORT);
-console.log(`OneTesselAway web server running on: ${ADDRESS}:${PORT}`);
+log.info(`OneTesselAway web server running on: ${ADDRESS}:${PORT}`);
 
+// Close server on ^C
 process.on('SIGINT', () => {
     server.close();
 });

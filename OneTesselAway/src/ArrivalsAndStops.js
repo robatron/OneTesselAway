@@ -20,7 +20,11 @@ const getArrivalsAndDeparturesForStop = async stopId => {
         );
     }
 
-    return await response.json();
+    const responseJson = await response.text();
+
+    console.log('>>> JSON:', responseJson); // DEBUGGGG
+
+    return JSON.parse(responseJson);
 };
 
 const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {

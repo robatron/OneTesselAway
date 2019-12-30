@@ -1,4 +1,50 @@
 module.exports = {
+    DEFAULT_ARRIVAL_INFO: {
+        '1_100009': {
+            lastUpdatedDate: '2019-12-30T19:49:12.282Z',
+            routeName: '11',
+            stopName: 'E Madison St & 22nd Ave E',
+            upcomingArrivalTimes: [
+                {
+                    clock: '11:53',
+                    minsUntilArrival: 4,
+                    tripId: '1_40560770',
+                },
+                {
+                    clock: '12:09',
+                    minsUntilArrival: 19,
+                    tripId: '1_40560771',
+                },
+                {
+                    clock: '12:24',
+                    minsUntilArrival: 34,
+                    tripId: '1_40560772',
+                },
+            ],
+        },
+        '1_100018': {
+            lastUpdatedDate: '2019-12-30T19:49:12.380Z',
+            routeName: '12',
+            stopName: 'E Madison St & 19th Ave',
+            upcomingArrivalTimes: [
+                {
+                    clock: '11:51',
+                    minsUntilArrival: 1,
+                    tripId: '1_44297782',
+                },
+                {
+                    clock: '12:05',
+                    minsUntilArrival: 16,
+                    tripId: '1_44297821',
+                },
+                {
+                    clock: '12:19',
+                    minsUntilArrival: 30,
+                    tripId: '1_44297749',
+                },
+            ],
+        },
+    },
     DEFAULT_ARRIVALS_AND_DEPARTURES_FOR_STOP_RESPONSE: {
         code: 200,
         currentTime: 1577721840746,

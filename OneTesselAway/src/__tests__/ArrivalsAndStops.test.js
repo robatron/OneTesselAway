@@ -7,7 +7,7 @@ const {
 const { apiKey } = require('../../oba-api-key.json');
 const {
     DEFAULT_ARRIVALS_AND_DEPARTURES_FOR_STOP_RESPONSE,
-} = require('./__data__/ArrivalsAndStops.test-data');
+} = require('./__data__/ArrivalInfoTestData');
 
 // Mock fetch so we don't make calls
 jest.mock('node-fetch');

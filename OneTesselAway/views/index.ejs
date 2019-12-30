@@ -4,6 +4,11 @@
             body {
                 font-family: 'Courier New', Courier, monospace;
             }
+            .display {
+                background-color: green;
+                padding: 10px;
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
@@ -15,10 +20,8 @@
         </p>
 
         <h2>Mock Display</h2>
-        <p>This is what should be currently displayed on the Tessel device</p>
-        <pre>
-<%= displayLines %>
-        </pre>
+        <p>This is what should be currently displayed on the Tessel device:</p>
+        <pre class="display"><%= displayLines %></pre>
 
         <h2>Arrival Info</h2>
         <pre>

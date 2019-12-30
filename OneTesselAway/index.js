@@ -20,6 +20,7 @@ const os = require('os');
 const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
+const { arrivalInfoToDisplayLines } = require('./src/DisplayUtils');
 
 // Settings ------------------------------------------------------------
 
@@ -42,7 +43,7 @@ const TARGET_ROUTES = {
 };
 
 // How often to request updates from OneBusAway (in milliseconds)
-const UPDATE_INTERVAL = 1000;
+const UPDATE_INTERVAL = 3000;
 
 // Log file path
 const LOGFILE = './logs/device.log';
@@ -71,25 +72,41 @@ app.get('/', async (req, res) => {
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
 
-    await updateArrivalInfo(TARGET_ROUTES);
-
     const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
     const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
+    const displayLines = arrivalInfoToDisplayLines(getArrivalInfo()).join('\n');
 
     res.render('index', {
         arrivalInfo,
         deviceLogs,
-        displayLines: null,
+        displayLines,
     });
 });
 
 // Start ---------------------------------------------------------------
+log.info('Starting OneTesselAway...');
+
+if (process.env.WEB_ONLY === '1') {
+    log.info('Running in WEB-ONLY mode. Skipping device initialization.');
+} else {
+    log.info('Initializing device...');
+    // TODO: Actual device setup
+}
+
+// Begin updating arrival info regularly
+log.info(`Begin updating arrival info every ${UPDATE_INTERVAL} milliseconds`);
+const updateInterval = setInterval(
+    () => updateArrivalInfo(TARGET_ROUTES),
+    UPDATE_INTERVAL,
+);
+updateArrivalInfo.bind(TARGET_ROUTES);
 
 // Start up web UI server
 server = app.listen(PORT);
-log.info(`OneTesselAway web server running on: ${ADDRESS}:${PORT}`);
+log.info(`Web server running on: ${ADDRESS}:${PORT}`);
 
-// Close server on ^C
+// Shut down everything on ^C
 process.on('SIGINT', () => {
+    clearInterval(updateInterval);
     server.close();
 });

@@ -5,10 +5,11 @@ const {
 } = require('./TimeUtils');
 const { apiKey } = require('../oba-api-key.json');
 
+// OneBusAway API endpoint for "arrivals" data at a stop
 const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
-// JSON response from OneBusAway
-const getArrivalsAndDeparturesForStop = async stopId => {
+// Fetch upcomming arrivals data for the given stop from the OneBusAway API
+const _getArrivalsAndDeparturesForStop = async stopId => {
     const response = await fetch(
         `${API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
     );
@@ -20,8 +21,8 @@ const getArrivalsAndDeparturesForStop = async stopId => {
         );
     }
 
-    // Returning text is safer and more versitale than returning JSON in case
-    // invalid JSON is returned from service. We'll manually parse JSON below.
+    // Returning text instead of JSON allows us to catch JSON parse errors
+    // separately, and to inspect body contents when that happens
     const responseText = await response.text();
 
     try {
@@ -33,7 +34,8 @@ const getArrivalsAndDeparturesForStop = async stopId => {
     }
 };
 
-const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
+// Get an arrivals list for a specific route from a OneBusAway response
+const _getArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     let arrivalsAndDepartures;
 
     try {
@@ -53,22 +55,9 @@ const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     return arrivalsForRoute;
 };
 
-// Return a sorted list (ascending) of upcoming arrival times for a route as
-// Date objects for the given stop and route. Predicted time will be used when
-// possible, otherwise the scheduled time will be used.
-const getUpcommingArrivalDates = arrivalsForRoute =>
-    arrivalsForRoute
-        .map(
-            arrival =>
-                new Date(
-                    arrival.predictedArrivalTime ||
-                        arrival.scheduledArrivalTime,
-                ),
-        )
-        .sort();
-
-// Return a dictionary of trip IDs to arrival dates given an array of arrivals
-const getArrivalDatesByTripId = arrivals =>
+// Return a dictionary of trip IDs to arrival dates given an array of arrivals.
+// Use scheduled arrival times when predicted times aren't available.
+const _getArrivalDatesByTripId = arrivals =>
     arrivals.reduce((arrivalDates, arrival) => {
         arrivalDates[arrival.tripId] = new Date(
             arrival.predictedArrivalTime || arrival.scheduledArrivalTime,
@@ -78,14 +67,14 @@ const getArrivalDatesByTripId = arrivals =>
 
 // Returns a list of upcomming arrival times for the specified stop and route
 const getUpcommingArrivalTimes = async (stopId, routeId, currentDate) => {
-    const arrivalsForStop = await getArrivalsAndDeparturesForStop(stopId);
-    const arrivalsForRoute = extractArrivalsForRoute(arrivalsForStop, routeId);
-    const arrivalDates = getArrivalDatesByTripId(arrivalsForRoute);
+    const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
+    const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
+    const arrivalDatesByTripId = _getArrivalDatesByTripId(arrivalsForRoute);
 
-    return Object.keys(arrivalDates).map(tripId => {
-        const arrivalDate = arrivalDates[tripId];
+    return Object.keys(arrivalDatesByTripId).map(tripId => {
+        const arrivalDate = arrivalDatesByTripId[tripId];
         return {
-            arrivalTime: dateTo24HourClockString(arrivalDate),
+            clock: dateTo24HourClockString(arrivalDate),
             minsUntilArrival: getMinutesBetweenDates(arrivalDate, currentDate),
             tripId,
         };
@@ -93,8 +82,8 @@ const getUpcommingArrivalTimes = async (stopId, routeId, currentDate) => {
 };
 
 module.exports = {
-    extractArrivalsForRoute,
-    getArrivalsAndDeparturesForStop,
-    getUpcommingArrivalDates,
+    _getArrivalDatesByTripId,
+    _getArrivalsAndDeparturesForStop,
+    _getArrivalsForRoute,
     getUpcommingArrivalTimes,
 };

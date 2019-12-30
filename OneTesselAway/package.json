@@ -6,8 +6,9 @@
     "engine": "^8",
     "scripts": {
         "deploy": "echo 'Deploying via USB...' && t2 push --usb index.js",
-        "start": "echo 'Starting dev server...' && ADDR=localhost node index.js",
-        "test": "jest"
+        "start": "echo 'Starting local web UI...' && ADDR=0.0.0.0 WEB_ONLY=1 node index.js",
+        "test": "jest",
+        "test:watch": "npm test -- --watch"
     },
     "author": "Robert McGuire <robert.mcgui@gmail.com>",
     "license": "ISC",

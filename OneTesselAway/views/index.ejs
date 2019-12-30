@@ -1,4 +1,11 @@
 <html>
+    <head>
+        <style>
+            body {
+                font-family: 'Courier New', Courier, monospace;
+            }
+        </style>
+    </head>
     <body>
         <h1>OneTesselAway (Web UI)</h1>
 
@@ -7,6 +14,12 @@
             arrival info and device logs to help with diagnostics.
         </p>
 
+        <h2>Mock Display</h2>
+        <p>This is what should be currently displayed on the Tessel device</p>
+        <pre>
+<%= displayLines %>
+        </pre>
+
         <h2>Arrival Info</h2>
         <pre>
 <%= arrivalInfo %>
@@ -14,7 +27,7 @@
 
         <h2>Device Logs</h2>
         <pre>
-<%= logs %>
+<%= deviceLogs %>
         </pre>
     </body>
 </html>

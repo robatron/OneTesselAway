@@ -4,10 +4,10 @@ const fs = require('fs');
 const { createLogger, transports } = require('winston');
 const { format } = require('logform');
 
-let logger;
+global.log;
 
 const initLogger = logfileName => {
-    logger = createLogger({
+    log = createLogger({
         level: 'info',
         format: format.combine(
             format.timestamp(),
@@ -30,7 +30,7 @@ const initLogger = logfileName => {
         ],
     });
 
-    return logger;
+    return log;
 };
 
 const getLatestLogFromFile = (logfile, { reverseLines }) => {
@@ -48,7 +48,7 @@ const getLatestLogFromFile = (logfile, { reverseLines }) => {
 
         loglines = loglines.join('\n');
     } catch (e) {
-        logger.error(`Failed to load logfile ${logfile}: ${e.toString()}`);
+        log.error(`Failed to load logfile ${logfile}: ${e.toString()}`);
     }
 
     return loglines;
@@ -56,6 +56,5 @@ const getLatestLogFromFile = (logfile, { reverseLines }) => {
 
 module.exports = {
     getLatestLogFromFile,
-    getLogger: () => logger,
     initLogger,
 };

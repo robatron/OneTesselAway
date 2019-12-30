@@ -18,8 +18,8 @@
 const http = require('http');
 const os = require('os');
 const Express = require('express');
-const { getUpcomingArrivalTimes } = require('./src/ArrivalsAndStops');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
+const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 
 // Settings ------------------------------------------------------------
 
@@ -71,56 +71,19 @@ app.get('/', async (req, res) => {
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
 
-    await getUpdatedArrivalInfo(TARGET_ROUTES);
+    await updateArrivalInfo(TARGET_ROUTES);
+
+    const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
+    const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
 
     res.render('index', {
-        arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
-        logs: getLatestLogFromFile(LOGFILE, { reverseLines: true }),
+        arrivalInfo,
+        deviceLogs,
+        displayLines: null,
     });
 });
 
 // Start ---------------------------------------------------------------
-
-// Main arrival info cache
-let arrivalInfo = {};
-
-// Updates the arrival info in memory. If an update fails, log an error
-// and move on.
-const getUpdatedArrivalInfo = async targetRoutes => {
-    log.info('Updating arrival info...');
-
-    const targetRouteIds = Object.keys(targetRoutes);
-
-    for (let i = 0; i < targetRouteIds.length; ++i) {
-        const currentDate = new Date();
-        const routeId = targetRouteIds[i];
-        const routeName = targetRoutes[routeId].routeName;
-        const stopId = targetRoutes[routeId].stopId;
-        const stopName = targetRoutes[routeId].stopName;
-        let upcomingArrivalTimes;
-
-        try {
-            upcomingArrivalTimes = await getUpcomingArrivalTimes(
-                stopId,
-                routeId,
-                currentDate,
-            );
-        } catch (e) {
-            log.error(
-                `Failed to get upcoming arrival times for route ${routeId} and stop ${stopId}: ${e.toString()}`,
-            );
-        }
-
-        if (upcomingArrivalTimes) {
-            arrivalInfo[routeId] = {
-                lastUpdatedDate: currentDate,
-                routeName,
-                stopName,
-                upcomingArrivalTimes,
-            };
-        }
-    }
-};
 
 // Start up web UI server
 server = app.listen(PORT);

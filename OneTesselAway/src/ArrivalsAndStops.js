@@ -43,16 +43,11 @@ const extractArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
     return arrivalsForRoute;
 };
 
-// Return a sorted list (ascending) of upcoming arrival times as Date objects
-// for the given stop and route. Predicted time will be used when possible,
-// otherwise the scheduled time will be used.
-const getUpcommingArrivalDates = async (stopId, routeId) => {
-    const arrivalsForRoute = extractArrivalsForRoute(
-        await getArrivalsAndDeparturesForStop(stopId),
-        routeId,
-    );
-
-    return arrivalsForRoute
+// Return a sorted list (ascending) of upcoming arrival times for a route as
+// Date objects for the given stop and route. Predicted time will be used when
+// possible, otherwise the scheduled time will be used.
+const getUpcommingArrivalDates = arrivalsForRoute =>
+    arrivalsForRoute
         .map(
             arrival =>
                 new Date(
@@ -61,22 +56,24 @@ const getUpcommingArrivalDates = async (stopId, routeId) => {
                 ),
         )
         .sort();
+
+const getUpcommingArrivalTimes = async (stopId, routeId, relDateMsEpoch) => {
+    const arrivalsForStop = await getArrivalsAndDeparturesForStop(stopId);
+    const arrivalsForRoute = extractArrivalsForRoute(arrivalsForStop, routeId);
+    const arrivalDates = getUpcommingArrivalDates(arrivalsForRoute);
+
+    return arrivalDates.map(arrivalDate => ({
+        arrivalTime: dateTo24HourClockString(arrivalDate),
+        minsUntilArrival: getMinutesBetweenMsEpochs(
+            arrivalDate.getTime(),
+            relDateMsEpoch,
+        ),
+    }));
 };
-
-const getUpcommingArrivalTimes = async (stopId, routeId) =>
-    (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
-        dateTo24HourClockString(arrivalDate),
-    );
-
-const getUpcommingArrivalMinsUntil = async (stopId, routeId, relDateMsEpoch) =>
-    (await getUpcommingArrivalDates(stopId, routeId)).map(arrivalDate =>
-        getMinutesBetweenMsEpochs(arrivalDate.getTime(), relDateMsEpoch),
-    );
 
 module.exports = {
     extractArrivalsForRoute,
     getArrivalsAndDeparturesForStop,
     getUpcommingArrivalDates,
     getUpcommingArrivalTimes,
-    getUpcommingArrivalMinsUntil,
 };

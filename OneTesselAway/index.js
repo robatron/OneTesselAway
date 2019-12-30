@@ -14,10 +14,7 @@ const http = require('http');
 const os = require('os');
 const Express = require('express');
 
-const {
-    getUpcommingArrivalTimes,
-    getUpcommingArrivalMinsUntil,
-} = require('./src/ArrivalsAndStops');
+const { getUpcommingArrivalTimes } = require('./src/ArrivalsAndStops');
 
 // Settings ------------------------------------------------------------
 
@@ -90,10 +87,6 @@ const getUpdatedArrivalInfo = async (routesAndStops, callTimeMsEpoch) => {
             stopName,
             routeName,
             upcommingArrivalTimes: await getUpcommingArrivalTimes(
-                stopId,
-                routeId,
-            ),
-            upcommingArrivalMinsUntil: await getUpcommingArrivalMinsUntil(
                 stopId,
                 routeId,
                 callTimeMsEpoch,

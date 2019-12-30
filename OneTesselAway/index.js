@@ -12,6 +12,7 @@
  */
 const http = require('http');
 const os = require('os');
+const fs = require('fs');
 const { createLogger, transports } = require('winston');
 const { format } = require('logform');
 const Express = require('express');
@@ -52,6 +53,7 @@ const ADDRESS = `http://${process.env.ADDR ||
 // Setup ---------------------------------------------------------------
 
 // Set up logger
+const LATEST_LOGFILE = './logs/app.log';
 const log = createLogger({
     level: 'info',
     format: format.combine(
@@ -68,7 +70,7 @@ const log = createLogger({
         new transports.File({
             filename: './logs/app.log',
             maxFiles: 10,
-            maxsize: 1024 * 1024, // 1 MiB
+            maxsize: 1024 * 100, // 100 KiB
             tailable: true,
         }),
         new transports.Console(),
@@ -85,14 +87,23 @@ app.set('view engine', 'ejs');
 // Route to index
 app.get('/', async (req, res) => {
     const callTimeMsEpoch = Date.now();
-    const arrivalInfo = await getUpdatedArrivalInfo(
-        ROUTES_AND_STOPS,
-        callTimeMsEpoch,
-    );
+    let arrivalInfo;
+
+    log.info("Getting '/' ... ");
+
+    try {
+        arrivalInfo = await getUpdatedArrivalInfo(
+            ROUTES_AND_STOPS,
+            callTimeMsEpoch,
+        );
+    } catch (e) {
+        log.error(e);
+    }
 
     res.render('index', {
-        updateTime: new Date(callTimeMsEpoch),
         arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
+        logs: fs.readFileSync(LATEST_LOGFILE),
+        updateTime: new Date(callTimeMsEpoch),
     });
 });
 

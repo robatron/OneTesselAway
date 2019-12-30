@@ -63,26 +63,31 @@ app.set('view engine', 'ejs');
 
 // Web UI
 app.get('/', async (req, res) => {
-    const arrivalInfo = await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
+    const callTimeMsEpoch = Date.now();
+    const arrivalInfo = await getUpdatedArrivalInfo(
+        ROUTES_AND_STOPS,
+        callTimeMsEpoch,
+    );
 
     res.render('index', {
-        title: 'Hey',
-        message: 'Hello there!',
-        refreshInterval: UPDATE_INTERVAL,
+        updateTime: new Date(callTimeMsEpoch),
         arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
     });
 });
 
 // Start ---------------------------------------------------------------
 
-const getUpdatedArrivalInfo = async routesAndStops => {
+const getUpdatedArrivalInfo = async (routesAndStops, callTimeMsEpoch) => {
     const updatedInfo = [];
 
     for (let i = 0; i < routesAndStops.length; ++i) {
+        const routeId = routesAndStops[i].routeId;
         const routeName = routesAndStops[i].routeName;
         const stopId = routesAndStops[i].stopId;
-        const routeId = routesAndStops[i].routeId;
+        const stopName = routesAndStops[i].stopName;
+
         updatedInfo.push({
+            stopName,
             routeName,
             upcommingArrivalTimes: await getUpcommingArrivalTimes(
                 stopId,
@@ -91,7 +96,7 @@ const getUpdatedArrivalInfo = async routesAndStops => {
             upcommingArrivalMinsUntil: await getUpcommingArrivalMinsUntil(
                 stopId,
                 routeId,
-                Date.now(),
+                callTimeMsEpoch,
             ),
         });
     }

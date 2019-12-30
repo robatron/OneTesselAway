@@ -1,17 +1,9 @@
-<html data-refresh-interval="<%= refreshInterval %>">
-    <h1><%= title %></h1>
-    <h2><%= message %></h2>
+<html>
     <body>
+        <h1>OneTesselAway (Web UI)</h1>
+        <p>Arrival info as of <%= updateTime %></p>
         <pre>
 <%= arrivalInfo %>
         </pre>
-        <script>
-            const refreshInterval = parseInt(
-                document.querySelector('html').dataset.refreshInterval,
-            );
-            // setInterval(() => {
-            //     location.reload();
-            // }, refreshInterval);
-        </script>
     </body>
 </html>

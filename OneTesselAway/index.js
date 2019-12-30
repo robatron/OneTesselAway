@@ -22,7 +22,7 @@ const { createLogger, transports } = require('winston');
 const { format } = require('logform');
 const Express = require('express');
 
-const { getUpcommingArrivalTimes } = require('./src/ArrivalsAndStops');
+const { getUpcomingArrivalTimes } = require('./src/ArrivalsAndStops');
 
 // Settings ------------------------------------------------------------
 
@@ -130,7 +130,7 @@ const getUpdatedArrivalInfo = async routesAndStops => {
         updatedInfo.push({
             stopName,
             routeName,
-            upcommingArrivalTimes: await getUpcommingArrivalTimes(
+            upcommingArrivalTimes: await getUpcomingArrivalTimes(
                 stopId,
                 routeId,
                 currentDate,

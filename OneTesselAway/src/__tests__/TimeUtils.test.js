@@ -1,6 +1,6 @@
 const {
     dateTo24HourClockString,
-    getMinutesBetweenMsEpochs,
+    getMinutesBetweenDates,
 } = require('../TimeUtils');
 
 describe('dateTo24HourClockString', () => {
@@ -17,11 +17,11 @@ describe('dateTo24HourClockString', () => {
     });
 });
 
-describe('getMinutesBetweenMsEpochs', () => {
-    it('returns the floored difference between two millisecond-epoch times', () => {
-        const time1 = 1577653615000;
-        const time2 = 1577651539187;
-        const diff = getMinutesBetweenMsEpochs(time1, time2);
-        expect(diff).toEqual(34);
+describe('getMinutesBetweenDates', () => {
+    it('returns the difference between two dates, in minutes, floored', () => {
+        const date1 = new Date(1577653615000);
+        const date2 = new Date(1577651539187);
+        const minutes = getMinutesBetweenDates(date1, date2);
+        expect(minutes).toEqual(34);
     });
 });

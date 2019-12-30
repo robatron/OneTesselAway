@@ -66,7 +66,7 @@ const _getArrivalDatesByTripId = arrivals =>
     }, {});
 
 // Returns a list of upcomming arrival times for the specified stop and route
-const getUpcommingArrivalTimes = async (stopId, routeId, currentDate) => {
+const getUpcomingArrivalTimes = async (stopId, routeId, currentDate) => {
     const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
     const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
     const arrivalDatesByTripId = _getArrivalDatesByTripId(arrivalsForRoute);
@@ -85,5 +85,5 @@ module.exports = {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
-    getUpcommingArrivalTimes,
+    getUpcomingArrivalTimes,
 };

@@ -80,7 +80,7 @@ module.exports = {
                         numberOfStopsAway: 2,
                         predicted: true,
                         predictedArrivalInterval: null,
-                        predictedArrivalTime: 1577721962000,
+                        predictedArrivalTime: 0,
                         predictedDepartureInterval: null,
                         predictedDepartureTime: 1577721962000,
                         predictedOccupancy: '',

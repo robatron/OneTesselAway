@@ -18,6 +18,7 @@
 const http = require('http');
 const os = require('os');
 const fs = require('fs');
+
 const { createLogger, transports } = require('winston');
 const { format } = require('logform');
 const Express = require('express');
@@ -46,6 +47,23 @@ const ROUTES_AND_STOPS = [
     },
 ];
 
+const TARGET_ROUTES = {
+    '1_100009': {
+        leaveMinGo: 2,
+        leaveMinReady: 5,
+        routeName: '11',
+        stopId: '1_12351',
+        stopName: 'E Madison St & 22nd Ave E',
+    },
+    '1_100018': {
+        leaveMinGo: 5,
+        leaveMinReady: 8,
+        routeName: '12',
+        stopId: '1_12353',
+        stopName: 'E Madison St & 19th Ave',
+    },
+};
+
 // How often to request updates from OneBusAway (in milliseconds)
 const UPDATE_INTERVAL = 1000;
 
@@ -58,7 +76,7 @@ const ADDRESS = `http://${process.env.ADDR ||
 // Setup ---------------------------------------------------------------
 
 // Set up logger
-const LATEST_LOGFILE = './logs/app.log';
+const LATEST_LOGFILE = './logs/device.log';
 const log = createLogger({
     level: 'info',
     format: format.combine(
@@ -73,7 +91,7 @@ const log = createLogger({
     ),
     transports: [
         new transports.File({
-            filename: './logs/app.log',
+            filename: LATEST_LOGFILE,
             maxFiles: 10,
             maxsize: 1024 * 100, // 100 KiB
             tailable: true,
@@ -91,15 +109,9 @@ app.set('view engine', 'ejs');
 
 // Route to index
 app.get('/', async (req, res) => {
-    let arrivalInfo;
-
     log.info("Getting '/' ... ");
 
-    try {
-        arrivalInfo = await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
-    } catch (e) {
-        log.error(e);
-    }
+    await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
 
     res.render('index', {
         arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
@@ -110,7 +122,7 @@ app.get('/', async (req, res) => {
 // Start ---------------------------------------------------------------
 
 // Main arrival info cache
-const arrivalInfo = {};
+let arrivalInfo;
 
 // Updates the arrival info in memory. If an update fails, log an error
 // and move on.
@@ -118,7 +130,6 @@ const getUpdatedArrivalInfo = async routesAndStops => {
     log.info('Updating arrival info...');
 
     const currentDate = new Date();
-
     const updatedInfo = [];
 
     for (let i = 0; i < routesAndStops.length; ++i) {
@@ -126,19 +137,32 @@ const getUpdatedArrivalInfo = async routesAndStops => {
         const routeName = routesAndStops[i].routeName;
         const stopId = routesAndStops[i].stopId;
         const stopName = routesAndStops[i].stopName;
+        let upcomingArrivalTimes;
+
+        try {
+            upcomingArrivalTimes = await getUpcomingArrivalTimes(
+                stopId,
+                routeId,
+                currentDate,
+            );
+        } catch (e) {
+            log.error(
+                `Failed to get upcoming arrival times for stop ${stopId} and route ${routeId}: ${e.toString()}`,
+            );
+        }
 
         updatedInfo.push({
             stopName,
             routeName,
-            upcommingArrivalTimes: await getUpcomingArrivalTimes(
-                stopId,
-                routeId,
-                currentDate,
-            ),
+            upcomingArrivalTimes,
         });
     }
 
-    return updatedInfo;
+    arrivalInfo = {
+        ...arrivalInfo,
+        lastUpdatedDate: currentDate,
+        updatedInfo,
+    };
 };
 
 // Start up web UI server

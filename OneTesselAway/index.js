@@ -17,36 +17,13 @@
  */
 const http = require('http');
 const os = require('os');
-const fs = require('fs');
-
-const { createLogger, transports } = require('winston');
-const { format } = require('logform');
 const Express = require('express');
-
 const { getUpcomingArrivalTimes } = require('./src/ArrivalsAndStops');
+const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 
 // Settings ------------------------------------------------------------
 
-// Which stops and routes to track
-const ROUTES_AND_STOPS = [
-    {
-        leaveMinGo: 2,
-        leaveMinReady: 5,
-        routeId: '1_100009',
-        routeName: '11',
-        stopId: '1_12351',
-        stopName: 'E Madison St & 22nd Ave E',
-    },
-    {
-        leaveMinGo: 5,
-        leaveMinReady: 8,
-        routeId: '1_100018',
-        routeName: '12',
-        stopId: '1_12353',
-        stopName: 'E Madison St & 19th Ave',
-    },
-];
-
+// Which routes and stops we're interested in, keyed by route ID.
 const TARGET_ROUTES = {
     '1_100009': {
         leaveMinGo: 2,
@@ -67,6 +44,9 @@ const TARGET_ROUTES = {
 // How often to request updates from OneBusAway (in milliseconds)
 const UPDATE_INTERVAL = 1000;
 
+// Log file path
+const LOGFILE = './logs/device.log';
+
 // Server settings. If started locally w/ `npm start`, it'll serve from
 // localhost. If running on the Tessel 2, it'll run from its WiFi IP
 const PORT = process.env.PORT || 8080;
@@ -76,29 +56,7 @@ const ADDRESS = `http://${process.env.ADDR ||
 // Setup ---------------------------------------------------------------
 
 // Set up logger
-const LATEST_LOGFILE = './logs/device.log';
-const log = createLogger({
-    level: 'info',
-    format: format.combine(
-        format.timestamp(),
-        format.errors({ stack: true }),
-        format.printf(
-            info =>
-                `${info.timestamp} [${info.level}] ${info.message} ${
-                    info.stack ? '\n' + info.stack : ''
-                }`,
-        ),
-    ),
-    transports: [
-        new transports.File({
-            filename: LATEST_LOGFILE,
-            maxFiles: 10,
-            maxsize: 1024 * 100, // 100 KiB
-            tailable: true,
-        }),
-        new transports.Console(),
-    ],
-});
+const log = initLogger(LOGFILE);
 
 // Set up Express server for the web UI
 var app = new Express();
@@ -109,34 +67,36 @@ app.set('view engine', 'ejs');
 
 // Route to index
 app.get('/', async (req, res) => {
-    log.info("Getting '/' ... ");
+    log.info(
+        `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
+    );
 
-    await getUpdatedArrivalInfo(ROUTES_AND_STOPS);
+    await getUpdatedArrivalInfo(TARGET_ROUTES);
 
     res.render('index', {
         arrivalInfo: JSON.stringify(arrivalInfo, null, 2),
-        logs: fs.readFileSync(LATEST_LOGFILE),
+        logs: getLatestLogFromFile(LOGFILE, { reverseLines: true }),
     });
 });
 
 // Start ---------------------------------------------------------------
 
 // Main arrival info cache
-let arrivalInfo;
+let arrivalInfo = {};
 
 // Updates the arrival info in memory. If an update fails, log an error
 // and move on.
-const getUpdatedArrivalInfo = async routesAndStops => {
+const getUpdatedArrivalInfo = async targetRoutes => {
     log.info('Updating arrival info...');
 
-    const currentDate = new Date();
-    const updatedInfo = [];
+    const targetRouteIds = Object.keys(targetRoutes);
 
-    for (let i = 0; i < routesAndStops.length; ++i) {
-        const routeId = routesAndStops[i].routeId;
-        const routeName = routesAndStops[i].routeName;
-        const stopId = routesAndStops[i].stopId;
-        const stopName = routesAndStops[i].stopName;
+    for (let i = 0; i < targetRouteIds.length; ++i) {
+        const currentDate = new Date();
+        const routeId = targetRouteIds[i];
+        const routeName = targetRoutes[routeId].routeName;
+        const stopId = targetRoutes[routeId].stopId;
+        const stopName = targetRoutes[routeId].stopName;
         let upcomingArrivalTimes;
 
         try {
@@ -147,22 +107,19 @@ const getUpdatedArrivalInfo = async routesAndStops => {
             );
         } catch (e) {
             log.error(
-                `Failed to get upcoming arrival times for stop ${stopId} and route ${routeId}: ${e.toString()}`,
+                `Failed to get upcoming arrival times for route ${routeId} and stop ${stopId}: ${e.toString()}`,
             );
         }
 
-        updatedInfo.push({
-            stopName,
-            routeName,
-            upcomingArrivalTimes,
-        });
+        if (upcomingArrivalTimes) {
+            arrivalInfo[routeId] = {
+                lastUpdatedDate: currentDate,
+                routeName,
+                stopName,
+                upcomingArrivalTimes,
+            };
+        }
     }
-
-    arrivalInfo = {
-        ...arrivalInfo,
-        lastUpdatedDate: currentDate,
-        updatedInfo,
-    };
 };
 
 // Start up web UI server

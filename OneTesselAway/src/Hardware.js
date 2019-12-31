@@ -18,7 +18,7 @@ const initHardware = (updateInterval, lcdPins, getDisplayLinesFn) => {
             );
             const displayLines = getDisplayLinesFn();
             displayLines.forEach((line, i) => {
-                lcd.cursor(i, 0).print(line);
+                lcd.cursor(i, 0).print(line.padEnd(16, ' '));
             });
         });
     });

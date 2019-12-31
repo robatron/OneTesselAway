@@ -69,6 +69,7 @@ var server = new http.Server(app);
 
 // Set up the templating engine
 app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
 
 // Route to index
 app.get('/', async (req, res) => {

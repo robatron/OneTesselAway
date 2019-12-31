@@ -24,6 +24,7 @@
     },
     "devDependencies": {
         "eslint-plugin-jest": "^23.2.0",
-        "jest": "^24.9.0"
+        "jest": "^24.9.0",
+        "t2-cli": "^0.1.22"
     }
 }

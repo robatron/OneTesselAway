@@ -1,7 +1,15 @@
+# Files to include when deploying the Tessel device
+
+# Main file. Redundant, but won't hurt.
 index.js
+
+# Dependencies that don't get picked up automatically via require analysis
+node_modules/ejs
 node_modules/logform/combine.js
 node_modules/logform/errors.js
 node_modules/logform/printf.js
 node_modules/logform/timestamp.js
 node_modules/logform/node_modules/fecha
-views/*
+
+# HTML template files
+views/index.ejs

@@ -15,6 +15,14 @@ nvm use
 npm test
 ```
 
+## Todo
+
+-   ~~Diagnose why web interface doesn't run on device~~
+-   Sync LCD display update w/ API update
+-   Add blinking colons for updates
+-   Support 3-digit route IDs
+-   Clean up logs (don't log every update)
+
 ## References
 
 -   https://nodejs.org/docs/latest-v8.x/api/index.html (Latest supported by Tessel 2)

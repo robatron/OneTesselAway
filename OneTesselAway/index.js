@@ -23,9 +23,9 @@ const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { arrivalInfoToDisplayLines } = require('./src/DisplayUtils');
 const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 
-// Settings ------------------------------------------------------------
+// Settings --------------------------------------------------------------------
 
-// Which routes and stops we're interested in, keyed by route ID.
+// Which routes and stops we're interested in, keyed by route ID
 const TARGET_ROUTES = {
     '1_100009': {
         leaveMinGo: 2,
@@ -43,11 +43,11 @@ const TARGET_ROUTES = {
     },
 };
 
-// How often to request updates from OneBusAway (in milliseconds)
+// How often to request updates from OneBusAway and update LCD screen
 const UPDATE_INTERVAL = 3000;
 
 // Log file path
-const LOGFILE = './logs/device.log';
+const LOGFILE = __dirname + '/logs/device.log';
 
 // Server settings. If started locally w/ `npm start`, it'll serve from
 // localhost. If running on the Tessel 2, it'll run from its WiFi IP
@@ -58,10 +58,24 @@ const ADDRESS = `http://${process.env.ADDR ||
 // Which pins on the Tessel is the LCD plugged into?
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
-// Setup ---------------------------------------------------------------
+// Initialize ------------------------------------------------------------------
 
 // Set up logger
 const log = initLogger(LOGFILE);
+
+log.info('Initializing OneTesselAway...');
+
+// Should we enable the device, or run in web-only mode?
+const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
+
+// Don't try to require the hardware module unless we're running on the actual
+// device to prevent global import errors
+let initHardware, updateLcdScreen;
+if (DEVICE_ENABLED) {
+    const hardware = require('./src/Hardware');
+    initHardware = hardware.initHardware;
+    updateLcdScreen = hardware.updateLcdScreen;
+}
 
 // Set up Express server for the web UI
 var app = new Express();
@@ -72,7 +86,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 // Route to index
-app.get('/', async (req, res) => {
+app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
@@ -88,27 +102,19 @@ app.get('/', async (req, res) => {
     });
 });
 
-// Start ---------------------------------------------------------------
-log.info('Starting OneTesselAway...');
-
-const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
+// Start -----------------------------------------------------------------------
 let intervalId;
 
 (async () => {
-    let updateLcdScreen;
-
     if (DEVICE_ENABLED) {
-        log.info('Initializing device...');
-
-        // Don't try to require the hardware module unless we're running
-        // on the actual device to prevent global import errors
-        const { initHardware } = require('./src/Hardware');
-        updateLcdScreen = await initHardware(LCD_DISPLAY_PINS);
+        log.info('Initializing Tessel 2 device...');
+        await initHardware(LCD_DISPLAY_PINS);
     } else {
         log.info('Device DISABLED. Starting web UI only...');
     }
 
     // Begin updating arrival info and LCD screen regularly
+    log.info('Starting OneTesselAway...');
     log.info(
         `Begin updating arrival info ${DEVICE_ENABLED &&
             '(and LCD screen)'} every ${UPDATE_INTERVAL} milliseconds`,

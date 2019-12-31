@@ -89,11 +89,12 @@ app.get('/', async (req, res) => {
 });
 
 // Start ---------------------------------------------------------------
+log.info('Starting OneTesselAway...');
+
+const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
+let intervalId;
+
 (async () => {
-    log.info('Starting OneTesselAway...');
-
-    const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
-
     let updateLcdScreen;
 
     if (DEVICE_ENABLED) {
@@ -112,20 +113,28 @@ app.get('/', async (req, res) => {
         `Begin updating arrival info ${DEVICE_ENABLED &&
             '(and LCD screen)'} every ${UPDATE_INTERVAL} milliseconds`,
     );
-    fireAndRepeat(UPDATE_INTERVAL, async () => {
-        await updateArrivalInfo(TARGET_ROUTES);
-        if (DEVICE_ENABLED) {
-            const newDisplayLines = arrivalInfoToDisplayLines(getArrivalInfo());
-            updateLcdScreen(newDisplayLines);
-        }
-    });
+    fireAndRepeat(
+        UPDATE_INTERVAL,
+        async () => {
+            await updateArrivalInfo(TARGET_ROUTES);
+            if (DEVICE_ENABLED) {
+                const newDisplayLines = arrivalInfoToDisplayLines(
+                    getArrivalInfo(),
+                );
+                updateLcdScreen(newDisplayLines);
+            }
+        },
+        iid => (intervalId = iid),
+    );
 })();
 
 // Start up web UI server
 server = app.listen(PORT);
-log.info(`Web server running on: ${ADDRESS}:${PORT}`);
+log.info(`Web UI running on ${ADDRESS}:${PORT}`);
 
 // Shut down everything on ^C
 process.on('SIGINT', () => {
+    log.info('Shutting down...');
+    clearInterval(intervalId);
     server.close();
 });

@@ -21,7 +21,7 @@ const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { arrivalInfoToDisplayLines } = require('./src/DisplayUtils');
-const { initHardware } = require('./src/Hardware');
+const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 
 // Settings ------------------------------------------------------------
 
@@ -89,26 +89,37 @@ app.get('/', async (req, res) => {
 });
 
 // Start ---------------------------------------------------------------
-log.info('Starting OneTesselAway...');
+(async () => {
+    log.info('Starting OneTesselAway...');
 
-if (process.env.WEB_ONLY === '1') {
-    log.info('Running in WEB-ONLY mode. Skipping device initialization.');
-} else {
-    log.info('Initializing device...');
-    initHardware(
-        UPDATE_INTERVAL,
-        LCD_DISPLAY_PINS,
-        arrivalInfoToDisplayLines.bind(this, getArrivalInfo()),
+    const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
+
+    let updateLcdScreen;
+
+    if (DEVICE_ENABLED) {
+        log.info('Initializing device...');
+
+        // Don't try to require the hardware module unless we're running
+        // on the actual device to prevent global import errors
+        const { initHardware } = require('./src/Hardware');
+        updateLcdScreen = await initHardware(LCD_DISPLAY_PINS);
+    } else {
+        log.info('Device DISABLED. Starting web UI only...');
+    }
+
+    // Begin updating arrival info and LCD screen regularly
+    log.info(
+        `Begin updating arrival info ${DEVICE_ENABLED &&
+            '(and LCD screen)'} every ${UPDATE_INTERVAL} milliseconds`,
     );
-}
-
-// Begin updating arrival info regularly
-log.info(`Begin updating arrival info every ${UPDATE_INTERVAL} milliseconds`);
-const updateInterval = setInterval(
-    () => updateArrivalInfo(TARGET_ROUTES),
-    UPDATE_INTERVAL,
-);
-updateArrivalInfo.bind(TARGET_ROUTES);
+    fireAndRepeat(UPDATE_INTERVAL, async () => {
+        await updateArrivalInfo(TARGET_ROUTES);
+        if (DEVICE_ENABLED) {
+            const newDisplayLines = arrivalInfoToDisplayLines(getArrivalInfo());
+            updateLcdScreen(newDisplayLines);
+        }
+    });
+})();
 
 // Start up web UI server
 server = app.listen(PORT);
@@ -116,6 +127,5 @@ log.info(`Web server running on: ${ADDRESS}:${PORT}`);
 
 // Shut down everything on ^C
 process.on('SIGINT', () => {
-    clearInterval(updateInterval);
     server.close();
 });

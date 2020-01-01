@@ -40,7 +40,7 @@ const TARGET_ROUTES = {
 };
 
 // How often to request updates from OneBusAway and update LCD screen
-const UPDATE_INTERVAL = 3000;
+const UPDATE_INTERVAL = 5000;
 
 // Log file path
 const LOGFILE = __dirname + '/logs/device.log';

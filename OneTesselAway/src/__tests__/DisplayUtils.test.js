@@ -14,17 +14,10 @@ describe('arrivalInfoToDisplayLines', () => {
     });
 
     it('supports custom delimeters', () => {
-        const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO, {
-            routeDelim: '>',
-        });
-        expect(displayLines).toEqual(['11>    4  19    ', '12>   -1  16 120']);
-    });
-
-    it('supports a different delimeter for even lines', () => {
-        const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO, {
-            routeDelim: '>',
-            routeDelimAlt: '.',
-        });
+        const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO, [
+            '>',
+            '.',
+        ]);
         expect(displayLines).toEqual(['11>    4  19    ', '12.   -1  16 120']);
     });
 });

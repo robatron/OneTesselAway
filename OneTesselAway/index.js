@@ -54,6 +54,38 @@ const ADDRESS = `http://${process.env.ADDR ||
 // Which pins on the Tessel is the LCD plugged into?
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
+// Helper Functions / Data -----------------------------------------------------
+
+// Neverending interval ID so we can kill it on command
+let intervalId;
+
+let getDisplayLinesCount = 0;
+
+// Create display lines from arrival info and dynamic delimeters
+const getDisplayLines = () => {
+    const arrivalInfo = getArrivalInfo();
+
+    // Animate route delimeter characters, alternating frames between calls
+    const routeDelims = [':', '.'];
+    if (getDisplayLinesCount % routeDelims.length) {
+        routeDelims.reverse();
+    }
+
+    const displayLines = arrivalInfoToDisplayLines(arrivalInfo, routeDelims);
+
+    ++getDisplayLinesCount;
+
+    return displayLines;
+};
+
+// Update arrival info from OneBusAway and update LCD screen
+const fetchArrivalInfoAndUpdateDisplay = async () => {
+    await updateArrivalInfo(TARGET_ROUTES);
+    if (DEVICE_ENABLED) {
+        updateLcdScreen(getDisplayLines());
+    }
+};
+
 // Initialize ------------------------------------------------------------------
 
 // Set up logger
@@ -89,7 +121,7 @@ app.get('/', (req, res) => {
 
     const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
     const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
-    const displayLines = arrivalInfoToDisplayLines(getArrivalInfo()).join('\n');
+    const displayLines = getDisplayLines().join('\n');
 
     res.render('index', {
         arrivalInfo,
@@ -100,18 +132,6 @@ app.get('/', (req, res) => {
 });
 
 // Start -----------------------------------------------------------------------
-
-// Neverending interval ID so we can kill it on command
-let intervalId;
-
-// Update arrival info from OneBusAway and update LCD screen
-const fetchArrivalInfoAndUpdateDisplay = async () => {
-    await updateArrivalInfo(TARGET_ROUTES);
-    if (DEVICE_ENABLED) {
-        const newDisplayLines = arrivalInfoToDisplayLines(getArrivalInfo());
-        updateLcdScreen(newDisplayLines);
-    }
-};
 
 // Initialize hardware and set up update loop. Needs to be wrapped in an async
 // function to assure hardware is initialized and initial data is fetched
@@ -127,8 +147,9 @@ const fetchArrivalInfoAndUpdateDisplay = async () => {
     // Begin updating arrival info and LCD screen regularly
     log.info('Starting OneTesselAway...');
     log.info(
-        `Begin updating arrival info ${DEVICE_ENABLED &&
-            '(and LCD screen)'} every ${UPDATE_INTERVAL} milliseconds`,
+        `Begin updating arrival info ${
+            DEVICE_ENABLED ? 'and LCD screen' : ''
+        } every ${UPDATE_INTERVAL} milliseconds`,
     );
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);

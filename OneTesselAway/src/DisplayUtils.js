@@ -5,13 +5,13 @@ const DISPLAY_LINE_COUNT = 2;
 
 // Convert arrival info to display lines for the LCD screen. Ignore
 // lines beyond what the display supports, ignore any characters beyond
-// what each line supports.
-const arrivalInfoToDisplayLines = (arrivalInfo, options) => {
+// what each line supports. `routeDelims` control the the delimeters between the
+// route name and the arrival times.
+const arrivalInfoToDisplayLines = (
+    arrivalInfo,
+    routeDelims = Array(DISPLAY_LINE_COUNT).fill(':'),
+) => {
     const routeIds = Object.keys(arrivalInfo).slice(0, DISPLAY_LINE_COUNT);
-    let { routeDelim, routeDelimAlt } = options || {};
-
-    routeDelim = routeDelim || ':';
-    routeDelimAlt = routeDelimAlt || routeDelim;
 
     return routeIds.map((routeId, i) => {
         const displaySections = [];
@@ -20,8 +20,9 @@ const arrivalInfoToDisplayLines = (arrivalInfo, options) => {
         // Route name + colon, end-padded to 4 chars with a space, e.g.,
         //  '11:  '
         //  '150: '
-        const delim = i % 2 === 0 ? routeDelim : routeDelimAlt;
-        displaySections.push((routeInfo.routeName + delim).padEnd(4, ' '));
+        displaySections.push(
+            (routeInfo.routeName + routeDelims[i]).padEnd(4, ' '),
+        );
 
         // For each arrival time, usually 2 or 3, push a start-padded "minutes-
         // 'till" section to 3 chars, e.g.,

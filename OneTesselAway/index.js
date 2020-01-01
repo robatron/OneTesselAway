@@ -119,6 +119,9 @@ let intervalId;
         `Begin updating arrival info ${DEVICE_ENABLED &&
             '(and LCD screen)'} every ${UPDATE_INTERVAL} milliseconds`,
     );
+    if (DEVICE_ENABLED) {
+        updateLcdScreen(['Getting bus', 'arrival info...']);
+    }
     fireAndRepeat(
         UPDATE_INTERVAL,
         async () => {

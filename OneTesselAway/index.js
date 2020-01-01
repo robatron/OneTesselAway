@@ -95,18 +95,33 @@ app.get('/', (req, res) => {
         arrivalInfo,
         deviceLogs,
         displayLines,
+        updateInterval: UPDATE_INTERVAL,
     });
 });
 
 // Start -----------------------------------------------------------------------
+
+// Neverending interval ID so we can kill it on command
 let intervalId;
 
+// Update arrival info from OneBusAway and update LCD screen
+const fetchArrivalInfoAndUpdateDisplay = async () => {
+    await updateArrivalInfo(TARGET_ROUTES);
+    if (DEVICE_ENABLED) {
+        const newDisplayLines = arrivalInfoToDisplayLines(getArrivalInfo());
+        updateLcdScreen(newDisplayLines);
+    }
+};
+
+// Initialize hardware and set up update loop. Needs to be wrapped in an async
+// function to assure hardware is initialized and initial data is fetched
+// before starting
 (async () => {
     if (DEVICE_ENABLED) {
-        log.info('Initializing Tessel 2 device...');
+        log.info('Initializing hardware device...');
         await initHardware(LCD_DISPLAY_PINS);
     } else {
-        log.info('Device DISABLED. Starting web UI only...');
+        log.info('Hardware device DISABLED. Starting web UI only...');
     }
 
     // Begin updating arrival info and LCD screen regularly
@@ -118,28 +133,21 @@ let intervalId;
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);
     }
-    fireAndRepeat(
+    await fireAndRepeat(
         UPDATE_INTERVAL,
-        async () => {
-            await updateArrivalInfo(TARGET_ROUTES);
-            if (DEVICE_ENABLED) {
-                const newDisplayLines = arrivalInfoToDisplayLines(
-                    getArrivalInfo(),
-                );
-                updateLcdScreen(newDisplayLines);
-            }
-        },
+        fetchArrivalInfoAndUpdateDisplay,
         iid => (intervalId = iid),
     );
+
+    // Start up web UI server
+    server = app.listen(PORT);
+    log.info(`Web UI address: ${ADDRESS}:${PORT}`);
+    log.info(`\t Auto-reload address: ${ADDRESS}:${PORT}?auto-reload`);
+
+    // Shut down everything on ^C
+    process.on('SIGINT', () => {
+        log.info('Shutting down...');
+        clearInterval(intervalId);
+        server.close();
+    });
 })();
-
-// Start up web UI server
-server = app.listen(PORT);
-log.info(`Web UI running on ${ADDRESS}:${PORT}`);
-
-// Shut down everything on ^C
-process.on('SIGINT', () => {
-    log.info('Shutting down...');
-    clearInterval(intervalId);
-    server.close();
-});

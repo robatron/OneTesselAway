@@ -32,5 +32,14 @@
         <pre>
 <%= deviceLogs %>
         </pre>
+        <script>
+            // Auto reload the page at the same update interval as the LCD
+            if (location.search.indexOf('auto-reload') > -1) {
+                setInterval(
+                    () => location.reload(),
+                    parseInt('<%= updateInterval %>'),
+                );
+            }
+        </script>
     </body>
 </html>

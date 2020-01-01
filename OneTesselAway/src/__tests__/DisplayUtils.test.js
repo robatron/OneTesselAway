@@ -6,10 +6,25 @@ describe('arrivalInfoToDisplayLines', () => {
         const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO);
         expect(displayLines.length).toEqual(2);
         expect(displayLines).toEqual([
-            // "Route 11 in 4, 19, and 34 minutes"
-            '11:   4  19  34',
-            // "Route 12 in 1, 16, and 30 minutes"
-            '12:   1  16  30',
+            // "Route 11 in 4, and 19 minutes"
+            '11:    4  19    ',
+            // "Route 12 in -1, 16, and 120 minutes"
+            '12:   -1  16 120',
         ]);
+    });
+
+    it('supports custom delimeters', () => {
+        const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO, {
+            routeDelim: '>',
+        });
+        expect(displayLines).toEqual(['11>    4  19    ', '12>   -1  16 120']);
+    });
+
+    it('supports a different delimeter for even lines', () => {
+        const displayLines = arrivalInfoToDisplayLines(DEFAULT_ARRIVAL_INFO, {
+            routeDelim: '>',
+            routeDelimAlt: '.',
+        });
+        expect(displayLines).toEqual(['11>    4  19    ', '12.   -1  16 120']);
     });
 });

@@ -15,11 +15,6 @@ module.exports = {
                     minsUntilArrival: 19,
                     tripId: '1_40560771',
                 },
-                {
-                    clock: '12:24',
-                    minsUntilArrival: 34,
-                    tripId: '1_40560772',
-                },
             ],
         },
         '1_100018': {
@@ -27,19 +22,32 @@ module.exports = {
             routeName: '12',
             stopName: 'E Madison St & 19th Ave',
             upcomingArrivalTimes: [
+                // Test negative minute (bus already departed)
                 {
                     clock: '11:51',
-                    minsUntilArrival: 1,
+                    minsUntilArrival: -1,
                     tripId: '1_44297782',
                 },
+
+                // Typical 2-char minute
                 {
                     clock: '12:05',
                     minsUntilArrival: 16,
                     tripId: '1_44297821',
                 },
+
+                // Test 3-character minute
                 {
                     clock: '12:19',
-                    minsUntilArrival: 30,
+                    minsUntilArrival: 120,
+                    tripId: '1_44297749',
+                },
+
+                // This shouldn't get included in the display because it would
+                // be too long
+                {
+                    clock: '12:19',
+                    minsUntilArrival: 140,
                     tripId: '1_44297749',
                 },
             ],

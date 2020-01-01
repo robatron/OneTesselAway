@@ -28,15 +28,11 @@ const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 // Which routes and stops we're interested in, keyed by route ID
 const TARGET_ROUTES = {
     '1_100009': {
-        leaveMinGo: 2,
-        leaveMinReady: 5,
         routeName: '11',
         stopId: '1_12351',
         stopName: 'E Madison St & 22nd Ave E',
     },
     '1_100018': {
-        leaveMinGo: 5,
-        leaveMinReady: 8,
         routeName: '12',
         stopId: '1_12353',
         stopName: 'E Madison St & 19th Ave',

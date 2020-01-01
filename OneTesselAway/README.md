@@ -18,10 +18,10 @@ npm test
 ## Todo
 
 -   ~~Diagnose why web interface doesn't run on device~~
--   Sync LCD display update w/ API update
--   Add blinking colons for updates
--   Support 3-digit route IDs
--   Clean up logs (don't log every update)
+-   ~~Sync LCD display update w/ API update~~
+-   ~~Add blinking colons for updates~~
+-   ~~Support 3-digit route IDs~~
+-   ~~Clean up logs (don't log every update)~~
 
 ## References
 

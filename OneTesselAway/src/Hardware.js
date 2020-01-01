@@ -22,7 +22,6 @@ const updateLcdScreen = (displayLines, options) => {
         log.error(new Error('LCD display has not been initialized'));
         return;
     }
-    log.info(`Updating display lines with ${displayLines}...`);
 
     displayLines.forEach((line, i) => {
         lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));

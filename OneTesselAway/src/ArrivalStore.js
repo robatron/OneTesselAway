@@ -6,8 +6,6 @@ let arrivalInfo = {};
 // Updates the arrival info in memory. If an update fails, log an error
 // and move on.
 const updateArrivalInfo = async targetRoutes => {
-    log.info('Updating arrival info...');
-
     const targetRouteIds = Object.keys(targetRoutes);
 
     for (let i = 0; i < targetRouteIds.length; ++i) {

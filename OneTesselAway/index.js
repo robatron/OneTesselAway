@@ -148,8 +148,8 @@ app.get('/', (req, res) => {
     log.info('Starting OneTesselAway...');
     log.info(
         `Begin updating arrival info ${
-            DEVICE_ENABLED ? 'and LCD screen' : ''
-        } every ${UPDATE_INTERVAL} milliseconds`,
+            DEVICE_ENABLED ? 'and LCD screen ' : ''
+        }every ${UPDATE_INTERVAL} milliseconds`,
     );
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);

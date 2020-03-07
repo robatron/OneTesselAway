@@ -44,6 +44,34 @@ Run the tests:
 
     npm test
 
+### Run OneTesselAway on Local Machine
+
+You can run an instance of OneTesselAway on your local machine without the hardware at all.
+
+    npm start
+
+You can also use the following environment variables to configure how OneTesselAway runs.
+
+-   `ADDR` - The address on which to run the Web UI
+-   `PORT` - The port on which to run the Web UI
+-   `DISABLE_DEVICE` - Run in web-only mode (disable device hardware)
+
+E.g., to run the web UI on a different port:
+
+    PORT=8081 npm start
+
+### Run OneTesselAway on Tessel 2 Hardware
+
+You can run an instance of OneTesselAway on the actual Tessel 2 hardware when connected via USB.
+
+    npm run start:device
+
+### Deploy to Tessel 2 Hardware
+
+You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by default.)
+
+    npm run deploy
+
 ## References
 
 -   https://nodejs.org/docs/latest-v8.x/api/index.html (Latest supported by Tessel 2)

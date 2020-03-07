@@ -1,6 +1,8 @@
 # OneTesselAway
 
-> OneBusAway for the Tessel 2
+I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus in the morning.
+
+<img src="./img/prototype-device.jpg" width="250"/>
 
 ## Prerequisites
 
@@ -10,18 +12,13 @@
 
 ## Development
 
-```
-nvm use
-npm test
-```
+Use the latest version of Node supported by the Tessel:
 
-## Todo
+    nvm use
 
--   ~~Diagnose why web interface doesn't run on device~~
--   ~~Sync LCD display update w/ API update~~
--   ~~Add blinking colons for updates~~
--   ~~Support 3-digit route IDs~~
--   ~~Clean up logs (don't log every update)~~
+Run the tests:
+
+    npm test
 
 ## References
 

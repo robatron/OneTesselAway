@@ -46,7 +46,8 @@ const getLatestLogFromFile = (logfile, { reverseLines }) => {
             loglines.reverse();
         }
 
-        loglines = loglines.join('\n');
+        // Slice to omit first line which is always a newline
+        loglines = loglines.slice(1).join('\n');
     } catch (e) {
         log.error(`Failed to load logfile ${logfile}: ${e.toString()}`);
     }

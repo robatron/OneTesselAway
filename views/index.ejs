@@ -1,7 +1,7 @@
 <html>
     <head>
         <style>
-            body {
+            body * {
                 font-family: 'Courier New', Courier, monospace;
             }
             .display {
@@ -9,41 +9,64 @@
                 padding: 10px;
                 font-weight: bold;
             }
+            .text-area {
+                width: 100%;
+                height: 250px;
+                padding: 10px;
+            }
         </style>
     </head>
     <body>
-        <h1>OneTesselAway (Web UI)</h1>
+        <h1>OneTesselAway Web UI</h1>
 
         <p>
             This is a simple web UI for the OneTesselAway device. It shows raw
             arrival info and device logs to help with diagnostics.
         </p>
 
-        <h2>Mock Display</h2>
-        <p>This is what should be currently displayed on the Tessel device:</p>
-        <pre class="display"><%= displayLinesJoined %></pre>
+        <h2>Simulated Display</h2>
+        <p>
+            This is what should be currently displayed on the LCD screen of the
+            device:
+        </p>
+        <pre id="displayLinesJoined" class="display">
+<%= displayLinesJoined %></pre
+        >
 
         <h2>Arrival Info</h2>
-        <pre>
+        <p>
+            Latest "arrival info" state in memory, from which the display is
+            derived
+        </p>
+        <textarea id="arrivalInfo" class="text-area">
 <%= arrivalInfo %>
-        </pre>
+        </textarea>
 
         <h2>Device Logs</h2>
-        <pre>
+        <p>
+            Device logs from the OneTesselAway program, latest first.
+        </p>
+        <textarea id="deviceLogs" class="text-area">
 <%= deviceLogs %>
-        </pre>
+        </textarea>
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io.connect();
-            socket.on('news', function(data) {
-                console.log(data);
-                socket.emit('my other event', { my: 'data' });
-            });
 
-            socket.on('deviceStateUpdated', data => {
-                console.log('>>>', data);
+            // Update the display when the device state updates
+            socket.on('deviceStateUpdated', deviceState => {
+                Object.keys(deviceState).forEach(stateKey => {
+                    const stateValue = deviceState[stateKey];
+                    const el = document.querySelector(`#${stateKey}`);
+                    if (el) {
+                        el.innerHTML = stateValue;
+                        console.log(
+                            `Updated "#${stateKey}"" with "${stateValue}"`,
+                        );
+                    }
+                });
             });
         </script>
     </body>

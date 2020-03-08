@@ -79,7 +79,7 @@ const getDisplayLines = () => {
 
 // Get the current device state, used to render the Web UI data, and update the
 // LCD screen
-const getCurrentDeviceState = () => {
+const getDeviceState = () => {
     const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
     const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
     const displayLines = getDisplayLines();
@@ -96,7 +96,7 @@ const getCurrentDeviceState = () => {
 // LCD screen if the hardware is enabled
 const fetchArrivalInfoAndUpdateDisplay = async () => {
     await updateArrivalInfo(TARGET_ROUTES);
-    const currentDeviceState = getCurrentDeviceState();
+    const currentDeviceState = getDeviceState();
 
     // Send device state to the Web UI
     io.emit('deviceStateUpdated', currentDeviceState);
@@ -137,14 +137,12 @@ app.set('views', __dirname + '/views');
 // Set up Socket.io for sending data to the Web UI w/o refreshing the page
 var io = require('socket.io')(server);
 
-// Route to index
+// Route to index. Render initial Web UI server-side.
 app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
-
-    const currentDeviceState = getCurrentDeviceState();
-
+    const currentDeviceState = getDeviceState();
     res.render('index', currentDeviceState);
 });
 

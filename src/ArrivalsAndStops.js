@@ -8,7 +8,7 @@ const { apiKey } = require('../oba-api-key.json');
 // OneBusAway API endpoint for "arrivals" data at a stop
 const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
-// Fetch upcomming arrivals data for the given stop from the OneBusAway API
+// Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
     const response = await fetch(
         `${API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,

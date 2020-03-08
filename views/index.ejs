@@ -21,7 +21,7 @@
 
         <h2>Mock Display</h2>
         <p>This is what should be currently displayed on the Tessel device:</p>
-        <pre class="display"><%= displayLines %></pre>
+        <pre class="display"><%= displayLinesJoined %></pre>
 
         <h2>Arrival Info</h2>
         <pre>
@@ -32,14 +32,19 @@
         <pre>
 <%= deviceLogs %>
         </pre>
+
+        <!-- This client library is provided by the server -->
+        <script src="/socket.io/socket.io.js"></script>
         <script>
-            // Auto reload the page at the same update interval as the LCD
-            if (location.search.indexOf('auto-reload') > -1) {
-                setInterval(
-                    () => location.reload(),
-                    parseInt('<%= updateInterval %>'),
-                );
-            }
+            var socket = io.connect();
+            socket.on('news', function(data) {
+                console.log(data);
+                socket.emit('my other event', { my: 'data' });
+            });
+
+            socket.on('deviceStateUpdated', data => {
+                console.log('>>>', data);
+            });
         </script>
     </body>
 </html>

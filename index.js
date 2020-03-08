@@ -59,9 +59,8 @@ const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 // Neverending interval ID so we can kill it on command
 let intervalId;
 
-let getDisplayLinesCount = 0;
-
 // Create display lines from arrival info and dynamic delimeters
+let getDisplayLinesCount = 0;
 const getDisplayLines = () => {
     const arrivalInfo = getArrivalInfo();
 
@@ -78,11 +77,33 @@ const getDisplayLines = () => {
     return displayLines;
 };
 
-// Update arrival info from OneBusAway and update LCD screen
+// Get the current device state, used to render the Web UI data, and update the
+// LCD screen
+const getCurrentDeviceState = () => {
+    const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
+    const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
+    const displayLines = getDisplayLines();
+
+    return {
+        arrivalInfo,
+        deviceLogs,
+        displayLines,
+        displayLinesJoined: displayLines.join('\n'),
+    };
+};
+
+// Update arrival info from OneBusAway, update the Web UI, and finally update
+// LCD screen if the hardware is enabled
 const fetchArrivalInfoAndUpdateDisplay = async () => {
     await updateArrivalInfo(TARGET_ROUTES);
+    const currentDeviceState = getCurrentDeviceState();
+
+    // Send device state to the Web UI
+    io.emit('deviceStateUpdated', currentDeviceState);
+
+    // Update the LCD display if hardware is enabled
     if (DEVICE_ENABLED) {
-        updateLcdScreen(getDisplayLines());
+        updateLcdScreen(currentDeviceState.displayLines);
     }
 };
 
@@ -113,22 +134,18 @@ var server = new http.Server(app);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
+// Set up Socket.io for sending data to the Web UI w/o refreshing the page
+var io = require('socket.io')(server);
+
 // Route to index
 app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
 
-    const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
-    const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
-    const displayLines = getDisplayLines().join('\n');
+    const currentDeviceState = getCurrentDeviceState();
 
-    res.render('index', {
-        arrivalInfo,
-        deviceLogs,
-        displayLines,
-        updateInterval: UPDATE_INTERVAL,
-    });
+    res.render('index', currentDeviceState);
 });
 
 // Start -----------------------------------------------------------------------
@@ -161,9 +178,8 @@ app.get('/', (req, res) => {
     );
 
     // Start up web UI server
-    server = app.listen(PORT);
-    log.info(`Web UI address: ${ADDRESS}:${PORT}`);
-    log.info(`\t Auto-reload address: ${ADDRESS}:${PORT}?auto-reload`);
+    server = server.listen(PORT);
+    log.info(`Web UI server address: ${ADDRESS}:${PORT}`);
 
     // Shut down everything on ^C
     process.on('SIGINT', () => {

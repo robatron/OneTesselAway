@@ -182,11 +182,11 @@ app.get('/', (req, res) => {
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);
     }
-    // await fireAndRepeat(
-    //     UPDATE_INTERVAL,
-    //     fetchArrivalInfoAndUpdateDisplay,
-    //     iid => (intervalId = iid),
-    // );
+    await fireAndRepeat(
+        UPDATE_INTERVAL,
+        fetchArrivalInfoAndUpdateDisplay,
+        iid => (intervalId = iid),
+    );
 
     // Start up web UI server
     server = server.listen(PORT);

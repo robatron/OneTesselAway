@@ -21,22 +21,19 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin }) => {
             let songPlaying;
             let songInterval;
             const startSong = () => {
-                // WORKS!!
-                // [...Array(5000).keys()]
-                //     .map(el => el + 1)
-                //     .forEach(freq => {
-                //         tesselLowLevel.pwmFrequency(freq);
-                //         tesselLowLevel.port.B.pin[6].pwmDutyCycle(0.2);
-                //     });
-
                 console.log('Playing Mario...'); // DEBUGGGG
+
+                const mario = [659, 659, 659, 523, 659, 784, 392];
+                let currentNote = 0;
+
                 songPlaying = true;
                 songInterval = setInterval(() => {
-                    [659, 659, 659, 523, 659, 784, 392].forEach(freq => {
-                        tesselLowLevel.pwmFrequency(freq);
-                        tesselLowLevel.port.B.pin[6].pwmDutyCycle(0.2);
-                    });
-                }, 100);
+                    tesselLowLevel.pwmFrequency(
+                        mario[currentNote % mario.length],
+                    );
+                    tesselLowLevel.port.B.pin[6].pwmDutyCycle(0.2);
+                    ++currentNote;
+                }, 250);
             };
 
             const stopSong = () => {

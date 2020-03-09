@@ -13,4 +13,5 @@ const fireAndRepeat = (timeoutMs, func, intervalIdCallback) =>
 
 module.exports = {
     fireAndRepeat,
+    wait,
 };

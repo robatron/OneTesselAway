@@ -23,25 +23,25 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
 
                 const BPM = 200;
                 const marioSong = [
-                    [NOTES['E5'], 1 / 4],
+                    [NOTES['e5'], 1 / 4],
                     [null, 1 / 4],
-                    [NOTES['E5'], 1 / 4],
+                    [NOTES['e5'], 1 / 4],
                     [null, 3 / 4],
-                    [NOTES['E5'], 1 / 4],
+                    [NOTES['e5'], 1 / 4],
                     [null, 3 / 4],
-                    [NOTES['C5'], 1 / 4],
+                    [NOTES['c5'], 1 / 4],
                     [null, 1 / 4],
-                    [NOTES['E5'], 1 / 4],
+                    [NOTES['e5'], 1 / 4],
                     [null, 3 / 4],
-                    [NOTES['G5'], 1 / 4],
+                    [NOTES['g5'], 1 / 4],
                     [null, 7 / 4],
-                    [NOTES['G4'], 1 / 4],
+                    [NOTES['g4'], 1 / 4],
                     [null, 7 / 4],
                 ];
 
                 for (let i = 0; i < marioSong.length; ++i) {
                     const freq = marioSong[i][0];
-                    const duration = marioSong[i][1] * 1000;
+                    const duration = marioSong[i][1] * 1000 * (60 / BPM);
                     await playFrequency({
                         freq,
                         pwmPort: piezoPort,

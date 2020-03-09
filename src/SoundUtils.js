@@ -2,7 +2,7 @@ const tesselLowLevel = require('tessel');
 const { wait } = require('./AsyncRepeatUtils');
 
 const PLAY_DUTY_CYCLE = 0.2;
-const STOP_DUTY_CYLCE = 0;
+const STOP_DUTY_CYCLE = 0;
 
 // Play a frequency on the specified PWM pin until stopped. Returns a
 // promise.
@@ -15,14 +15,10 @@ const playFrequency = ({ freq, pwmPort, pwmPin, duration }) =>
             targetPin.pwmDutyCycle(PLAY_DUTY_CYCLE);
         } else {
             tesselLowLevel.pwmFrequency(1);
-            targetPin.pwmDutyCycle(STOP_DUTY_CYLCE);
+            targetPin.pwmDutyCycle(STOP_DUTY_CYCLE);
         }
 
-        return wait(duration)
-            .then(resolve => {
-                targetPin.pwmDutyCycle(STOP_DUTY_CYLCE);
-            })
-            .then(resolve);
+        return wait(duration).then(resolve);
     });
 
 // https://github.com/rwaldron/johnny-five/blob/master/lib/piezo.js#L178

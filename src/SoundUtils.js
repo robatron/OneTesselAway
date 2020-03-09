@@ -25,8 +25,9 @@ const playFrequency = ({ freq, pwmPort, pwmPin, duration }) =>
 // https://github.com/julianduque/j5-songs
 const playSong = async ({ piezoPort, piezoPin, song }) => {
     const notes = song.song;
+    notes.push([null, 0]);
     for (let i = 0; i < notes.length; ++i) {
-        const freq = notes[i][0];
+        const freq = notes[i][0] && NOTE_TO_FREQ[notes[i][0].toLowerCase()];
         const duration = notes[i][1] * 1000 * (60 / song.tempo);
         await playFrequency({
             freq,
@@ -38,7 +39,7 @@ const playSong = async ({ piezoPort, piezoPin, song }) => {
 };
 
 // https://github.com/rwaldron/johnny-five/blob/master/lib/piezo.js#L178
-const NOTES = {
+const NOTE_TO_FREQ = {
     c0: 16,
     'c#0': 17,
     d0: 18,
@@ -151,6 +152,6 @@ const NOTES = {
 
 module.exports = {
     playFrequency,
-    NOTES,
+    NOTES: NOTE_TO_FREQ,
     playSong,
 };

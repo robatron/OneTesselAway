@@ -1,7 +1,10 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
 const { playSong, NOTES } = require('./SoundUtils');
-const { tetrisTheme } = require('./songs');
+const songs = require('./songs');
+
+const songList = Object.keys(songs);
+let songSelection = 0;
 
 let lcdScreen;
 let button;
@@ -18,20 +21,23 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
             lcdScreen = new five.LCD({ pins: lcdPins });
             button = new five.Button(buttonPin);
 
-            button.on('release', async () => {
-                console.log('Button Released!');
-                await playSong({
+            button.on('release', () => {
+                const songTitle = songList[songSelection % songList.length];
+                console.log(`Button Released! Playing song "${songTitle}"`);
+                playSong({
                     piezoPin,
                     piezoPort,
-                    song: tetrisTheme,
+                    song: songs[songTitle],
                 });
+                ++songSelection;
             });
 
-            await playSong({
+            playSong({
                 piezoPin,
                 piezoPort,
-                song: tetrisTheme,
+                song: songs[songList[songSelection]],
             });
+            ++songSelection;
 
             resolve();
         });

@@ -21,6 +21,22 @@ const playFrequency = ({ freq, pwmPort, pwmPin, duration }) =>
         return wait(duration).then(resolve);
     });
 
+// Play a j5-format song
+// https://github.com/julianduque/j5-songs
+const playSong = async ({ piezoPort, piezoPin, song }) => {
+    const notes = song.song;
+    for (let i = 0; i < notes.length; ++i) {
+        const freq = notes[i][0];
+        const duration = notes[i][1] * 1000 * (60 / song.tempo);
+        await playFrequency({
+            freq,
+            pwmPort: piezoPort,
+            pwmPin: piezoPin,
+            duration,
+        });
+    }
+};
+
 // https://github.com/rwaldron/johnny-five/blob/master/lib/piezo.js#L178
 const NOTES = {
     c0: 16,
@@ -136,4 +152,5 @@ const NOTES = {
 module.exports = {
     playFrequency,
     NOTES,
+    playSong,
 };

@@ -1,7 +1,7 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
-var tesselLowLevel = require('tessel');
-const { playFrequency, NOTES } = require('./SoundUtils');
+const { playSong, NOTES } = require('./SoundUtils');
+const { tetrisTheme } = require('./songs');
 
 let lcdScreen;
 let button;
@@ -18,45 +18,22 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
             lcdScreen = new five.LCD({ pins: lcdPins });
             button = new five.Button(buttonPin);
 
-            const startSong = async () => {
-                console.log('Playing Mario...'); // DEBUGGGG
-
-                const BPM = 200;
-                const marioSong = [
-                    [NOTES['e5'], 1 / 4],
-                    [null, 1 / 4],
-                    [NOTES['e5'], 1 / 4],
-                    [null, 3 / 4],
-                    [NOTES['e5'], 1 / 4],
-                    [null, 3 / 4],
-                    [NOTES['c5'], 1 / 4],
-                    [null, 1 / 4],
-                    [NOTES['e5'], 1 / 4],
-                    [null, 3 / 4],
-                    [NOTES['g5'], 1 / 4],
-                    [null, 7 / 4],
-                    [NOTES['g4'], 1 / 4],
-                    [null, 7 / 4],
-                ];
-
-                for (let i = 0; i < marioSong.length; ++i) {
-                    const freq = marioSong[i][0];
-                    const duration = marioSong[i][1] * 1000 * (60 / BPM);
-                    await playFrequency({
-                        freq,
-                        pwmPort: piezoPort,
-                        pwmPin: piezoPin,
-                        duration,
-                    });
-                }
-            };
-
             button.on('release', async () => {
                 console.log('Button Released!');
-                await startSong();
+                await playSong({
+                    piezoPin,
+                    piezoPort,
+                    song: tetrisTheme,
+                });
             });
 
-            startSong().then(resolve);
+            await playSong({
+                piezoPin,
+                piezoPort,
+                song: tetrisTheme,
+            });
+
+            resolve();
         });
     });
 };

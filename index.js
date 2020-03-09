@@ -59,7 +59,8 @@ const BUTTON_PIN = 'b7';
 
 // Piezo speaker has to be on a PWM pin
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
-const PIEZO_PIN = 'b6';
+const PIEZO_PORT = 'B';
+const PIEZO_PIN = 6;
 
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
@@ -167,6 +168,7 @@ app.get('/', (req, res) => {
             buttonPin: BUTTON_PIN,
             lcdPins: LCD_DISPLAY_PINS,
             piezoPin: PIEZO_PIN,
+            piezoPort: PIEZO_PORT,
         });
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');

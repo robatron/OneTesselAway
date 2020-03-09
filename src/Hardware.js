@@ -1,12 +1,12 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
 var tesselLowLevel = require('tessel');
-const songs = require('j5-songs');
+const { playFrequency, NOTES } = require('./SoundUtils');
 
 let lcdScreen;
 let button;
 
-const initHardware = ({ buttonPin, lcdPins, piezoPin }) => {
+const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
     var board = new five.Board({ io: new Tessel() });
 
     return new Promise(resolve => {
@@ -18,42 +18,45 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin }) => {
             lcdScreen = new five.LCD({ pins: lcdPins });
             button = new five.Button(buttonPin);
 
-            let songPlaying;
-            let songInterval;
-            const startSong = () => {
+            const startSong = async () => {
                 console.log('Playing Mario...'); // DEBUGGGG
 
-                const mario = [659, 659, 659, 523, 659, 784, 392];
-                let currentNote = 0;
+                const BPM = 200;
+                const marioSong = [
+                    [NOTES['E5'], 1 / 4],
+                    [null, 1 / 4],
+                    [NOTES['E5'], 1 / 4],
+                    [null, 3 / 4],
+                    [NOTES['E5'], 1 / 4],
+                    [null, 3 / 4],
+                    [NOTES['C5'], 1 / 4],
+                    [null, 1 / 4],
+                    [NOTES['E5'], 1 / 4],
+                    [null, 3 / 4],
+                    [NOTES['G5'], 1 / 4],
+                    [null, 7 / 4],
+                    [NOTES['G4'], 1 / 4],
+                    [null, 7 / 4],
+                ];
 
-                songPlaying = true;
-                songInterval = setInterval(() => {
-                    tesselLowLevel.pwmFrequency(
-                        mario[currentNote % mario.length],
-                    );
-                    tesselLowLevel.port.B.pin[6].pwmDutyCycle(0.2);
-                    ++currentNote;
-                }, 250);
-            };
-
-            const stopSong = () => {
-                console.log('Stopping Mario...');
-                songPlaying = false;
-                tesselLowLevel.port.B.pin[6].pwmDutyCycle(0);
-                clearInterval(songInterval);
-            };
-
-            startSong();
-            button.on('release', () => {
-                console.log('Button Released!');
-                if (songPlaying) {
-                    stopSong();
-                } else {
-                    startSong();
+                for (let i = 0; i < marioSong.length; ++i) {
+                    const freq = marioSong[i][0];
+                    const duration = marioSong[i][1] * 1000;
+                    await playFrequency({
+                        freq,
+                        pwmPort: piezoPort,
+                        pwmPin: piezoPin,
+                        duration,
+                    });
                 }
+            };
+
+            button.on('release', async () => {
+                console.log('Button Released!');
+                await startSong();
             });
 
-            resolve();
+            startSong().then(resolve);
         });
     });
 };

@@ -10,7 +10,6 @@ node_modules/logform/errors.js
 node_modules/logform/printf.js
 node_modules/logform/timestamp.js
 node_modules/logform/node_modules/fecha
-node_modules/j5-songs/**/*.js
 
 # HTML template files
 views/index.ejs

@@ -20,6 +20,12 @@
                 padding: 10px;
                 width: 100%;
             }
+            .led-alarm-set {
+                border: 1px solid red;
+                display: inline-block;
+                height: 20px;
+                width: 20px;
+            }
         </style>
     </head>
     <body>
@@ -38,6 +44,10 @@
         <pre id="displayLinesJoined" class="display">
 <%= displayLinesJoined %></pre
         >
+        <form>
+            <button>Set Alarm</button>
+            <div class="led-alarm-set"></div>
+        </form>
 
         <h2>Arrival Info</h2>
         <p>

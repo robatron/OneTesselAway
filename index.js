@@ -52,6 +52,15 @@ const ADDRESS = `http://${process.env.ADDR ||
     os.networkInterfaces().wlan0[0].address}`;
 
 // Which pins on the Tessel is the LCD plugged into?
+
+// Button needs to be on a pull-up or pull-down pin
+// https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins
+const BUTTON_PIN = 'b7';
+
+// Piezo speaker has to be on a PWM pin
+// https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
+const PIEZO_PIN = 'b6';
+
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
 // Helper Functions / Data -----------------------------------------------------
@@ -154,7 +163,11 @@ app.get('/', (req, res) => {
 (async () => {
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware device...');
-        await initHardware(LCD_DISPLAY_PINS);
+        await initHardware({
+            buttonPin: BUTTON_PIN,
+            lcdPins: LCD_DISPLAY_PINS,
+            piezoPin: PIEZO_PIN,
+        });
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');
     }
@@ -169,11 +182,11 @@ app.get('/', (req, res) => {
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);
     }
-    await fireAndRepeat(
-        UPDATE_INTERVAL,
-        fetchArrivalInfoAndUpdateDisplay,
-        iid => (intervalId = iid),
-    );
+    // await fireAndRepeat(
+    //     UPDATE_INTERVAL,
+    //     fetchArrivalInfoAndUpdateDisplay,
+    //     iid => (intervalId = iid),
+    // );
 
     // Start up web UI server
     server = server.listen(PORT);

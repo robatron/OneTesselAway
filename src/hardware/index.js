@@ -1,15 +1,25 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
-const { playSong, NOTES } = require('./SoundUtils');
-const songs = require('./songs');
-
-const songList = Object.keys(songs);
-let songSelection = 0;
+const { playSong, NOTES } = require('../SoundUtils');
+const { nyanIntro } = require('../songs');
+const { initAlarmHardware } = require('./Alarm');
 
 let lcdScreen;
-let button;
 
-const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
+let ledReady;
+let ledSet;
+let ledGo;
+
+const initHardware = ({
+    buttonAlarmTogglePin,
+    lcdPins,
+    ledAlarmStatusPin,
+    ledGoPin,
+    ledReadyPin,
+    ledSetPin,
+    piezoPin,
+    piezoPort,
+}) => {
     var board = new five.Board({ io: new Tessel() });
 
     return new Promise(resolve => {
@@ -19,25 +29,21 @@ const initHardware = ({ buttonPin, lcdPins, piezoPin, piezoPort }) => {
             );
 
             lcdScreen = new five.LCD({ pins: lcdPins });
-            button = new five.Button(buttonPin);
 
-            button.on('release', () => {
-                const songTitle = songList[songSelection % songList.length];
-                console.log(`Button Released! Playing song "${songTitle}"`);
-                playSong({
-                    piezoPin,
-                    piezoPort,
-                    song: songs[songTitle],
-                });
-                ++songSelection;
+            initAlarmHardware({
+                buttonAlarmToggle: new five.Button(buttonAlarmTogglePin),
+                ledAlarmStatus: new five.Led(ledAlarmStatusPin),
             });
+
+            // ledReady = new five.Led(ledReadyPin);
+            // ledSet = new five.Led(ledSetPin);
+            // ledGo = new five.Led(ledGoPin);
 
             playSong({
                 piezoPin,
                 piezoPort,
-                song: songs[songList[songSelection]],
+                song: nyanIntro,
             });
-            ++songSelection;
 
             resolve();
         });

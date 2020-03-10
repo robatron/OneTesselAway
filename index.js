@@ -55,14 +55,21 @@ const ADDRESS = `http://${process.env.ADDR ||
 
 // Button needs to be on a pull-up or pull-down pin
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins
-const BUTTON_PIN = 'b7';
+const BUTTON_ALARM_PIN = 'b7';
 
-// Piezo speaker has to be on a PWM pin
+// Piezo speaker has to be on a PWM pin. These are low-level values for use w/ the 'tessel' API
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
 const PIEZO_PORT = 'B';
 const PIEZO_PIN = 6;
 
+// LCD display
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
+
+// LEDs
+const LED_READY_PIN = 'b4';
+const LED_SET_PIN = 'b3';
+const LED_GO_PIN = 'b2';
+const LED_ALARM_STATUS_PIN = 'b5';
 
 // Helper Functions / Data -----------------------------------------------------
 
@@ -131,7 +138,7 @@ const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
 // device to prevent global import errors
 let initHardware, updateLcdScreen;
 if (DEVICE_ENABLED) {
-    const hardware = require('./src/Hardware');
+    const hardware = require('./src/hardware');
     initHardware = hardware.initHardware;
     updateLcdScreen = hardware.updateLcdScreen;
 }
@@ -165,8 +172,12 @@ app.get('/', (req, res) => {
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware device...');
         await initHardware({
-            buttonPin: BUTTON_PIN,
+            buttonAlarmTogglePin: BUTTON_ALARM_PIN,
             lcdPins: LCD_DISPLAY_PINS,
+            ledAlarmStatusPin: LED_ALARM_STATUS_PIN,
+            ledGoPin: LED_GO_PIN,
+            ledReadyPin: LED_READY_PIN,
+            ledSetPin: LED_SET_PIN,
             piezoPin: PIEZO_PIN,
             piezoPort: PIEZO_PORT,
         });

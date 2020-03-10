@@ -1,9 +1,14 @@
+const five = require('johnny-five');
+
 let isAlarmEnabled = false;
 let buttonAlarmToggle;
 let ledAlarmStatus;
 
 // When the button is released, toggle the alarm status
-const initAlarmHardware = ({ buttonAlarmToggle, ledAlarmStatus }) => {
+const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
+    ledAlarmStatus = new five.Led(ledAlarmStatusPin);
+    buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+
     buttonAlarmToggle.on('release', () => {
         console.log(`Button "buttonAlarmToggle" released!`);
 

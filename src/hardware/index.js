@@ -4,6 +4,7 @@ const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 const { initAlarmHardware } = require('./Alarm');
 const { initLcdScreen } = require('./LcdScreen');
+const { initTrafficLight } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -23,21 +24,16 @@ const initHardware = ({
                 `Device board ready. Configuring LCD display with pins ${lcdPins}...`,
             );
 
-            initLcdScreen(new five.LCD({ pins: lcdPins }));
-            initAlarmHardware({
-                buttonAlarmToggle: new five.Button(buttonAlarmTogglePin),
-                ledAlarmStatus: new five.Led(ledAlarmStatusPin),
-            });
+            initLcdScreen(lcdPins);
+            initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
+            initTrafficLight({ ledReadyPin, ledSetPin, ledGoPin });
 
             // ledReady = new five.Led(ledReadyPin);
             // ledSet = new five.Led(ledSetPin);
             // ledGo = new five.Led(ledGoPin);
 
-            playSong({
-                piezoPin,
-                piezoPort,
-                song: nyanIntro,
-            });
+            // Play a tune once the hardware is ready to go
+            playSong({ piezoPin, piezoPort, song: nyanIntro });
 
             resolve();
         });

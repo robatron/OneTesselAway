@@ -51,7 +51,7 @@ const PORT = process.env.PORT || 8080;
 const ADDRESS = `http://${process.env.ADDR ||
     os.networkInterfaces().wlan0[0].address}`;
 
-// Which pins on the Tessel is the LCD plugged into?
+// Which pins on the Tessel is the hardware plugged into?
 
 // Button needs to be on a pull-up or pull-down pin
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins
@@ -139,8 +139,9 @@ const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
 let initHardware, updateLcdScreen;
 if (DEVICE_ENABLED) {
     const hardware = require('./src/hardware');
+    const lcdScreen = require('./src/hardware/LcdScreen');
     initHardware = hardware.initHardware;
-    updateLcdScreen = hardware.updateLcdScreen;
+    updateLcdScreen = lcdScreen.updateLcdScreen;
 }
 
 // Set up Express server for the web UI

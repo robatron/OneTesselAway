@@ -77,3 +77,6 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   https://nodejs.org/docs/latest-v8.x/api/index.html (Latest supported by Tessel 2)
 -   https://github.com/mde/ejs/tree/v3.0.1
 -   https://github.com/rwaldron/johnny-five/blob/master/docs/lcd-16x2-tessel.md
+-   https://learn.sparkfun.com/tutorials/experiment-guide-for-the-johnny-five-inventors-kit/experiment-2-multiple-leds-
+-   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
+-   http://johnny-five.io/api/led/

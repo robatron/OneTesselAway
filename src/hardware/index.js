@@ -1,10 +1,16 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
+const { wait } = require('../AsyncRepeatUtils');
 const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 const { initAlarmHardware } = require('./Alarm');
 const { initLcdScreen } = require('./LcdScreen');
-const { initTrafficLight } = require('./TrafficLight');
+const {
+    initTrafficLight,
+    setReadyState,
+    setSteadyState,
+    setGoState,
+} = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -12,7 +18,7 @@ const initHardware = ({
     ledAlarmStatusPin,
     ledGoPin,
     ledReadyPin,
-    ledSetPin,
+    ledSteadyPin,
     piezoPin,
     piezoPort,
 }) => {
@@ -26,13 +32,9 @@ const initHardware = ({
 
             initLcdScreen(lcdPins);
             initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
-            initTrafficLight({ ledReadyPin, ledSetPin, ledGoPin });
+            initTrafficLight({ ledReadyPin, ledSteadyPin, ledGoPin });
 
-            // ledReady = new five.Led(ledReadyPin);
-            // ledSet = new five.Led(ledSetPin);
-            // ledGo = new five.Led(ledGoPin);
-
-            // Play a tune once the hardware is ready to go
+            // Play a tune and cycle traffic light once the hardware is ready to go
             playSong({ piezoPin, piezoPort, song: nyanIntro });
 
             resolve();

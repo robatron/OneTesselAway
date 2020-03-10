@@ -178,7 +178,7 @@ app.get('/', (req, res) => {
             ledAlarmStatusPin: LED_ALARM_STATUS_PIN,
             ledGoPin: LED_GO_PIN,
             ledReadyPin: LED_READY_PIN,
-            ledSetPin: LED_SET_PIN,
+            ledSteadyPin: LED_SET_PIN,
             piezoPin: PIEZO_PIN,
             piezoPort: PIEZO_PORT,
         });

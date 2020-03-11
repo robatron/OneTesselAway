@@ -59,6 +59,8 @@ module.exports.HARDWARE_UPDATE_INTERVAL = 1000;
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins
 module.exports.BUTTON_ALARM_PIN = 'b7';
 
+module.exports.BUTTON_DEBUG_FORCE_GO_STATE_PIN = 'b0';
+
 // Piezo speaker has to be on a PWM pin. These are low-level values for use w/ the 'tessel' API
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
 module.exports.PIEZO_PORT = 'B';

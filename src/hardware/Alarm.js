@@ -1,5 +1,6 @@
 const five = require('johnny-five');
-const { cycleStates } = require('./TrafficLight');
+const { playSong } = require('../SoundUtils');
+const { nyanIntro } = require('../songs');
 
 let isAlarmEnabled = false;
 let buttonAlarmToggle;
@@ -19,7 +20,32 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     });
 };
 
+// Trigger the alarm buzzer if all true:
+// - The alarm is enabled
+// - The traffic light state is 'go'
+// - The previous state != current state
+let previousTrafficLightState = null;
+const triggerAlarmBuzzer = async ({
+    piezoPin,
+    piezoPort,
+    trafficLightState,
+}) => {
+    if (
+        isAlarmEnabled &&
+        trafficLightState === 'go' &&
+        trafficLightState !== previousTrafficLightState
+    ) {
+        await playSong({ piezoPin, piezoPort, song: nyanIntro });
+
+        isAlarmEnabled = false;
+        ledAlarmStatus.off();
+
+        previousTrafficLightState = trafficLightState;
+    }
+};
+
 module.exports = {
     getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
+    triggerAlarmBuzzer,
 };

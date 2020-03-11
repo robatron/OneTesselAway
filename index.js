@@ -20,6 +20,7 @@ const Express = require('express');
 const constants = require('./src/Constants');
 const { initLogger } = require('./src/Logger');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
+const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
     getDeviceState,
     processDeviceStateForDisplay,
@@ -37,13 +38,14 @@ const updateArrivalsAndHardware = async () => {
     const currentDeviceState = getDeviceState();
 
     if (DEVICE_ENABLED) {
-        // TEMP - TESTING 'GO' STATE
-        if (currentDeviceState.isAlarmEnabled) {
-            setTrafficLightState('go');
-        } else {
-            // Set the traffic light state based on next-bus arrival
-            setTrafficLightState(currentDeviceState.stoplightState);
-        }
+        // Set the traffic light state and trigger buzzer based on arrival
+        // of next bus on primary route
+        setTrafficLightState(currentDeviceState.stoplightState);
+        triggerAlarmBuzzer({
+            piezoPin: constants.PIEZO_PIN,
+            piezoPort: constants.PIEZO_PORT,
+            trafficLightState: currentDeviceState.stoplightState,
+        });
 
         // Update LCD. Do last b/c it's very slow.
         updateLcdScreen(currentDeviceState.displayLines);
@@ -106,6 +108,8 @@ app.get('/', (req, res) => {
         log.info('Initializing hardware device...');
         await initHardware({
             buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
+            buttonDebugForceGoStatePin:
+                constants.BUTTON_DEBUG_FORCE_GO_STATE_PIN,
             lcdPins: constants.LCD_DISPLAY_PINS,
             ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
             ledMissPin: constants.LED_MISS_PIN,

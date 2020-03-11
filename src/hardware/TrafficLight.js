@@ -1,6 +1,5 @@
 const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
-const constants = require('../Constants');
 
 const strobeDuration = 1000;
 const leds = {

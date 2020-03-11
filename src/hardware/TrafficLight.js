@@ -1,39 +1,47 @@
 const five = require('johnny-five');
+const { wait } = require('../AsyncRepeatUtils');
 
 const strobeDelay = 1000;
 
-let ledReady;
-let ledSteady;
-let ledGo;
+const leds = {
+    ready: null,
+    set: null,
+    go: null,
+};
 
 const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledGoPin }) => {
-    ledReady = new five.Led(ledReadyPin);
-    ledSteady = new five.Led(ledSteadyPin);
-    ledGo = new five.Led(ledGoPin);
+    leds.ready = new five.Led(ledReadyPin);
+    leds.set = new five.Led(ledSteadyPin);
+    leds.go = new five.Led(ledGoPin);
 };
 
-// Turn on one of the traffic lights, mutually exclusive
-const setReadyState = () => {
-    ledReady.strobe(strobeDelay);
-    ledSteady.stop().off();
-    ledGo.stop().off();
+// Turn on one of the traffic lights, turn all others off
+const setState = stateId => {
+    Object.keys(leds).forEach(led => {
+        leds[led].stop().off();
+    });
+    leds[stateId].strobe(strobeDelay);
 };
 
-const setSteadyState = () => {
-    ledReady.stop().off();
-    ledSteady.strobe(strobeDelay);
-    ledGo.stop().off();
-};
-
-const setGoState = () => {
-    ledReady.stop().off();
-    ledSteady.stop().off();
-    ledGo.strobe(strobeDelay);
+// Cycle through a list of states
+const cycleStates = async ({ cycleCount, cycleDelay, stateList }) => {
+    for (ii = 0; ii < cycleCount; ++ii) {
+        for (i = 0; i < stateList.length; ++i) {
+            stateList.forEach(stateId => {
+                leds[stateId].off();
+            });
+            leds[stateList[i]].on();
+            await wait(cycleDelay);
+        }
+    }
+    stateList.forEach(stateId => {
+        leds[stateId].off();
+    });
 };
 
 module.exports = {
+    cycleStates,
+    getLeds: () => leds,
     initTrafficLight,
-    setReadyState,
-    setSteadyState,
-    setGoState,
+    setState,
 };

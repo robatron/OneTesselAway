@@ -18,6 +18,9 @@ module.exports.TARGET_ROUTES = {
     },
 };
 
+// What route should be considered primary? Used for stoplight and alarm
+module.exports.PRIMARY_ROUTE = '1_100009';
+
 // How often to request updates from OneBusAway and update LCD screen
 module.exports.UPDATE_INTERVAL = 5000;
 

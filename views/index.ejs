@@ -71,14 +71,12 @@
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
+                console.log('Device state updated:', deviceState);
                 Object.keys(deviceState).forEach(stateKey => {
                     const stateValue = deviceState[stateKey];
                     const el = document.querySelector(`#${stateKey}`);
                     if (el) {
                         el.innerHTML = stateValue;
-                        console.log(
-                            `Updated "#${stateKey}"" with "${stateValue}"`,
-                        );
                     }
                 });
             });

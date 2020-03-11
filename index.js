@@ -16,14 +16,10 @@
  * Supports up to two routes and two stops.
  */
 const http = require('http');
-const os = require('os');
 const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
-const {
-    arrivalInfoToDisplayLines,
-    getLcdDisplayLines,
-} = require('./src/DisplayUtils');
+const { getLcdDisplayLines } = require('./src/DisplayUtils');
 const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 const constants = require('./src/Constants');
 
@@ -37,6 +33,8 @@ const getDeviceState = () => {
         reverseLines: true,
     });
     const displayLines = getLcdDisplayLines(arrivalInfo);
+
+    let stoplightState;
 
     return {
         arrivalInfo,

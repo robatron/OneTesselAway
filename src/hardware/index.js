@@ -11,7 +11,7 @@ const initHardware = ({
     buttonAlarmTogglePin,
     lcdPins,
     ledAlarmStatusPin,
-    ledGoPin,
+    ledMissPin,
     ledReadyPin,
     ledSteadyPin,
     piezoPin,
@@ -27,14 +27,14 @@ const initHardware = ({
 
             initLcdScreen(lcdPins);
             initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
-            initTrafficLight({ ledReadyPin, ledSteadyPin, ledGoPin });
+            initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
 
             // Play a tune and cycle traffic light once the hardware is ready to go
             playSong({ piezoPin, piezoPort, song: nyanIntro });
             cycleStates({
                 cycleCount: 5,
                 cycleDelay: 200,
-                stateList: ['ready', 'set', 'go'],
+                stateList: ['ready', 'set', 'miss'],
             });
 
             resolve();

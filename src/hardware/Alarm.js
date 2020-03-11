@@ -21,7 +21,7 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
         cycleStates({
             cycleCount: 10,
             cycleDelay: 100,
-            stateList: ['ready', 'set', 'go'],
+            stateList: ['ready', 'set', 'miss'],
         });
     });
 };

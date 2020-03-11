@@ -69,5 +69,5 @@ module.exports.LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 // LEDs
 module.exports.LED_READY_PIN = 'b2';
 module.exports.LED_SET_PIN = 'b3';
-module.exports.LED_GO_PIN = 'b4';
+module.exports.LED_MISS_PIN = 'b4';
 module.exports.LED_ALARM_STATUS_PIN = 'b5';

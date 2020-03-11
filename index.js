@@ -22,6 +22,7 @@ const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { getLcdDisplayLines } = require('./src/DisplayUtils');
 const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 const constants = require('./src/Constants');
+const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 
 // Helper Functions / Data -----------------------------------------------------
 
@@ -73,6 +74,9 @@ const processDeviceStateForDisplay = deviceState => ({
 const fetchArrivalInfoAndUpdateDisplay = async () => {
     await updateArrivalInfo(constants.TARGET_ROUTES);
     const currentDeviceState = getDeviceState();
+
+    // Set the traffic light state based on next-bus arrival
+    setTrafficLightState(currentDeviceState.stoplightState);
 
     // Send device state to the Web UI
     io.emit(
@@ -141,7 +145,7 @@ app.get('/', (req, res) => {
             buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
             lcdPins: constants.LCD_DISPLAY_PINS,
             ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
-            ledGoPin: constants.LED_GO_PIN,
+            ledMissPin: constants.LED_MISS_PIN,
             ledReadyPin: constants.LED_READY_PIN,
             ledSteadyPin: constants.LED_SET_PIN,
             piezoPin: constants.PIEZO_PIN,

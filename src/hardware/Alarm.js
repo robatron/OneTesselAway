@@ -16,17 +16,10 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
         // Toggle alarm status and sync the status LED
         isAlarmEnabled = !isAlarmEnabled;
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
-
-        // Cycle lights TEMP
-        cycleStates({
-            cycleCount: 10,
-            cycleDelay: 100,
-            stateList: ['ready', 'set', 'miss'],
-        });
     });
 };
 
 module.exports = {
-    getAlarmIsEnabled: () => isAlarmEnabled,
+    getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
 };

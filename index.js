@@ -21,12 +21,12 @@ const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { getLcdDisplayLines } = require('./src/DisplayUtils');
 const constants = require('./src/Constants');
+const { getIsAlarmEnabled } = require('./hardware/Alarm');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 
 // Helper Functions / Data -----------------------------------------------------
 
-// Get the current device state, used to render the Web UI data, and update the
-// LCD screen
+// Get the current device state, referenced by the web UI and other hardware
 const getDeviceState = () => {
     const arrivalInfo = getArrivalInfo();
     const deviceLogs = getLatestLogFromFile(constants.LOGFILE, {
@@ -57,6 +57,7 @@ const getDeviceState = () => {
         arrivalInfo,
         deviceLogs,
         displayLines,
+        isAlarmEnabled: getIsAlarmEnabled(),
         stoplightState,
     };
 };
@@ -68,27 +69,32 @@ const processDeviceStateForDisplay = deviceState => ({
     displayLines: deviceState.displayLines.join('\n'),
 });
 
-// Update hardware, LCD, stoplight, and alarm, from display
-let hardwareUpdateCount = 0;
-const updateHardwareFromState = () => {
+// Update arrivals from API and hardware from state
+const updateArrivalsAndHardware = async () => {
+    // Fetch a new arrival info synchronously
+    await updateArrivalInfo(constants.TARGET_ROUTES);
+
+    // Grab the updated device state
     const currentDeviceState = getDeviceState();
+
+    if (DEVICE_ENABLED) {
+        // TEMP - TESTING 'GO' STATE
+        if (currentDeviceState.isAlarmEnabled) {
+            setTrafficLightState('go');
+        } else {
+            // Set the traffic light state based on next-bus arrival
+            setTrafficLightState(currentDeviceState.stoplightState);
+        }
+
+        // Update LCD. Do last b/c it's very slow.
+        updateLcdScreen(currentDeviceState.displayLines);
+    }
 
     // Send device state to the Web UI
     io.emit(
         'deviceStateUpdated',
         processDeviceStateForDisplay(currentDeviceState),
     );
-
-    if (DEVICE_ENABLED) {
-        // Set the traffic light state based on next-bus arrival
-        setTrafficLightState({
-            stateId: currentDeviceState.stoplightState,
-            state: hardwareUpdateCount % 2 == 0 ? 'on' : 'off',
-        });
-
-        // Update the LCD display
-        updateLcdScreen(currentDeviceState.displayLines);
-    }
 };
 
 // Initialize ------------------------------------------------------------------
@@ -166,16 +172,12 @@ app.get('/', (req, res) => {
     }
 
     // Wait for the first arrival info to return before starting up
-    await updateArrivalInfo(constants.TARGET_ROUTES);
-    updateHardwareFromState();
+    await updateArrivalsAndHardware();
 
-    // After the intial API fetch, we can decouple API and hardware updates
-    const apiIntervalId = setInterval(() => {
-        updateArrivalInfo(constants.TARGET_ROUTES);
-    }, constants.API_UPDATE_INTERVAL);
-    const hardwareIntervalId = setInterval(
-        updateHardwareFromState,
-        constants.HARDWARE_UPDATE_INTERVAL,
+    // After the initial API fetch, continue updating asynchronously
+    const apiIntervalId = setInterval(
+        updateArrivalsAndHardware,
+        constants.API_UPDATE_INTERVAL,
     );
 
     // Start up web UI server

@@ -20,7 +20,10 @@ const os = require('os');
 const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
-const { arrivalInfoToDisplayLines } = require('./src/DisplayUtils');
+const {
+    arrivalInfoToDisplayLines,
+    getLcdDisplayLines,
+} = require('./src/DisplayUtils');
 const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 
 // Settings --------------------------------------------------------------------
@@ -66,48 +69,33 @@ const PIEZO_PIN = 6;
 const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
 
 // LEDs
-const LED_READY_PIN = 'b4';
+const LED_READY_PIN = 'b2';
 const LED_SET_PIN = 'b3';
-const LED_GO_PIN = 'b2';
+const LED_GO_PIN = 'b4';
 const LED_ALARM_STATUS_PIN = 'b5';
 
 // Helper Functions / Data -----------------------------------------------------
 
-// Neverending interval ID so we can kill it on command
-let intervalId;
-
-// Create display lines from arrival info and dynamic delimeters
-let getDisplayLinesCount = 0;
-const getDisplayLines = () => {
-    const arrivalInfo = getArrivalInfo();
-
-    // Animate route delimeter characters, alternating frames between calls
-    const routeDelims = [':', '.'];
-    if (getDisplayLinesCount % routeDelims.length) {
-        routeDelims.reverse();
-    }
-
-    const displayLines = arrivalInfoToDisplayLines(arrivalInfo, routeDelims);
-
-    ++getDisplayLinesCount;
-
-    return displayLines;
-};
-
 // Get the current device state, used to render the Web UI data, and update the
 // LCD screen
 const getDeviceState = () => {
-    const arrivalInfo = JSON.stringify(getArrivalInfo(), null, 2);
+    const arrivalInfo = getArrivalInfo();
     const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
-    const displayLines = getDisplayLines();
+    const displayLines = getLcdDisplayLines(arrivalInfo);
 
     return {
         arrivalInfo,
         deviceLogs,
         displayLines,
-        displayLinesJoined: displayLines.join('\n'),
     };
 };
+
+// Processes device state for use within the Web UI
+const processDeviceStateForDisplay = deviceState => ({
+    ...deviceState,
+    arrivalInfo: JSON.stringify(deviceState.arrivalInfo, null, 2),
+    displayLines: deviceState.displayLines.join('\n'),
+});
 
 // Update arrival info from OneBusAway, update the Web UI, and finally update
 // LCD screen if the hardware is enabled
@@ -116,7 +104,10 @@ const fetchArrivalInfoAndUpdateDisplay = async () => {
     const currentDeviceState = getDeviceState();
 
     // Send device state to the Web UI
-    io.emit('deviceStateUpdated', currentDeviceState);
+    io.emit(
+        'deviceStateUpdated',
+        processDeviceStateForDisplay(currentDeviceState),
+    );
 
     // Update the LCD display if hardware is enabled
     if (DEVICE_ENABLED) {
@@ -161,7 +152,7 @@ app.get('/', (req, res) => {
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
     const currentDeviceState = getDeviceState();
-    res.render('index', currentDeviceState);
+    res.render('index', processDeviceStateForDisplay(currentDeviceState));
 });
 
 // Start -----------------------------------------------------------------------
@@ -170,6 +161,9 @@ app.get('/', (req, res) => {
 // function to assure hardware is initialized and initial data is fetched
 // before starting
 (async () => {
+    // Track the main program loop interval ID so we can kill it on command
+    let intervalId;
+
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware device...');
         await initHardware({
@@ -193,9 +187,11 @@ app.get('/', (req, res) => {
             DEVICE_ENABLED ? 'and LCD screen ' : ''
         }every ${UPDATE_INTERVAL} milliseconds`,
     );
+
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);
     }
+
     await fireAndRepeat(
         UPDATE_INTERVAL,
         fetchArrivalInfoAndUpdateDisplay,

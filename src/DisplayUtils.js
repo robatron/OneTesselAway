@@ -46,6 +46,24 @@ const arrivalInfoToDisplayLines = (
     });
 };
 
+// Create display lines from arrival info and dynamic delimeters
+let getDisplayLinesCount = 0;
+const getLcdDisplayLines = arrivalInfo => {
+    // Animate route delimeter characters, alternating frames between calls
+    const ROUTE_DELIMS = [':', '.'];
+
+    if (getDisplayLinesCount % ROUTE_DELIMS.length) {
+        ROUTE_DELIMS.reverse();
+    }
+
+    const displayLines = arrivalInfoToDisplayLines(arrivalInfo, ROUTE_DELIMS);
+
+    ++getDisplayLinesCount;
+
+    return displayLines;
+};
+
 module.exports = {
     arrivalInfoToDisplayLines,
+    getLcdDisplayLines,
 };

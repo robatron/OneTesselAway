@@ -1,7 +1,7 @@
 module.exports = {
     DEFAULT_ARRIVAL_INFO: {
         '1_100009': {
-            lastUpdatedDate: '2019-12-30T19:49:12.282Z',
+            deviceRequestDate: '2019-12-30T19:49:12.282Z',
             routeName: '11',
             stopName: 'E Madison St & 22nd Ave E',
             upcomingArrivalTimes: [
@@ -18,7 +18,7 @@ module.exports = {
             ],
         },
         '1_100018': {
-            lastUpdatedDate: '2019-12-30T19:49:12.380Z',
+            deviceRequestDate: '2019-12-30T19:49:12.380Z',
             routeName: '12',
             stopName: 'E Madison St & 19th Ave',
             upcomingArrivalTimes: [

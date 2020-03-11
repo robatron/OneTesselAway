@@ -22,7 +22,7 @@ module.exports.TARGET_ROUTES = {
 module.exports.UPDATE_INTERVAL = 5000;
 
 // OneBusAway API endpoint for "arrivals" data at a stop
-const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
+module.exports.API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
 // Log file path
 module.exports.LOGFILE = __dirname + '/../logs/device.log';
@@ -31,7 +31,13 @@ module.exports.LOGFILE = __dirname + '/../logs/device.log';
 // localhost. If running on the Tessel 2, it'll run from its WiFi IP
 module.exports.PORT = process.env.PORT || 8080;
 module.exports.ADDRESS = `http://${process.env.ADDR ||
-    os.networkInterfaces().wlan0[0].address}`;
+    (os &&
+        os.networkInterfaces &&
+        os.networkInterfaces() &&
+        os.networkInterfaces().wlan0 &&
+        os.networkInterfaces().wlan0[0] &&
+        os.networkInterfaces().wlan0[0].address) ||
+    '0.0.0.0'}`;
 
 // Time ranges for each stoplight state. Ranges minutes from (inclusive) and to (exclusive)
 module.exports.STOPLIGHT_TIME_RANGES = {

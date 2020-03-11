@@ -20,7 +20,6 @@ const updateArrivalInfo = async targetRoutes => {
             upcomingArrivalTimes = await getUpcomingArrivalTimes(
                 stopId,
                 routeId,
-                currentDate,
             );
         } catch (e) {
             log.error(
@@ -30,7 +29,7 @@ const updateArrivalInfo = async targetRoutes => {
 
         if (upcomingArrivalTimes) {
             arrivalInfo[routeId] = {
-                lastUpdatedDate: currentDate,
+                deviceRequestDate: currentDate,
                 routeName,
                 stopName,
                 upcomingArrivalTimes,

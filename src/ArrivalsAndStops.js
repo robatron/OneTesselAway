@@ -64,8 +64,9 @@ const _getArrivalDatesByTripId = arrivals =>
     }, {});
 
 // Returns a list of upcomming arrival times for the specified stop and route
-const getUpcomingArrivalTimes = async (stopId, routeId, currentDate) => {
+const getUpcomingArrivalTimes = async (stopId, routeId) => {
     const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
+    const basisDate = new Date(arrivalsForStop.currentTime);
     const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
     const arrivalDatesByTripId = _getArrivalDatesByTripId(arrivalsForRoute);
 
@@ -73,7 +74,8 @@ const getUpcomingArrivalTimes = async (stopId, routeId, currentDate) => {
         const arrivalDate = arrivalDatesByTripId[tripId];
         return {
             clock: dateTo24HourClockString(arrivalDate),
-            minsUntilArrival: getMinutesBetweenDates(arrivalDate, currentDate),
+            minsUntilArrival: getMinutesBetweenDates(arrivalDate, basisDate),
+            basisDate,
             tripId,
         };
     });

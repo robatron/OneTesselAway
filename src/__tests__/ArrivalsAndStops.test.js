@@ -103,11 +103,13 @@ describe('getUpcomingArrivalTimes', () => {
         );
         expect(upcomingArrivalTimes).toEqual([
             {
+                basisDate: new Date(1577721840746),
                 clock: '08:07',
                 minsUntilArrival: 3,
                 tripId: '1_40560755',
             },
             {
+                basisDate: new Date(1577721840746),
                 clock: '08:23',
                 minsUntilArrival: 19,
                 tripId: '1_40560756',

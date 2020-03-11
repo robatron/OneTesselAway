@@ -25,54 +25,7 @@ const {
     getLcdDisplayLines,
 } = require('./src/DisplayUtils');
 const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
-
-// Settings --------------------------------------------------------------------
-
-// Which routes and stops we're interested in, keyed by route ID
-const TARGET_ROUTES = {
-    '1_100009': {
-        routeName: '11',
-        stopId: '1_12351',
-        stopName: 'E Madison St & 22nd Ave E',
-    },
-    '1_100018': {
-        routeName: '12',
-        stopId: '1_12353',
-        stopName: 'E Madison St & 19th Ave',
-    },
-};
-
-// How often to request updates from OneBusAway and update LCD screen
-const UPDATE_INTERVAL = 5000;
-
-// Log file path
-const LOGFILE = __dirname + '/logs/device.log';
-
-// Server settings. If started locally w/ `npm start`, it'll serve from
-// localhost. If running on the Tessel 2, it'll run from its WiFi IP
-const PORT = process.env.PORT || 8080;
-const ADDRESS = `http://${process.env.ADDR ||
-    os.networkInterfaces().wlan0[0].address}`;
-
-// Which pins on the Tessel is the hardware plugged into?
-
-// Button needs to be on a pull-up or pull-down pin
-// https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins
-const BUTTON_ALARM_PIN = 'b7';
-
-// Piezo speaker has to be on a PWM pin. These are low-level values for use w/ the 'tessel' API
-// https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
-const PIEZO_PORT = 'B';
-const PIEZO_PIN = 6;
-
-// LCD display
-const LCD_DISPLAY_PINS = ['a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
-
-// LEDs
-const LED_READY_PIN = 'b2';
-const LED_SET_PIN = 'b3';
-const LED_GO_PIN = 'b4';
-const LED_ALARM_STATUS_PIN = 'b5';
+const constants = require('./src/Constants');
 
 // Helper Functions / Data -----------------------------------------------------
 
@@ -80,7 +33,9 @@ const LED_ALARM_STATUS_PIN = 'b5';
 // LCD screen
 const getDeviceState = () => {
     const arrivalInfo = getArrivalInfo();
-    const deviceLogs = getLatestLogFromFile(LOGFILE, { reverseLines: true });
+    const deviceLogs = getLatestLogFromFile(constants.LOGFILE, {
+        reverseLines: true,
+    });
     const displayLines = getLcdDisplayLines(arrivalInfo);
 
     return {
@@ -100,7 +55,7 @@ const processDeviceStateForDisplay = deviceState => ({
 // Update arrival info from OneBusAway, update the Web UI, and finally update
 // LCD screen if the hardware is enabled
 const fetchArrivalInfoAndUpdateDisplay = async () => {
-    await updateArrivalInfo(TARGET_ROUTES);
+    await updateArrivalInfo(constants.TARGET_ROUTES);
     const currentDeviceState = getDeviceState();
 
     // Send device state to the Web UI
@@ -118,7 +73,7 @@ const fetchArrivalInfoAndUpdateDisplay = async () => {
 // Initialize ------------------------------------------------------------------
 
 // Set up logger
-const log = initLogger(LOGFILE);
+const log = initLogger(constants.LOGFILE);
 
 log.info('Initializing OneTesselAway...');
 
@@ -167,14 +122,14 @@ app.get('/', (req, res) => {
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware device...');
         await initHardware({
-            buttonAlarmTogglePin: BUTTON_ALARM_PIN,
-            lcdPins: LCD_DISPLAY_PINS,
-            ledAlarmStatusPin: LED_ALARM_STATUS_PIN,
-            ledGoPin: LED_GO_PIN,
-            ledReadyPin: LED_READY_PIN,
-            ledSteadyPin: LED_SET_PIN,
-            piezoPin: PIEZO_PIN,
-            piezoPort: PIEZO_PORT,
+            buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
+            lcdPins: constants.LCD_DISPLAY_PINS,
+            ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
+            ledGoPin: constants.LED_GO_PIN,
+            ledReadyPin: constants.LED_READY_PIN,
+            ledSteadyPin: constants.LED_SET_PIN,
+            piezoPin: constants.PIEZO_PIN,
+            piezoPort: constants.PIEZO_PORT,
         });
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');
@@ -185,7 +140,7 @@ app.get('/', (req, res) => {
     log.info(
         `Begin updating arrival info ${
             DEVICE_ENABLED ? 'and LCD screen ' : ''
-        }every ${UPDATE_INTERVAL} milliseconds`,
+        }every ${constants.UPDATE_INTERVAL} milliseconds`,
     );
 
     if (DEVICE_ENABLED) {
@@ -193,14 +148,14 @@ app.get('/', (req, res) => {
     }
 
     await fireAndRepeat(
-        UPDATE_INTERVAL,
+        constants.UPDATE_INTERVAL,
         fetchArrivalInfoAndUpdateDisplay,
         iid => (intervalId = iid),
     );
 
     // Start up web UI server
-    server = server.listen(PORT);
-    log.info(`Web UI server address: ${ADDRESS}:${PORT}`);
+    server = server.listen(constants.PORT);
+    log.info(`Web UI server address: ${constants.ADDRESS}:${constants.PORT}`);
 
     // Shut down everything on ^C
     process.on('SIGINT', () => {

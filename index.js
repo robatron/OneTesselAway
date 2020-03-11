@@ -17,61 +17,16 @@
  */
 const http = require('http');
 const Express = require('express');
-const { getLatestLogFromFile, initLogger } = require('./src/Logger');
-const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
-const { getLcdDisplayLines } = require('./src/DisplayUtils');
 const constants = require('./src/Constants');
-const { getIsAlarmEnabled } = require('./src/hardware/Alarm');
+const { initLogger } = require('./src/Logger');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
+const {
+    getDeviceState,
+    processDeviceStateForDisplay,
+    updateArrivalInfo,
+} = require('./src/DeviceState');
 
 // Helper Functions / Data -----------------------------------------------------
-
-// Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
-// the closest arrival time of the primary route
-const getStoplightState = arrivalInfo => {
-    const closestMinsUntilArrival =
-        arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
-            .minsUntilArrival;
-    const stoplightStates = Object.keys(constants.STOPLIGHT_TIME_RANGES);
-
-    let stoplightState;
-    for (let i = 0; stoplightStates.length; ++i) {
-        const curStoplightState = stoplightStates[i];
-        const curStoplightStateRange =
-            constants.STOPLIGHT_TIME_RANGES[curStoplightState];
-        if (
-            closestMinsUntilArrival >= curStoplightStateRange[0] &&
-            closestMinsUntilArrival < curStoplightStateRange[1]
-        ) {
-            stoplightState = curStoplightState;
-            break;
-        }
-    }
-
-    return stoplightState;
-};
-
-// Get the current device state, referenced by the web UI and other hardware
-const getDeviceState = () => {
-    const arrivalInfo = getArrivalInfo();
-
-    return {
-        arrivalInfo,
-        deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
-            reverseLines: true,
-        }),
-        displayLines: getLcdDisplayLines(arrivalInfo),
-        isAlarmEnabled: getIsAlarmEnabled(),
-        stoplightState: getStoplightState(arrivalInfo),
-    };
-};
-
-// Processes device state for use within the Web UI
-const processDeviceStateForDisplay = deviceState => ({
-    ...deviceState,
-    arrivalInfo: JSON.stringify(deviceState.arrivalInfo, null, 2),
-    displayLines: deviceState.displayLines.join('\n'),
-});
 
 // Update arrivals from API and hardware from state
 const updateArrivalsAndHardware = async () => {

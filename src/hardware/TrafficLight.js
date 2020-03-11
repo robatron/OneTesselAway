@@ -3,7 +3,6 @@ const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
 
 const goCycleDelay = 100;
-
 const leds = {
     ready: null,
     set: null,
@@ -16,24 +15,18 @@ const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
     leds.miss = new five.Led(ledMissPin);
 };
 
-// Enable one of the traffic light states
-const setTrafficLightState = stateId => {
+// Enable one of the traffic light states. The special state 'go' means to set state of all at once.
+const setTrafficLightState = ({ stateId, state }) => {
     Object.keys(leds).forEach(led => {
         leds[led].off();
     });
 
     if (stateId === 'go') {
-        const stateList = Object.keys(leds);
-        // TODO: Cycle forever
-        cycleStates({
-            cycleCount:
-                (constants.HARDWARE_UPDATE_INTERVAL / stateList.length) *
-                goCycleDelay,
-            cycleDelay: goCycleDelay,
-            stateList,
+        Object.keys(leds).forEach(led => {
+            leds[led][state]();
         });
     } else {
-        leds[stateId].on();
+        leds[stateId][state]();
     }
 };
 

@@ -69,11 +69,9 @@ const processDeviceStateForDisplay = deviceState => ({
 });
 
 // Update hardware, LCD, stoplight, and alarm, from display
+let hardwareUpdateCount = 0;
 const updateHardwareFromState = () => {
     const currentDeviceState = getDeviceState();
-
-    // Set the traffic light state based on next-bus arrival
-    setTrafficLightState(currentDeviceState.stoplightState);
 
     // Send device state to the Web UI
     io.emit(
@@ -81,8 +79,14 @@ const updateHardwareFromState = () => {
         processDeviceStateForDisplay(currentDeviceState),
     );
 
-    // Update the LCD display if hardware is enabled
     if (DEVICE_ENABLED) {
+        // Set the traffic light state based on next-bus arrival
+        setTrafficLightState({
+            stateId: currentDeviceState.stoplightState,
+            state: hardwareUpdateCount % 2 == 0 ? 'on' : 'off',
+        });
+
+        // Update the LCD display
         updateLcdScreen(currentDeviceState.displayLines);
     }
 };
@@ -166,10 +170,9 @@ app.get('/', (req, res) => {
     updateHardwareFromState();
 
     // After the intial API fetch, we can decouple API and hardware updates
-    const apiIntervalId = setInterval(
-        updateArrivalInfo.bind(null, constants.TARGET_ROUTES),
-        constants.API_UPDATE_INTERVAL,
-    );
+    const apiIntervalId = setInterval(() => {
+        updateArrivalInfo(constants.TARGET_ROUTES);
+    }, constants.API_UPDATE_INTERVAL);
     const hardwareIntervalId = setInterval(
         updateHardwareFromState,
         constants.HARDWARE_UPDATE_INTERVAL,

@@ -21,7 +21,7 @@ const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { getLcdDisplayLines } = require('./src/DisplayUtils');
 const constants = require('./src/Constants');
-const { getIsAlarmEnabled } = require('./hardware/Alarm');
+const { getIsAlarmEnabled } = require('./src/hardware/Alarm');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 
 // Helper Functions / Data -----------------------------------------------------

@@ -4,7 +4,7 @@ const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 const { initAlarmHardware } = require('./Alarm');
 const { initLcdScreen } = require('./LcdScreen');
-const { initTrafficLight, cycleStates } = require('./TrafficLight');
+const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -28,13 +28,9 @@ const initHardware = ({
             initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
             initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
 
-            // Play a tune and cycle traffic light once the hardware is ready to go
+            // Play a tune and flash traffic light once the hardware is ready to go
             playSong({ piezoPin, piezoPort, song: nyanIntro });
-            cycleStates({
-                cycleCount: 5,
-                cycleDelay: 200,
-                stateList: ['ready', 'set', 'miss'],
-            });
+            setTrafficLightState('go');
 
             resolve();
         });

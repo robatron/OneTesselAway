@@ -2,7 +2,7 @@ const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
 
-const strobeDuration = 250;
+const strobeDuration = 1000;
 const leds = {
     ready: null,
     set: null,
@@ -31,6 +31,8 @@ const setTrafficLightState = stateId => {
         } else {
             leds[stateId].strobe(strobeDuration);
         }
+
+        previousSetState = stateId;
     }
 };
 

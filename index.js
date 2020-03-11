@@ -26,14 +26,9 @@ const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 
 // Helper Functions / Data -----------------------------------------------------
 
-// Get the current device state, referenced by the web UI and other hardware
-const getDeviceState = () => {
-    const arrivalInfo = getArrivalInfo();
-    const deviceLogs = getLatestLogFromFile(constants.LOGFILE, {
-        reverseLines: true,
-    });
-    const displayLines = getLcdDisplayLines(arrivalInfo);
-
+// Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
+// the closest arrival time of the primary route
+const getStoplightState = arrivalInfo => {
     const closestMinsUntilArrival =
         arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
             .minsUntilArrival;
@@ -53,12 +48,21 @@ const getDeviceState = () => {
         }
     }
 
+    return stoplightState;
+};
+
+// Get the current device state, referenced by the web UI and other hardware
+const getDeviceState = () => {
+    const arrivalInfo = getArrivalInfo();
+
     return {
         arrivalInfo,
-        deviceLogs,
-        displayLines,
+        deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
+            reverseLines: true,
+        }),
+        displayLines: getLcdDisplayLines(arrivalInfo),
         isAlarmEnabled: getIsAlarmEnabled(),
-        stoplightState,
+        stoplightState: getStoplightState(arrivalInfo),
     };
 };
 

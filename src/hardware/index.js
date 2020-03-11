@@ -1,6 +1,5 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
-const { wait } = require('../AsyncRepeatUtils');
 const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 const { initAlarmHardware } = require('./Alarm');

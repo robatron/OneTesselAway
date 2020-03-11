@@ -20,7 +20,6 @@ const Express = require('express');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { getArrivalInfo, updateArrivalInfo } = require('./src/ArrivalStore');
 const { getLcdDisplayLines } = require('./src/DisplayUtils');
-const { fireAndRepeat } = require('./src/AsyncRepeatUtils');
 const constants = require('./src/Constants');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 
@@ -69,10 +68,8 @@ const processDeviceStateForDisplay = deviceState => ({
     displayLines: deviceState.displayLines.join('\n'),
 });
 
-// Update arrival info from OneBusAway, update the Web UI, and finally update
-// LCD screen if the hardware is enabled
-const fetchArrivalInfoAndUpdateDisplay = async () => {
-    await updateArrivalInfo(constants.TARGET_ROUTES);
+// Update hardware, LCD, stoplight, and alarm, from display
+const updateHardwareFromState = () => {
     const currentDeviceState = getDeviceState();
 
     // Set the traffic light state based on next-bus arrival
@@ -136,9 +133,6 @@ app.get('/', (req, res) => {
 // function to assure hardware is initialized and initial data is fetched
 // before starting
 (async () => {
-    // Track the main program loop interval ID so we can kill it on command
-    let intervalId;
-
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware device...');
         await initHardware({
@@ -160,17 +154,25 @@ app.get('/', (req, res) => {
     log.info(
         `Begin updating arrival info ${
             DEVICE_ENABLED ? 'and LCD screen ' : ''
-        }every ${constants.UPDATE_INTERVAL} milliseconds`,
+        }every ${constants.API_UPDATE_INTERVAL} milliseconds`,
     );
 
     if (DEVICE_ENABLED) {
         updateLcdScreen(['Getting bus', 'arrival info...']);
     }
 
-    await fireAndRepeat(
-        constants.UPDATE_INTERVAL,
-        fetchArrivalInfoAndUpdateDisplay,
-        iid => (intervalId = iid),
+    // Wait for the first arrival info to return before starting up
+    await updateArrivalInfo(constants.TARGET_ROUTES);
+    updateHardwareFromState();
+
+    // After the intial API fetch, we can decouple API and hardware updates
+    const apiIntervalId = setInterval(
+        updateArrivalInfo.bind(null, constants.TARGET_ROUTES),
+        constants.API_UPDATE_INTERVAL,
+    );
+    const hardwareIntervalId = setInterval(
+        updateHardwareFromState,
+        constants.HARDWARE_UPDATE_INTERVAL,
     );
 
     // Start up web UI server
@@ -180,7 +182,8 @@ app.get('/', (req, res) => {
     // Shut down everything on ^C
     process.on('SIGINT', () => {
         log.info('Shutting down...');
-        clearInterval(intervalId);
+        clearInterval(apiIntervalId);
+        clearInterval(hardwareIntervalId);
         server.close();
     });
 })();

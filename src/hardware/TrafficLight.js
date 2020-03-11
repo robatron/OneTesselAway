@@ -2,7 +2,6 @@ const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
 
-const strobeDelay = 1000;
 const goCycleDelay = 100;
 
 const leds = {
@@ -20,19 +19,21 @@ const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
 // Enable one of the traffic light states
 const setTrafficLightState = stateId => {
     Object.keys(leds).forEach(led => {
-        leds[led].stop().off();
+        leds[led].off();
     });
 
     if (stateId === 'go') {
         const stateList = Object.keys(leds);
+        // TODO: Cycle forever
         cycleStates({
             cycleCount:
-                (constants.UPDATE_INTERVAL / stateList.length) * goCycleDelay,
+                (constants.HARDWARE_UPDATE_INTERVAL / stateList.length) *
+                goCycleDelay,
             cycleDelay: goCycleDelay,
             stateList,
         });
     } else {
-        leds[stateId].strobe(strobeDelay);
+        leds[stateId].on();
     }
 };
 

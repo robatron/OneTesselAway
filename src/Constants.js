@@ -21,8 +21,8 @@ module.exports.TARGET_ROUTES = {
 // What route should be considered primary? Used for stoplight and alarm
 module.exports.PRIMARY_ROUTE = '1_100009';
 
-// How often to request updates from OneBusAway and update LCD screen
-module.exports.UPDATE_INTERVAL = 5000;
+// How often to request updates from OneBusAway
+module.exports.API_UPDATE_INTERVAL = 5000;
 
 // OneBusAway API endpoint for "arrivals" data at a stop
 module.exports.API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
@@ -52,7 +52,8 @@ module.exports.STOPLIGHT_TIME_RANGES = {
 
 // HARDWARE CONSTANTS --------------------------------------------------
 
-// Which pins on the Tessel is the hardware plugged into?
+// How often to refresh the hardware
+module.exports.HARDWARE_UPDATE_INTERVAL = 1000;
 
 // Button needs to be on a pull-up or pull-down pin
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pull-up-and-pull-down-pins

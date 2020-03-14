@@ -108,8 +108,6 @@ app.get('/', (req, res) => {
         log.info('Initializing hardware device...');
         await initHardware({
             buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
-            buttonDebugForceGoStatePin:
-                constants.BUTTON_DEBUG_FORCE_GO_STATE_PIN,
             lcdPins: constants.LCD_DISPLAY_PINS,
             ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
             ledMissPin: constants.LED_MISS_PIN,

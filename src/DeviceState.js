@@ -2,8 +2,10 @@ const constants = require('./Constants');
 const { getUpcomingArrivalTimes } = require('./ArrivalsAndStops');
 const { getLatestLogFromFile } = require('./Logger');
 const { getLcdDisplayLines } = require('./DisplayUtils');
-const { getIsAlarmEnabled } = require('./hardware/Alarm');
-const { getIsDebugForceGoState } = require('./hardware/Debug');
+const {
+    getIsAlarmEnabled,
+    getIsDebugForceGoState,
+} = require('./hardware/Alarm');
 
 // Main arrival info cache
 let arrivalInfo = {};

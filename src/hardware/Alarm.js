@@ -3,44 +3,43 @@ const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 
 let isAlarmEnabled = false;
-let buttonAlarmToggle;
 let ledAlarmStatus;
+// let isDebugForceGoState = false;
 
-// When the button is released, toggle the alarm status
+// When the button is released, toggle the alarm status. When the button is held
+// toggle a
 const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     ledAlarmStatus = new five.Led(ledAlarmStatusPin);
-    buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+    const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
 
     buttonAlarmToggle.on('release', () => {
-        console.log(`Button "buttonAlarmToggle" released!`);
-
         // Toggle alarm status and sync the status LED
         isAlarmEnabled = !isAlarmEnabled;
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
+
+        log.info(`Toggled alarm enabled: ${isAlarmEnabled}`);
     });
+
+    // Toggle
+    // buttonAlarmToggle.on('hold', () => {
+    //     isDebugForceGoState = !isDebugForceGoState;
+    //     log.info(`Toggled 'go' state to: ${isDebugForceGoState}`);
+    // });
 };
 
 // Trigger the alarm buzzer if all true:
 // - The alarm is enabled
 // - The traffic light state is 'go'
-// - The previous state != current state
-let previousTrafficLightState = null;
 const triggerAlarmBuzzer = async ({
     piezoPin,
     piezoPort,
     trafficLightState,
 }) => {
-    if (
-        isAlarmEnabled &&
-        trafficLightState === 'go' &&
-        trafficLightState !== previousTrafficLightState
-    ) {
-        await playSong({ piezoPin, piezoPort, song: nyanIntro });
+    if (isAlarmEnabled && trafficLightState === 'go') {
+        playSong({ piezoPin, piezoPort, song: nyanIntro });
 
         isAlarmEnabled = false;
         ledAlarmStatus.off();
-
-        previousTrafficLightState = trafficLightState;
     }
 };
 
@@ -48,4 +47,5 @@ module.exports = {
     getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
     triggerAlarmBuzzer,
+    // getIsDebugForceGoState: () => isDebugForceGoState,
 };

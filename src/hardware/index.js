@@ -3,13 +3,11 @@ const Tessel = require('tessel-io');
 const { playSong } = require('../SoundUtils');
 const { nyanIntro } = require('../songs');
 const { initAlarmHardware } = require('./Alarm');
-const { initDebugHardware } = require('./Debug');
 const { initLcdScreen } = require('./LcdScreen');
 const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
-    buttonDebugForceGoStatePin,
     lcdPins,
     ledAlarmStatusPin,
     ledMissPin,
@@ -25,9 +23,6 @@ const initHardware = ({
             log.info(
                 `Device board ready. Configuring LCD display with pins ${lcdPins}...`,
             );
-
-            // Debug hardware
-            initDebugHardware({ buttonDebugForceGoStatePin });
 
             // Alarm button, buzzer, and light
             initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });

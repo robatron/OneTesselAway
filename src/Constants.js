@@ -62,13 +62,13 @@ module.exports.BUTTON_ALARM_PIN = 'a4';
 // Piezo speaker has to be on a PWM pin. These are low-level values for use w/ the 'tessel' API
 // https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
 module.exports.PIEZO_PORT = 'A';
-module.exports.PIEZO_PIN = 2;
+module.exports.PIEZO_PIN = 6;
 
 // LCD display
 module.exports.LCD_DISPLAY_PINS = ['b2', 'b3', 'b4', 'b5', 'b6', 'b7'];
 
 // LEDs
 module.exports.LED_READY_PIN = 'a7'; // Green LED
-module.exports.LED_SET_PIN = 'a6'; // Yellow LED
+module.exports.LED_SET_PIN = 'a2'; // Yellow LED
 module.exports.LED_MISS_PIN = 'a5'; // Red LED
 module.exports.LED_ALARM_STATUS_PIN = 'a3'; // Blue LED

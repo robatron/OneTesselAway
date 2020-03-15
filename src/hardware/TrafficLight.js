@@ -1,17 +1,18 @@
 const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
+const constants = require('../Constants');
 
 const strobeDuration = 1000;
 const leds = {
-    ready: null,
-    steady: null,
-    miss: null,
+    [constants.STOPLIGHT_STATES.READY]: null,
+    [constants.STOPLIGHT_STATES.STEADY]: null,
+    [constants.STOPLIGHT_STATES.MISS]: null,
 };
 
 const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
-    leds.ready = new five.Led(ledReadyPin);
-    leds.steady = new five.Led(ledSteadyPin);
-    leds.miss = new five.Led(ledMissPin);
+    leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
+    leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
+    leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
 };
 
 // Enable one of the traffic light states. The special state 'go' means to set state of all at once.
@@ -24,7 +25,7 @@ const setTrafficLightState = stateId => {
         });
 
         setTimeout(() => {
-            if (stateId === 'go') {
+            if (stateId === constants.STOPLIGHT_STATES.GO) {
                 Object.keys(leds).forEach(led => {
                     leds[led].strobe(strobeDuration);
                 });

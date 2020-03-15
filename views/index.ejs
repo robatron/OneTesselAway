@@ -103,7 +103,9 @@
                 <div class="led led-alarm"></div>
                 <div class="led-label">Alarm LED</div>
             </li>
-            <button class="btn-alarm">Set alarm</button>
+            <button class="btn-alarm">
+                Set alarm
+            </button>
         </ul>
 
         <h2>Arrival Info</h2>
@@ -126,7 +128,12 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io.connect();
+            const socket = io.connect();
+
+            const ledAlarmEl = document.querySelector('.led-alarm');
+            const btnAlarmEl = document.querySelector('.btn-alarm');
+
+            // DEVICE -> WEB UI -----------------------------------------------
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
@@ -143,8 +150,17 @@
 
                 // Update alarm
                 if (deviceState.isAlarmEnabled) {
+                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
+                        .borderColor;
+                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
                 }
             });
+
+            // WEB UI -> DEVICE -----------------------------------------------
+            btnAlarmEl.onclick = e => {
+                e.preventDefault();
+                io.emit('');
+            };
         </script>
     </body>
 </html>

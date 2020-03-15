@@ -1,7 +1,7 @@
 const five = require('johnny-five');
 const Tessel = require('tessel-io');
-const { playSong } = require('../SoundUtils');
-const { nyanIntro } = require('../songs');
+const { playSong } = require('../audio/SoundUtils');
+const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
 const { initLcdScreen } = require('./LcdScreen');
 const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');

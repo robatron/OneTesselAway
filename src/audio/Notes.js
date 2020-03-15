@@ -1,45 +1,5 @@
-const tesselLowLevel = require('tessel');
-const { wait } = require('./AsyncRepeatUtils');
-
-const PLAY_DUTY_CYCLE = 0.2;
-const STOP_DUTY_CYCLE = 0;
-
-// Play a frequency on the specified PWM pin until stopped. Returns a
-// promise.
-const playFrequency = ({ freq, pwmPort, pwmPin, duration }) =>
-    new Promise(resolve => {
-        const targetPin = tesselLowLevel.port[pwmPort].pin[pwmPin];
-
-        if (freq) {
-            tesselLowLevel.pwmFrequency(freq);
-            targetPin.pwmDutyCycle(PLAY_DUTY_CYCLE);
-        } else {
-            tesselLowLevel.pwmFrequency(1);
-            targetPin.pwmDutyCycle(STOP_DUTY_CYCLE);
-        }
-
-        return wait(duration).then(resolve);
-    });
-
-// Play a j5-format song
-// https://github.com/julianduque/j5-songs
-const playSong = async ({ piezoPort, piezoPin, song }) => {
-    const notes = song.song;
-    notes.push([null, 0]);
-    for (let i = 0; i < notes.length; ++i) {
-        const freq = notes[i][0] && NOTE_TO_FREQ[notes[i][0].toLowerCase()];
-        const duration = notes[i][1] * 1000 * (60 / song.tempo);
-        await playFrequency({
-            freq,
-            pwmPort: piezoPort,
-            pwmPin: piezoPin,
-            duration,
-        });
-    }
-};
-
 // https://github.com/rwaldron/johnny-five/blob/master/lib/piezo.js#L178
-const NOTE_TO_FREQ = {
+module.exports = {
     c0: 16,
     'c#0': 17,
     d0: 18,
@@ -148,10 +108,4 @@ const NOTE_TO_FREQ = {
     a8: 7040,
     'a#8': 7459,
     b8: 7902,
-};
-
-module.exports = {
-    playFrequency,
-    NOTES: NOTE_TO_FREQ,
-    playSong,
 };

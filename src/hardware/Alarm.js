@@ -1,6 +1,6 @@
 const five = require('johnny-five');
-const { playSong } = require('../SoundUtils');
-const { nyanIntro } = require('../songs');
+const { playSong } = require('../audio/SoundUtils');
+const { nyanIntro } = require('../audio/songs');
 
 let isAlarmEnabled = false;
 let ledAlarmStatus;

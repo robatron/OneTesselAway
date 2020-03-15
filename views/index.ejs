@@ -3,10 +3,18 @@
         <style>
             body * {
                 font-family: 'Courier New', Courier, monospace;
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 2em;
             }
             h2 {
+                font-size: 1.5em;
                 margin-block-end: 0.5em;
-                margin-block-start: 2em;
+                margin-block-start: 1.5em;
+            }
+            h3 {
+                font-size: 1em;
             }
             .display {
                 background-color: green;
@@ -20,11 +28,41 @@
                 padding: 10px;
                 width: 100%;
             }
-            .led-alarm-set {
-                border: 1px solid red;
+
+            .component-list{
+                list-style-type: none;
+            }
+            .led {
                 display: inline-block;
                 height: 20px;
                 width: 20px;
+                box-sizing: border-box;
+            }
+            .led-label {
+                margin-left: 10px;
+            }
+
+            .stoplight-led-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .led-missed {
+                border: 2px solid red;
+            }
+            .led-set {
+                border: 2px solid orange;
+            }
+            .led-ready {
+                border: 2px solid green;
+            }
+
+            .led-alarm {
+                border: 2px solid blue;
+            }
+            .btn-alarm {
+                /* border-width: 2px; */
+                font-size: 1em;
             }
         </style>
     </head>
@@ -36,16 +74,36 @@
             arrival info and device logs to help with diagnostics.
         </p>
 
-        <h2>Simulated Display</h2>
+        <h2>Simulated Device</h2>
         <p>
             This is what should be currently displayed on the LCD screen of the
             device:
         </p>
+        <h3>Display</h3>
         <pre id="displayLines" class="display"><%= displayLines %></pre>
-        <form>
-            <button>Set Alarm</button>
-            <div class="led-alarm-set"></div>
-        </form>
+        <h3>Stoplight LEDs</h3>
+        <ul class="component-list">
+            <li class="stoplight-led-row">
+                <div class="led led-missed"></div>
+                <div class="led-label">Missed</div>
+            </li>
+            <li class="stoplight-led-row">
+                <div class="led led-set"></div>
+                <div class="led-label">Set</div>
+            </li>
+            <li class="stoplight-led-row">
+                <div class="led led-ready"></div>
+                <div class="led-label">Ready</div>
+            </li>
+        </ul>
+        <h3>Alarm</h3>
+        <ul class="component-list">
+            <li class="stoplight-led-row">
+                <div class="led led-alarm"></div>
+                <div class="led-label">Alarm set</div>
+            </li>
+            <button class="btn-alarm">Set alarm</button></button>
+        </ul>
 
         <h2>Arrival Info</h2>
         <p>

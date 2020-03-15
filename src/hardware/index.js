@@ -37,7 +37,8 @@ const initHardware = ({
             playSong({ piezoPin, piezoPort, song: nyanIntro });
             setTrafficLightState('go');
 
-            resolve();
+            // Give the hardware a 1/2 second to initialize before starting
+            setTimeout(resolve, 500);
         });
     });
 };

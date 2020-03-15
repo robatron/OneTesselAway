@@ -23,13 +23,15 @@ const setTrafficLightState = stateId => {
             leds[led].stop().off();
         });
 
-        if (stateId === 'go') {
-            Object.keys(leds).forEach(led => {
-                leds[led].strobe(strobeDuration);
-            });
-        } else {
-            leds[stateId].strobe(strobeDuration);
-        }
+        setTimeout(() => {
+            if (stateId === 'go') {
+                Object.keys(leds).forEach(led => {
+                    leds[led].strobe(strobeDuration);
+                });
+            } else {
+                leds[stateId].strobe(strobeDuration);
+            }
+        }, 250);
 
         previousSetState = stateId;
     }

@@ -4,6 +4,7 @@ const fs = require('fs');
 const { createLogger, transports } = require('winston');
 const { format } = require('logform');
 
+// Global shared log
 global.log;
 
 const initLogger = logfileName => {

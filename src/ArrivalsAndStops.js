@@ -4,14 +4,12 @@ const {
     getMinutesBetweenDates,
 } = require('./TimeUtils');
 const { apiKey } = require('../oba-api-key.json');
-
-// OneBusAway API endpoint for "arrivals" data at a stop
-const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
+const constants = require('./Constants');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
     const response = await fetch(
-        `${API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
+        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
     );
 
     // If response is not a 200, throw an error
@@ -66,8 +64,9 @@ const _getArrivalDatesByTripId = arrivals =>
     }, {});
 
 // Returns a list of upcomming arrival times for the specified stop and route
-const getUpcomingArrivalTimes = async (stopId, routeId, currentDate) => {
+const getUpcomingArrivalTimes = async (stopId, routeId) => {
     const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
+    const basisDate = new Date(arrivalsForStop.currentTime);
     const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
     const arrivalDatesByTripId = _getArrivalDatesByTripId(arrivalsForRoute);
 
@@ -75,7 +74,8 @@ const getUpcomingArrivalTimes = async (stopId, routeId, currentDate) => {
         const arrivalDate = arrivalDatesByTripId[tripId];
         return {
             clock: dateTo24HourClockString(arrivalDate),
-            minsUntilArrival: getMinutesBetweenDates(arrivalDate, currentDate),
+            minsUntilArrival: getMinutesBetweenDates(arrivalDate, basisDate),
+            basisDate,
             tripId,
         };
     });

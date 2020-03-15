@@ -3,11 +3,20 @@
         <style>
             body * {
                 font-family: 'Courier New', Courier, monospace;
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 2em;
             }
             h2 {
+                font-size: 1.5em;
                 margin-block-end: 0.5em;
-                margin-block-start: 2em;
+                margin-block-start: 1.5em;
             }
+            h3 {
+                font-size: 1em;
+            }
+
             .display {
                 background-color: green;
                 font-size: 1.2em;
@@ -20,6 +29,42 @@
                 padding: 10px;
                 width: 100%;
             }
+
+            .component-list {
+                list-style-type: none;
+            }
+            .led {
+                display: inline-block;
+                height: 20px;
+                width: 20px;
+                box-sizing: border-box;
+            }
+            .led-label {
+                margin-left: 10px;
+            }
+
+            .stoplight-led-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .led-missed {
+                border: 2px solid red;
+            }
+            .led-steady {
+                border: 2px solid orange;
+            }
+            .led-ready {
+                border: 2px solid green;
+            }
+
+            .led-alarm {
+                border: 2px solid blue;
+            }
+            .btn-alarm {
+                /* border-width: 2px; */
+                font-size: 1em;
+            }
         </style>
     </head>
     <body>
@@ -30,14 +75,38 @@
             arrival info and device logs to help with diagnostics.
         </p>
 
-        <h2>Simulated Display</h2>
+        <h2>Simulated Device</h2>
         <p>
-            This is what should be currently displayed on the LCD screen of the
-            device:
+            This simulated state should match exactly what's currently on the
+            device.
         </p>
-        <pre id="displayLinesJoined" class="display">
-<%= displayLinesJoined %></pre
-        >
+        <h3>Display</h3>
+        <pre id="displayLines" class="display"><%= displayLines %></pre>
+        <h3>Stoplight LEDs</h3>
+        <ul class="component-list">
+            <li class="stoplight-led-row">
+                <div class="led led-missed"></div>
+                <div class="led-label">Missed</div>
+            </li>
+            <li class="stoplight-led-row">
+                <div class="led led-steady"></div>
+                <div class="led-label">Steady</div>
+            </li>
+            <li class="stoplight-led-row">
+                <div class="led led-ready"></div>
+                <div class="led-label">Ready</div>
+            </li>
+        </ul>
+        <h3>Alarm</h3>
+        <ul class="component-list">
+            <li class="stoplight-led-row">
+                <div class="led led-alarm"></div>
+                <div class="led-label">Alarm LED</div>
+            </li>
+            <button class="btn-alarm">
+                Set alarm
+            </button>
+        </ul>
 
         <h2>Arrival Info</h2>
         <p>
@@ -59,21 +128,39 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io.connect();
+            const socket = io.connect();
+
+            const ledAlarmEl = document.querySelector('.led-alarm');
+            const btnAlarmEl = document.querySelector('.btn-alarm');
+
+            // DEVICE -> WEB UI -----------------------------------------------
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
+                console.log('Device state updated:', deviceState);
+
+                // Update text-based elements
                 Object.keys(deviceState).forEach(stateKey => {
                     const stateValue = deviceState[stateKey];
                     const el = document.querySelector(`#${stateKey}`);
                     if (el) {
                         el.innerHTML = stateValue;
-                        console.log(
-                            `Updated "#${stateKey}"" with "${stateValue}"`,
-                        );
                     }
                 });
+
+                // Update alarm
+                if (deviceState.isAlarmEnabled) {
+                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
+                        .borderColor;
+                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
+                }
             });
+
+            // WEB UI -> DEVICE -----------------------------------------------
+            btnAlarmEl.onclick = e => {
+                e.preventDefault();
+                io.emit('');
+            };
         </script>
     </body>
 </html>

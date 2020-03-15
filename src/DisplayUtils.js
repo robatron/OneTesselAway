@@ -1,11 +1,16 @@
 // LCD display utils
 
+// LCD display hardware info
 const DISPLAY_LINE_LENGTH = 16;
 const DISPLAY_LINE_COUNT = 2;
 
+// Track how many times getLcdDisplayLines has been called. Supports dynamic
+// delimiter animation
+let getLcdDisplayLinesCount = 0;
+
 // Convert arrival info to display lines for the LCD screen. Ignore
 // lines beyond what the display supports, ignore any characters beyond
-// what each line supports. `routeDelims` control the the delimeters between the
+// what each line supports. `routeDelims` control the the delimiters between the
 // route name and the arrival times.
 const arrivalInfoToDisplayLines = (
     arrivalInfo,
@@ -46,6 +51,23 @@ const arrivalInfoToDisplayLines = (
     });
 };
 
+// Create display lines from arrival info and dynamic delimeters
+const getLcdDisplayLines = arrivalInfo => {
+    // Animate route delimiter characters, alternating frames between calls
+    const ROUTE_DELIMS = [':', '.'];
+
+    if (getLcdDisplayLinesCount % ROUTE_DELIMS.length) {
+        ROUTE_DELIMS.reverse();
+    }
+
+    const displayLines = arrivalInfoToDisplayLines(arrivalInfo, ROUTE_DELIMS);
+
+    ++getLcdDisplayLinesCount;
+
+    return displayLines;
+};
+
 module.exports = {
     arrivalInfoToDisplayLines,
+    getLcdDisplayLines,
 };

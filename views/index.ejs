@@ -16,6 +16,7 @@
             h3 {
                 font-size: 1em;
             }
+
             .display {
                 background-color: green;
                 font-size: 1.2em;
@@ -29,7 +30,7 @@
                 width: 100%;
             }
 
-            .component-list{
+            .component-list {
                 list-style-type: none;
             }
             .led {
@@ -76,8 +77,8 @@
 
         <h2>Simulated Device</h2>
         <p>
-            This is what should be currently displayed on the LCD screen of the
-            device:
+            This simulated state should match exactly what's currently on the
+            device.
         </p>
         <h3>Display</h3>
         <pre id="displayLines" class="display"><%= displayLines %></pre>
@@ -100,9 +101,9 @@
         <ul class="component-list">
             <li class="stoplight-led-row">
                 <div class="led led-alarm"></div>
-                <div class="led-label">Alarm set</div>
+                <div class="led-label">Alarm LED</div>
             </li>
-            <button class="btn-alarm">Set alarm</button></button>
+            <button class="btn-alarm">Set alarm</button>
         </ul>
 
         <h2>Arrival Info</h2>

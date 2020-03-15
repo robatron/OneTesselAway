@@ -51,7 +51,7 @@
             .led-missed {
                 border: 2px solid red;
             }
-            .led-set {
+            .led-steady {
                 border: 2px solid orange;
             }
             .led-ready {
@@ -89,8 +89,8 @@
                 <div class="led-label">Missed</div>
             </li>
             <li class="stoplight-led-row">
-                <div class="led led-set"></div>
-                <div class="led-label">Set</div>
+                <div class="led led-steady"></div>
+                <div class="led-label">Steady</div>
             </li>
             <li class="stoplight-led-row">
                 <div class="led led-ready"></div>
@@ -131,6 +131,8 @@
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
                 console.log('Device state updated:', deviceState);
+
+                // Update text-based elements
                 Object.keys(deviceState).forEach(stateKey => {
                     const stateValue = deviceState[stateKey];
                     const el = document.querySelector(`#${stateKey}`);
@@ -138,6 +140,10 @@
                         el.innerHTML = stateValue;
                     }
                 });
+
+                // Update alarm
+                if (deviceState.isAlarmEnabled) {
+                }
             });
         </script>
     </body>

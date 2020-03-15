@@ -42,12 +42,19 @@ module.exports.ADDRESS = `http://${process.env.ADDR ||
         os.networkInterfaces().wlan0[0].address) ||
     '0.0.0.0'}`;
 
+module.exports.STOPLIGHT_STATES = {
+    READY: 'ready',
+    STEADY: 'steady',
+    GO: 'go',
+    MISS: 'miss',
+};
+
 // Time ranges for each stoplight state. Ranges minutes from (inclusive) and to (exclusive)
 module.exports.STOPLIGHT_TIME_RANGES = {
-    ready: [5, Infinity],
-    set: [3, 5],
-    go: [1, 3],
-    miss: [-Infinity, 1],
+    [module.exports.STOPLIGHT_STATES.READY]: [5, Infinity],
+    [module.exports.STOPLIGHT_STATES.STEADY]: [3, 5],
+    [module.exports.STOPLIGHT_STATES.GO]: [1, 3],
+    [module.exports.STOPLIGHT_STATES.MISS]: [-Infinity, 1],
 };
 
 // HARDWARE CONSTANTS --------------------------------------------------

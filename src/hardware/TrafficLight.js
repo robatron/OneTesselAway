@@ -4,13 +4,13 @@ const { wait } = require('../AsyncRepeatUtils');
 const strobeDuration = 1000;
 const leds = {
     ready: null,
-    set: null,
+    steady: null,
     miss: null,
 };
 
 const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
     leds.ready = new five.Led(ledReadyPin);
-    leds.set = new five.Led(ledSteadyPin);
+    leds.steady = new five.Led(ledSteadyPin);
     leds.miss = new five.Led(ledMissPin);
 };
 

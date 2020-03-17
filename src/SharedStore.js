@@ -11,7 +11,14 @@ const setState = (key, newState) => {
     });
 };
 
+const getState = key => store[key];
+
+io.on('btnAlarmClicked', () => {
+    setState('isAlarmEnabled', !getState('isAlarmEnabled'));
+});
+
 module.exports = {
     onStateChange,
     setState,
+    getState,
 };

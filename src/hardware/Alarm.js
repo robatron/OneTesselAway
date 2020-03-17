@@ -1,4 +1,5 @@
 const five = require('johnny-five');
+const constants = require('../Constants');
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
 
@@ -13,18 +14,16 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
 
     buttonAlarmToggle.on('release', () => {
+        io.emit('btnAlarmClicked', { isAlarmEnabled });
+    });
+
+    io.on('btnAlarmClicked', () => {
         // Toggle alarm status and sync the status LED
         isAlarmEnabled = !isAlarmEnabled;
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
 
         log.info(`Toggled alarm enabled: ${isAlarmEnabled}`);
     });
-
-    // Toggle
-    // buttonAlarmToggle.on('hold', () => {
-    //     isDebugForceGoState = !isDebugForceGoState;
-    //     log.info(`Toggled 'go' state to: ${isDebugForceGoState}`);
-    // });
 };
 
 // Trigger the alarm buzzer if all true:
@@ -35,7 +34,7 @@ const triggerAlarmBuzzer = async ({
     piezoPort,
     trafficLightState,
 }) => {
-    if (isAlarmEnabled && trafficLightState === 'go') {
+    if (isAlarmEnabled && trafficLightState === constants.STOPLIGHT_STATES.GO) {
         playSong({ piezoPin, piezoPort, song: nyanIntro });
 
         isAlarmEnabled = false;

@@ -53,10 +53,12 @@ const updateArrivalsAndHardware = async () => {
     }
 
     // Send device state to the Web UI
-    io.emit(
-        'deviceStateUpdated',
-        processDeviceStateForDisplay(currentDeviceState),
-    );
+    io.on('connection', socket => {
+        socket.emit(
+            'deviceStateUpdated',
+            processDeviceStateForDisplay(currentDeviceState),
+        );
+    });
 };
 
 // Initialize ------------------------------------------------------------------
@@ -100,7 +102,7 @@ app.get('/', (req, res) => {
 });
 
 // Init shared store for the server and the web UI
-initSharedStore(io);
+initSharedStore();
 
 // Start -----------------------------------------------------------------------
 
@@ -123,9 +125,20 @@ initSharedStore(io);
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');
 
-        io.on('updated:isAlarmEnabled', isAlarmEnabled => {
-            console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
+        io.on('connection', socket => {
+            socket.on('updated:isAlarmEnabled', isAlarmEnabled => {
+                console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
+            });
         });
+
+        setTimeout(() => {
+            console.log('>>>', 'setState', 'isAlarmEnabled'); // DEBUGGGG
+
+            setState({
+                key: 'isAlarmEnabled',
+                val: true,
+            });
+        }, 10000);
     }
 
     // Begin updating arrival info and LCD screen regularly
@@ -150,14 +163,13 @@ initSharedStore(io);
     );
 
     // Start up web UI server
-    server = server.listen(constants.PORT);
+    server.listen(constants.PORT);
     log.info(`Web UI server address: ${constants.ADDRESS}:${constants.PORT}`);
 
     // Shut down everything on ^C
     process.on('SIGINT', () => {
         log.info('Shutting down...');
         clearInterval(apiIntervalId);
-        clearInterval(hardwareIntervalId);
         server.close();
     });
 })();

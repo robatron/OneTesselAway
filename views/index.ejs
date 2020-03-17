@@ -128,14 +128,14 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            const io = io.connect();
+            const socket = io.connect();
 
             const ledAlarmEl = document.querySelector('.led-alarm');
             const btnAlarmEl = document.querySelector('.btn-alarm');
 
             // Update the display when the device state updates
-            io.on('deviceStateUpdated', deviceState => {
-                console.log('Device state updated:', deviceState);
+            socket.on('deviceStateUpdated', deviceState => {
+                //console.log('Device state updated:', deviceState);
 
                 // Update text-based elements
                 Object.keys(deviceState).forEach(stateKey => {
@@ -155,25 +155,28 @@
             });
 
             // Alarm
-            io.on('updated:isAlarmEnabled', isAlarmEnabled => {
-                console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled); // DEBUGGGG
+            let isAlarmEnabled;
 
-                if (isAlarmEnabled) {
-                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
-                        .borderColor;
-                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
-                }
+            socket.on('updated:isAlarmEnabled', val => {
+                console.log('>>>', 'updated:isAlarmEnabled', val); // DEBUGGGG
+
+                isAlarmEnabled = val;
+
+                const ledAlarmColor = getComputedStyle(ledAlarmEl).borderColor;
+
+                ledAlarmEl.style.backgroundColor = isAlarmEnabled
+                    ? ledAlarmColor
+                    : 'white';
             });
 
             btnAlarmEl.onclick = e => {
                 console.log('>>>', 'setState', 'isAlarmEnabled'); // DEBUGGGG
 
                 e.preventDefault();
-                io.emit(
-                    'setState',
-                    'isAlarmEnabled',
-                    currentState => !currentState['isAlarmEnabled'],
-                );
+                socket.emit('setState', {
+                    key: 'isAlarmEnabled',
+                    val: !isAlarmEnabled,
+                });
             };
         </script>
     </body>

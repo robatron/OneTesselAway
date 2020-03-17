@@ -19,6 +19,7 @@ const http = require('http');
 const Express = require('express');
 const constants = require('./src/Constants');
 const { initLogger } = require('./src/Logger');
+const { initSharedStore } = require('./src/SharedStore');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
@@ -97,6 +98,9 @@ app.get('/', (req, res) => {
     const currentDeviceState = getDeviceState();
     res.render('index', processDeviceStateForDisplay(currentDeviceState));
 });
+
+// Init shared store for the server and the web UI
+initSharedStore(io);
 
 // Start -----------------------------------------------------------------------
 

@@ -7,8 +7,11 @@ const setState = (key, newStateFn) => {
 };
 
 // Web UI setState
-io.on('setState', setState);
+const initSharedStore = io => {
+    io.on('setState', setState);
+};
 
 module.exports = {
+    initSharedStore,
     setState,
 };

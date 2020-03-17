@@ -79,15 +79,15 @@ if (DEVICE_ENABLED) {
 }
 
 // Set up Express server for the web UI
-var app = new Express();
-var server = new http.Server(app);
+const app = new Express();
+const server = new http.Server(app);
 
 // Set up the templating engine
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 // Set up Socket.io for sending data to the Web UI w/o refreshing the page
-var io = require('socket.io')(server);
+global.io = require('socket.io')(server);
 
 // Route to index. Render initial Web UI server-side.
 app.get('/', (req, res) => {
@@ -118,6 +118,10 @@ app.get('/', (req, res) => {
         });
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');
+
+        io.on('updated:isAlarmEnabled', isAlarmEnabled => {
+            console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
+        });
     }
 
     // Begin updating arrival info and LCD screen regularly

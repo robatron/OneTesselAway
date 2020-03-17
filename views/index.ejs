@@ -128,15 +128,13 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            const socket = io.connect();
+            const io = io.connect();
 
             const ledAlarmEl = document.querySelector('.led-alarm');
             const btnAlarmEl = document.querySelector('.btn-alarm');
 
-            // DEVICE -> WEB UI -----------------------------------------------
-
             // Update the display when the device state updates
-            socket.on('deviceStateUpdated', deviceState => {
+            io.on('deviceStateUpdated', deviceState => {
                 console.log('Device state updated:', deviceState);
 
                 // Update text-based elements
@@ -156,12 +154,26 @@
                 }
             });
 
-            socket.on('btnAlarmClicked', () => {});
+            // Alarm
+            io.on('updated:isAlarmEnabled', isAlarmEnabled => {
+                console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled); // DEBUGGGG
 
-            // WEB UI -> DEVICE -----------------------------------------------
+                if (isAlarmEnabled) {
+                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
+                        .borderColor;
+                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
+                }
+            });
+
             btnAlarmEl.onclick = e => {
+                console.log('>>>', 'setState', 'isAlarmEnabled'); // DEBUGGGG
+
                 e.preventDefault();
-                io.emit('btnAlarmClicked');
+                io.emit(
+                    'setState',
+                    'isAlarmEnabled',
+                    currentState => !currentState['isAlarmEnabled'],
+                );
             };
         </script>
     </body>

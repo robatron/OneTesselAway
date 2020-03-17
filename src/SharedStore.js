@@ -1,24 +1,14 @@
 const store = {};
-const subscriptions = {};
 
-const onStateChange = callback => subscriptions.isAlarmSet.push(callback);
-
-const setState = (key, newState) => {
-    store[key] = newState;
-    subscriptions[key] = subscriptions[key] || [];
-    [...new Array(subscriptions[key].length)].forEach(i => {
-        subscriptions[key].pop()();
-    });
+// Server-side setState
+const setState = (key, newStateFn) => {
+    store[key] = newStateFn(store);
+    io.emit(`updated:${key}`, store[key], store);
 };
 
-const getState = key => store[key];
-
-io.on('btnAlarmClicked', () => {
-    setState('isAlarmEnabled', !getState('isAlarmEnabled'));
-});
+// Web UI setState
+io.on('setState', setState);
 
 module.exports = {
-    onStateChange,
     setState,
-    getState,
 };

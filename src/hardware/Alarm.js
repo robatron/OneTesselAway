@@ -1,11 +1,11 @@
 const five = require('johnny-five');
 const constants = require('../Constants');
+const { setState } = require('../SharedStore');
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
 
 let isAlarmEnabled = false;
 let ledAlarmStatus;
-// let isDebugForceGoState = false;
 
 // When the button is released, toggle the alarm status. When the button is held
 // toggle a
@@ -14,15 +14,14 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
 
     buttonAlarmToggle.on('release', () => {
-        io.emit('btnAlarmClicked', { isAlarmEnabled });
+        setState(
+            'isAlarmEnabled',
+            currentState => !currentState['isAlarmEnabled'],
+        );
     });
 
-    io.on('btnAlarmClicked', () => {
-        // Toggle alarm status and sync the status LED
-        isAlarmEnabled = !isAlarmEnabled;
+    io.on('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
-
-        log.info(`Toggled alarm enabled: ${isAlarmEnabled}`);
     });
 };
 
@@ -46,5 +45,4 @@ module.exports = {
     getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
     triggerAlarmBuzzer,
-    // getIsDebugForceGoState: () => isDebugForceGoState,
 };

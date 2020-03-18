@@ -18,6 +18,7 @@ const initSharedStore = () => {
 };
 
 module.exports = {
+    getState: () => store,
     initSharedStore,
     setState,
 };

@@ -19,7 +19,7 @@ const http = require('http');
 const Express = require('express');
 const constants = require('./src/Constants');
 const { initLogger } = require('./src/Logger');
-const { initSharedStore } = require('./src/SharedStore');
+const { initSharedStore, setState } = require('./src/SharedStore');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
@@ -171,5 +171,6 @@ initSharedStore();
         log.info('Shutting down...');
         clearInterval(apiIntervalId);
         server.close();
+        process.exit(0);
     });
 })();

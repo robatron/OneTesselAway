@@ -15,10 +15,10 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
 
     buttonAlarmToggle.on('release', () => {
-        setState(
-            'isAlarmEnabled',
-            currentState => !currentState['isAlarmEnabled'],
-        );
+        setState({
+            key: 'isAlarmEnabled',
+            val: currentState => !currentState['isAlarmEnabled'],
+        });
     });
 
     onEvent('updated:isAlarmEnabled', isAlarmEnabled => {

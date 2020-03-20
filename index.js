@@ -18,6 +18,7 @@
 const http = require('http');
 const Express = require('express');
 const constants = require('./src/Constants');
+const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
@@ -53,12 +54,10 @@ const updateArrivalsAndHardware = async () => {
     }
 
     // Send device state to the Web UI
-    io.on('connection', socket => {
-        socket.emit(
-            'deviceStateUpdated',
-            processDeviceStateForDisplay(currentDeviceState),
-        );
-    });
+    emitEvent(
+        'deviceStateUpdated',
+        processDeviceStateForDisplay(currentDeviceState),
+    );
 };
 
 // Initialize ------------------------------------------------------------------
@@ -89,8 +88,8 @@ const server = new http.Server(app);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// Set up Socket.io for sending data to the Web UI w/o refreshing the page
-global.io = require('socket.io')(server);
+// Set up event system for sending data to the Web UI w/o refreshing the page
+initEvents(server);
 
 // Route to index. Render initial Web UI server-side.
 app.get('/', (req, res) => {
@@ -125,10 +124,8 @@ initSharedStore();
     } else {
         log.info('Hardware device DISABLED. Starting web UI only...');
 
-        io.on('connection', socket => {
-            socket.on('updated:isAlarmEnabled', isAlarmEnabled => {
-                console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
-            });
+        onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
+            console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
         });
 
         setTimeout(() => {

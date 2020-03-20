@@ -1,3 +1,5 @@
+const { emitEvent, onEvent } = require('./EventUtils');
+
 const store = {};
 
 // Server-side setState
@@ -6,15 +8,14 @@ const setState = ({ key, val }) => {
 
     store[key] = typeof val === 'function' ? val(store) : val;
 
-    io.emit(`updated:${key}`, store[key], store);
+    emitEvent(`updated:${key}`, store[key], store);
 };
 
 // Web UI setState
 const initSharedStore = () => {
     console.log('>>>', 'initSharedStore'); // DEBUGGGG
-    io.on('connection', socket => {
-        socket.on('setState', setState);
-    });
+
+    onEvent('setState', setState);
 };
 
 module.exports = {

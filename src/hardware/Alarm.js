@@ -1,5 +1,6 @@
 const five = require('johnny-five');
 const constants = require('../Constants');
+const { emitEvent, onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
@@ -20,7 +21,7 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
         );
     });
 
-    io.on('updated:isAlarmEnabled', isAlarmEnabled => {
+    onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
     });
 };

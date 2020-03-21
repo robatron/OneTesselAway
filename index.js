@@ -43,11 +43,7 @@ const updateArrivalsAndHardware = async () => {
         // Set the traffic light state and trigger buzzer based on arrival
         // of next bus on primary route
         setTrafficLightState(currentDeviceState.stoplightState);
-        triggerAlarmBuzzer({
-            piezoPin: constants.PIEZO_PIN,
-            piezoPort: constants.PIEZO_PORT,
-            trafficLightState: currentDeviceState.stoplightState,
-        });
+        triggerAlarmBuzzer(currentDeviceState.stoplightState);
 
         // Update LCD. Do last b/c it's very slow.
         updateLcdScreen(currentDeviceState.displayLines);

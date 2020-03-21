@@ -2,20 +2,20 @@ const { emitEvent, onEvent } = require('./EventUtils');
 
 const store = {};
 
-// Server-side setState
-const setState = ({ key, val }) => {
-    console.log('>>>', 'setState', key, val); // DEBUGGGG
+// Set a state of an item in the store
+const setState = ({ key, val, meta }) => {
+    console.log('>>>', 'setState', key, val, meta || ''); // DEBUGGGG
 
     store[key] = typeof val === 'function' ? val(store) : val;
 
     emitEvent(`updated:${key}`, store[key], store);
 };
 
-// Web UI setState
+// Allow state to be set via the Web UI
 const initSharedStore = () => {
-    console.log('>>>', 'initSharedStore'); // DEBUGGGG
-
-    onEvent('setState', setState);
+    onEvent('setState', ({ key, val }) =>
+        setState({ key, val, meta: { fromWebUi: true } }),
+    );
 };
 
 module.exports = {

@@ -3,14 +3,19 @@ const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 const { playSong } = require('../audio/SoundUtils');
-const { nyanIntro } = require('../audio/songs');
+const songs = require('../audio/songs');
 
 let isAlarmEnabled = false;
 let ledAlarmStatus;
 
 // When the button is released, toggle the alarm status. When the button is held
 // toggle a
-const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
+const initAlarmHardware = ({
+    buttonAlarmTogglePin,
+    ledAlarmStatusPin,
+    piezoPin,
+    piezoPort,
+}) => {
     ledAlarmStatus = new five.Led(ledAlarmStatusPin);
     const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
 
@@ -24,18 +29,18 @@ const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
     onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
     });
+
+    onEvent('action:playAlarm', songName => {
+        playSong({ piezoPin, piezoPort, song: songs[songName] });
+    });
 };
 
 // Trigger the alarm buzzer if all true:
 // - The alarm is enabled
 // - The traffic light state is 'go'
-const triggerAlarmBuzzer = async ({
-    piezoPin,
-    piezoPort,
-    trafficLightState,
-}) => {
+const triggerAlarmBuzzer = async trafficLightState => {
     if (isAlarmEnabled && trafficLightState === constants.STOPLIGHT_STATES.GO) {
-        playSong({ piezoPin, piezoPort, song: nyanIntro });
+        emitEvent('action:playAlarm', 'nyanIntro');
 
         isAlarmEnabled = false;
         ledAlarmStatus.off();

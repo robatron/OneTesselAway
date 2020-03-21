@@ -5,6 +5,10 @@
                 font-family: 'Courier New', Courier, monospace;
                 font-size: 16px;
             }
+            button {
+                /* border-width: 2px; */
+                font-size: 1em;
+            }
             h1 {
                 font-size: 2em;
             }
@@ -61,10 +65,6 @@
             .led-alarm {
                 border: 2px solid blue;
             }
-            .btn-alarm {
-                /* border-width: 2px; */
-                font-size: 1em;
-            }
         </style>
     </head>
     <body>
@@ -103,8 +103,16 @@
                 <div class="led led-alarm"></div>
                 <div class="led-label">Alarm LED</div>
             </li>
-            <button class="btn-alarm">
+            <button class="btn-alarm-set">
                 Set alarm
+            </button>
+        </ul>
+
+        <h2>Extended Device Control</h2>
+        <p>Additional controls and settings for the device.</p>
+        <ul class="component-list">
+            <button class="btn-alarm-play">
+                Play alarm tune
             </button>
         </ul>
 
@@ -128,10 +136,18 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            const socket = io.connect();
-
+            // Document element references
             const ledAlarmEl = document.querySelector('.led-alarm');
-            const btnAlarmEl = document.querySelector('.btn-alarm');
+            const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
+            const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
+
+            // Web UI -> server event communication
+            const socket = io.connect();
+            const onClickEmitEvent = (e, ...rest) => {
+                console.log('>>>', 'socket.emit', ...rest);
+                e.preventDefault();
+                socket.emit(...rest);
+            };
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
@@ -158,7 +174,7 @@
             let isAlarmEnabled;
 
             socket.on('updated:isAlarmEnabled', val => {
-                console.log('>>>', 'updated:isAlarmEnabled', val); // DEBUGGGG
+                console.log('>>>', 'socket.on', 'updated:isAlarmEnabled', val); // DEBUGGGG
 
                 isAlarmEnabled = val;
 
@@ -169,15 +185,14 @@
                     : 'white';
             });
 
-            btnAlarmEl.onclick = e => {
-                console.log('>>>', 'setState', 'isAlarmEnabled'); // DEBUGGGG
-
-                e.preventDefault();
-                socket.emit('setState', {
+            btnAlarmSetEl.onclick = e =>
+                onClickEmitEvent(e, 'setState', {
                     key: 'isAlarmEnabled',
                     val: !isAlarmEnabled,
                 });
-            };
+
+            btnAlarmPlayEl.onclick = e =>
+                onClickEmitEvent(e, 'action:playAlarm', 'nyanIntro');
         </script>
     </body>
 </html>

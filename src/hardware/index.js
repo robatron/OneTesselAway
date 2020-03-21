@@ -25,7 +25,12 @@ const initHardware = ({
             );
 
             // Alarm button, buzzer, and light
-            initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
+            initAlarmHardware({
+                buttonAlarmTogglePin,
+                ledAlarmStatusPin,
+                piezoPin,
+                piezoPort,
+            });
 
             // Traffic light: Set of 3 LEDs
             initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });

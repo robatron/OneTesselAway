@@ -106,33 +106,22 @@ initSharedStore();
 // before starting
 (async () => {
     if (DEVICE_ENABLED) {
-        log.info('Initializing hardware device...');
-        await initHardware({
-            buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
-            lcdPins: constants.LCD_DISPLAY_PINS,
-            ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
-            ledMissPin: constants.LED_MISS_PIN,
-            ledReadyPin: constants.LED_READY_PIN,
-            ledSteadyPin: constants.LED_SET_PIN,
-            piezoPin: constants.PIEZO_PIN,
-            piezoPort: constants.PIEZO_PORT,
-        });
+        log.info('Initializing hardware...');
     } else {
-        log.info('Hardware device DISABLED. Starting web UI only...');
-
-        onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
-            console.log('>>>', 'updated:isAlarmEnabled', isAlarmEnabled);
-        });
-
-        setTimeout(() => {
-            console.log('>>>', 'setState', 'isAlarmEnabled'); // DEBUGGGG
-
-            setState({
-                key: 'isAlarmEnabled',
-                val: true,
-            });
-        }, 10000);
+        log.info('Hardware is DISABLED. Starting Web UI only...');
     }
+
+    await initHardware({
+        buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
+        isDeviceEnabled: DEVICE_ENABLED,
+        lcdPins: constants.LCD_DISPLAY_PINS,
+        ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
+        ledMissPin: constants.LED_MISS_PIN,
+        ledReadyPin: constants.LED_READY_PIN,
+        ledSteadyPin: constants.LED_SET_PIN,
+        piezoPin: constants.PIEZO_PIN,
+        piezoPort: constants.PIEZO_PORT,
+    });
 
     // Begin updating arrival info and LCD screen regularly
     log.info('Starting OneTesselAway...');

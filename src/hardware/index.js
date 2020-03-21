@@ -1,5 +1,3 @@
-const five = require('johnny-five');
-const Tessel = require('tessel-io');
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
@@ -8,6 +6,7 @@ const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
+    isDeviceEnabled,
     lcdPins,
     ledAlarmStatusPin,
     ledMissPin,
@@ -16,7 +15,21 @@ const initHardware = ({
     piezoPin,
     piezoPort,
 }) => {
-    var board = new five.Board({ io: new Tessel() });
+    let board;
+
+    if (isDeviceEnabled) {
+        log.info('Initializing hardware...');
+
+        const five = require('johnny-five');
+        const Tessel = require('tessel-io');
+
+        board = new five.Board({ io: new Tessel() });
+    } else {
+        log.info('Initializing mock hardware...');
+        board = {
+            on: (event, cb) => cb(),
+        };
+    }
 
     return new Promise(resolve => {
         board.on('ready', () => {
@@ -27,6 +40,7 @@ const initHardware = ({
             // Alarm button, buzzer, and light
             initAlarmHardware({
                 buttonAlarmTogglePin,
+                isDeviceEnabled,
                 ledAlarmStatusPin,
                 piezoPin,
                 piezoPort,
@@ -42,8 +56,8 @@ const initHardware = ({
             playSong({ piezoPin, piezoPort, song: nyanIntro });
             setTrafficLightState('go');
 
-            // Give the hardware a 1/2 second to initialize before starting
-            setTimeout(resolve, 500);
+            // Resolve once hardware initialized
+            resolve();
         });
     });
 };

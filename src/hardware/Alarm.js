@@ -1,4 +1,3 @@
-const five = require('johnny-five');
 const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
@@ -12,12 +11,18 @@ let ledAlarmStatus;
 // toggle a
 const initAlarmHardware = ({
     buttonAlarmTogglePin,
+    isDeviceEnabled,
     ledAlarmStatusPin,
     piezoPin,
     piezoPort,
 }) => {
-    ledAlarmStatus = new five.Led(ledAlarmStatusPin);
-    const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+    if (isDeviceEnabled) {
+        log.info('Initializing alarm hardware...');
+        const five = require('johnny-five');
+
+        ledAlarmStatus = new five.Led(ledAlarmStatusPin);
+        const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+    }
 
     buttonAlarmToggle.on('release', () => {
         setState({

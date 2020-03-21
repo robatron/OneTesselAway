@@ -136,18 +136,37 @@
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
+            const socket = io.connect();
+
             // Document element references
             const ledAlarmEl = document.querySelector('.led-alarm');
             const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
             const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
 
-            // Web UI -> server event communication
-            const socket = io.connect();
+            // Web UI -> server event communication ----------------------------
+            const store = {};
+
+            // When a button is clicked, emit an event to the server
             const onClickEmitEvent = (e, ...rest) => {
-                console.log('>>>', 'socket.emit', ...rest);
+                console.log('onClickEmitEvent', ...rest);
                 e.preventDefault();
                 socket.emit(...rest);
             };
+
+            // When the server state updates a particular key...
+            const onStateKeyUpdateEvent = (stateKey, cb) => {
+                socket.on('updated:' + stateKey, updatedVal => {
+                    console.log(
+                        'onStateUpdatedEvent',
+                        'updated:' + stateKey,
+                        updatedVal,
+                    );
+                    store[stateKey] = updatedVal;
+                    cb(updatedVal);
+                });
+            };
+
+            // On device update ------------------------------------------------
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
@@ -170,25 +189,21 @@
                 }
             });
 
-            // Alarm
-            let isAlarmEnabled;
+            // Alarm -----------------------------------------------------------
 
-            socket.on('updated:isAlarmEnabled', val => {
-                console.log('>>>', 'socket.on', 'updated:isAlarmEnabled', val); // DEBUGGGG
-
-                isAlarmEnabled = val;
-
+            // Sync `isAlarmEnabled` state w/ server
+            onStateKeyUpdateEvent('isAlarmEnabled', isAlarmEnabled => {
                 const ledAlarmColor = getComputedStyle(ledAlarmEl).borderColor;
-
                 ledAlarmEl.style.backgroundColor = isAlarmEnabled
                     ? ledAlarmColor
                     : 'white';
             });
 
+            // Set button click handlers
             btnAlarmSetEl.onclick = e =>
                 onClickEmitEvent(e, 'setState', {
                     key: 'isAlarmEnabled',
-                    val: !isAlarmEnabled,
+                    val: !store.isAlarmEnabled,
                 });
 
             btnAlarmPlayEl.onclick = e =>

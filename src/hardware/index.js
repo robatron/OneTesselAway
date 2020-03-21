@@ -1,8 +1,8 @@
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
+const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 // const { initLcdScreen } = require('./LcdScreen');
-// const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -47,8 +47,13 @@ const initHardware = ({
                 piezoPort,
             });
 
-            // // Traffic light: Set of 3 LEDs
-            // initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
+            // Traffic light: Set of 3 LEDs
+            initTrafficLight({
+                isDeviceEnabled,
+                ledReadyPin,
+                ledSteadyPin,
+                ledMissPin,
+            });
 
             // // Init LCD last b/c it's slow
             // initLcdScreen(lcdPins);

@@ -42,12 +42,20 @@ module.exports.ADDRESS = `http://${process.env.ADDR ||
         os.networkInterfaces().wlan0[0].address) ||
     '0.0.0.0'}`;
 
+// Possible stoplight states
 module.exports.STOPLIGHT_STATES = {
     READY: 'ready',
     STEADY: 'steady',
     GO: 'go',
     MISS: 'miss',
 };
+
+// Names of the individual LEDs, correspond 1:1 to states excluding 'go', which is a multi-LED state
+module.exports.STOPLIGHT_LED_NAMES = [
+    module.exports.STOPLIGHT_STATES.READY,
+    module.exports.STOPLIGHT_STATES.STEADY,
+    module.exports.STOPLIGHT_STATES.MISS,
+];
 
 // Time ranges for each stoplight state. Ranges minutes from (inclusive) and to (exclusive)
 module.exports.STOPLIGHT_TIME_RANGES = {

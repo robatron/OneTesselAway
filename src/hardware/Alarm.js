@@ -16,6 +16,7 @@ const initAlarmHardware = ({
 }) => {
     if (isDeviceEnabled) {
         log.info('Initializing alarm hardware...');
+
         const five = require('johnny-five');
 
         ledAlarmStatus = new five.Led(ledAlarmStatusPin);

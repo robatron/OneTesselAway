@@ -1,44 +1,63 @@
-const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 
-const strobeDuration = 1000;
-const leds = {
-    [constants.STOPLIGHT_STATES.READY]: null,
-    [constants.STOPLIGHT_STATES.STEADY]: null,
-    [constants.STOPLIGHT_STATES.MISS]: null,
-};
+// Object containing references to LED hardware
+const leds = constants.STOPLIGHT_LED_NAMES.reduce((ledName, accum) => {
+    accum[ledName] = null;
+    return accum;
+}, {});
 
-const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
-    // Initialize hardware
-    leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
-    leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
-    leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
+const initTrafficLight = ({
+    isDeviceEnabled,
+    ledReadyPin,
+    ledSteadyPin,
+    ledMissPin,
+}) => {
+    if (isDeviceEnabled) {
+        log.info('Initializing stoplight hardware...');
+
+        const five = require('johnny-five');
+
+        leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
+        leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
+        leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
+    } else {
+        log.info('Initializing mock alarm hardware...');
+
+        constants.STOPLIGHT_LED_NAMES.forEach(stoplightState => {
+            leds[stoplightState] = {
+                off: () => {
+                    log.info(`Mock "${stoplightState}" off`);
+                },
+                on: () => {
+                    log.info(`Mock "${stoplightState}" on`);
+                },
+            };
+        });
+    }
 
     // Initialize LED state in global store
     Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
-        setState({ key: 'isTrafficLightLedOn_' + state, val: false });
+        setState({ key: 'isTrafficLightStateOn_' + state, val: false });
     });
 
-    // Set up LED state change handlers
+    // Set up stoplight state change handlers
     Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
-        onEvent('updated:isTrafficLightLedOn_' + state, result => {
-            Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
-                Object.keys(leds).forEach(led => {
-                    led.off();
-                });
+        onEvent('updated:isTrafficLightStateOn_' + state, result => {
+            // Always start by disabling all LEDs
+            Object.keys(constants.STOPLIGHT_LED_NAMES).forEach(led => {
+                leds[led].off();
             });
 
+            // The 'GO' state is special: Turn on all LEDs
             if (state === constants.STOPLIGHT_STATES.GO) {
-                Object.keys(leds).forEach(led => {
-                    led.on();
+                Object.keys(constants.STOPLIGHT_LED_NAMES).forEach(led => {
+                    leds[led].on();
                 });
             } else {
-                leds[constants.STOPLIGHT_STATES[state]][
-                    result ? 'on' : 'off'
-                ]();
+                leds[state][result ? 'on' : 'off']();
             }
         });
     });
@@ -69,24 +88,7 @@ const setTrafficLightState = stateId => {
     }
 };
 
-// Cycle through a list of states
-const cycleStates = async ({ cycleCount, cycleDelay, stateList }) => {
-    for (ii = 0; ii < cycleCount; ++ii) {
-        for (i = 0; i < stateList.length; ++i) {
-            stateList.forEach(stateId => {
-                leds[stateId].off();
-            });
-            leds[stateList[i]].on();
-            await wait(cycleDelay);
-        }
-    }
-    stateList.forEach(stateId => {
-        leds[stateId].off();
-    });
-};
-
 module.exports = {
-    cycleStates,
     getLeds: () => leds,
     initTrafficLight,
     setTrafficLightState,

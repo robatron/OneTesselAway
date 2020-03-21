@@ -4,7 +4,7 @@ const { emitEvent, onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 
 // Object containing references to LED hardware
-const leds = constants.STOPLIGHT_LED_NAMES.reduce((ledName, accum) => {
+const leds = constants.STOPLIGHT_LED_NAMES.reduce((accum, ledName) => {
     accum[ledName] = null;
     return accum;
 }, {});
@@ -47,13 +47,13 @@ const initTrafficLight = ({
     Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
         onEvent('updated:isTrafficLightStateOn_' + state, result => {
             // Always start by disabling all LEDs
-            Object.keys(constants.STOPLIGHT_LED_NAMES).forEach(led => {
+            Object.keys(leds).forEach(led => {
                 leds[led].off();
             });
 
             // The 'GO' state is special: Turn on all LEDs
             if (state === constants.STOPLIGHT_STATES.GO) {
-                Object.keys(constants.STOPLIGHT_LED_NAMES).forEach(led => {
+                Object.keys(leds).forEach(led => {
                     leds[led].on();
                 });
             } else {

@@ -94,7 +94,17 @@ app.get('/', (req, res) => {
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
     const currentDeviceState = getDeviceState();
-    res.render('index', processDeviceStateForDisplay(currentDeviceState));
+    res.render('index', {
+        ...processDeviceStateForDisplay(currentDeviceState),
+
+        // Supply the constants file to the Web UI to make hardware simulation
+        // easier
+        jsConstants: `<script>const constants = ${JSON.stringify(
+            constants,
+            null,
+            2,
+        )}</script>`,
+    });
 });
 
 // Init shared store for the server and the web UI

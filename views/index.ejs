@@ -52,13 +52,13 @@
                 align-items: center;
                 margin-bottom: 10px;
             }
-            .led-missed {
+            .led-stoplight-missed {
                 border: 2px solid red;
             }
-            .led-steady {
+            .led-stoplight-steady {
                 border: 2px solid orange;
             }
-            .led-ready {
+            .led-stoplight-ready {
                 border: 2px solid green;
             }
 
@@ -85,15 +85,15 @@
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
             <li class="stoplight-led-row">
-                <div class="led led-missed"></div>
+                <div class="led led-stoplight-missed"></div>
                 <div class="led-label">Missed</div>
             </li>
             <li class="stoplight-led-row">
-                <div class="led led-steady"></div>
+                <div class="led led-stoplight-steady"></div>
                 <div class="led-label">Steady</div>
             </li>
             <li class="stoplight-led-row">
-                <div class="led led-ready"></div>
+                <div class="led led-stoplight-ready"></div>
                 <div class="led-label">Ready</div>
             </li>
         </ul>
@@ -135,15 +135,34 @@
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
+        <%- jsConstants %>
         <script>
             const socket = io.connect();
 
-            // Document element references
-            const ledAlarmEl = document.querySelector('.led-alarm');
+            // Document element references -------------------------------------
+
             const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
             const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
+            const ledAlarmEl = document.querySelector('.led-alarm');
+            const ledStoplightEls = constants.STOPLIGHT_LED_NAMES.reduce(
+                (accum, ledName) => {
+                    accum[ledName] = document.querySelector(
+                        '.led-stoplight-' + ledName,
+                    );
+                    return accum;
+                },
+                {},
+            );
+
+            // Utilities -------------------------------------------------------
+
+            const setLed = (ledEl, on) => {
+                const ledColor = getComputedStyle(ledEl).borderColor;
+                ledEl.style.backgroundColor = on ? ledColor : 'white';
+            };
 
             // Web UI -> server event communication ----------------------------
+
             const store = {};
 
             // Emit an event to the server
@@ -169,7 +188,7 @@
             const setServerState = (key, val) =>
                 emitEvent('setState', { key, val });
 
-            // On device update ------------------------------------------------
+            // LCD display & debug info ----------------------------------------
 
             // Update the display when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
@@ -183,31 +202,53 @@
                         el.innerHTML = stateValue;
                     }
                 });
+            });
 
-                // Update alarm
-                if (deviceState.isAlarmEnabled) {
-                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
-                        .borderColor;
-                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
-                }
+            // Stoplight -------------------------------------------------------
+
+            Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+                onServerStateUpdate(
+                    'isTrafficLightStateOn_' + state,
+                    result => {
+                        // Turn on all stoplight LEDs if 'go' state
+                        if (state === constants.STOPLIGHT_STATES.GO) {
+                            Object.keys(ledStoplightEls).forEach(
+                                ledStoplightEl => {
+                                    setLed(ledStoplightEl, true);
+                                },
+                            );
+                        } else {
+                            // Otherwise, turn off all stoplight LEDs except the one
+                            Object.keys(ledStoplightEls).forEach(
+                                ledStoplightEl => {
+                                    setLed(ledStoplightEl, false);
+                                },
+                            );
+
+                            Object.keys(ledStoplightEls).forEach(
+                                ledStoplightEl => {
+                                    setLed(ledStoplightEl, result);
+                                },
+                            );
+                        }
+                    },
+                );
             });
 
             // Alarm -----------------------------------------------------------
 
-            // Sync `isAlarmEnabled` state w/ server
             onServerStateUpdate('isAlarmEnabled', isAlarmEnabled => {
-                const ledAlarmColor = getComputedStyle(ledAlarmEl).borderColor;
-                ledAlarmEl.style.backgroundColor = isAlarmEnabled
-                    ? ledAlarmColor
-                    : 'white';
+                setLed(ledAlarmEl, isAlarmEnabled);
             });
 
-            // Set button click handlers
             btnAlarmSetEl.onclick = e => {
                 e.preventDefault();
                 setServerState('isAlarmEnabled', !store.isAlarmEnabled);
             };
 
+            // EXTENDED DEVICE CONTROLS ========================================
+
+            // Play alarm
             btnAlarmPlayEl.onclick = e => {
                 e.preventDefault();
                 emitEvent('action:playAlarm', 'nyanIntro');

@@ -1,6 +1,8 @@
 const five = require('johnny-five');
 const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
+const { emitEvent, onEvent } = require('../EventUtils');
+const { setState } = require('../SharedStore');
 
 const strobeDuration = 1000;
 const leds = {
@@ -10,9 +12,36 @@ const leds = {
 };
 
 const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
+    // Initialize hardware
     leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
     leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
     leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
+
+    // Initialize LED state in global store
+    Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+        setState({ key: 'isTrafficLightLedOn_' + state, val: false });
+    });
+
+    // Set up LED state change handlers
+    Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+        onEvent('updated:isTrafficLightLedOn_' + state, result => {
+            Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+                Object.keys(leds).forEach(led => {
+                    led.off();
+                });
+            });
+
+            if (state === constants.STOPLIGHT_STATES.GO) {
+                Object.keys(leds).forEach(led => {
+                    led.on();
+                });
+            } else {
+                leds[constants.STOPLIGHT_STATES[state]][
+                    result ? 'on' : 'off'
+                ]();
+            }
+        });
+    });
 };
 
 // Enable one of the traffic light states. The special state 'go' means to set state of all at once.
@@ -20,19 +49,21 @@ const initTrafficLight = ({ ledReadyPin, ledSteadyPin, ledMissPin }) => {
 let previousSetState = null;
 const setTrafficLightState = stateId => {
     if (stateId !== previousSetState) {
-        Object.keys(leds).forEach(led => {
-            leds[led].stop().off();
-        });
+        setState({ key: 'isTrafficLightLedReadyOn', val: true });
+        setState({ key: 'isTrafficLightLedSteadyOn', val: true });
+        setState({ key: 'isTrafficLightLedMissOn', val: true });
 
-        setTimeout(() => {
-            if (stateId === constants.STOPLIGHT_STATES.GO) {
-                Object.keys(leds).forEach(led => {
-                    leds[led].strobe(strobeDuration);
-                });
-            } else {
-                leds[stateId].strobe(strobeDuration);
-            }
-        }, 250);
+        if (stateId === constants.STOPLIGHT_STATES.GO) {
+            setState({ key: 'isTrafficLightLedReadyOn', val: true });
+            setState({ key: 'isTrafficLightLedSteadyOn', val: true });
+            setState({ key: 'isTrafficLightLedMissOn', val: true });
+        } else if (stateId === constants.STOPLIGHT_STATES.READY) {
+            setState({ key: 'isTrafficLightLedReadyOn', val: true });
+        } else if (stateId === constants.STOPLIGHT_STATES.STEADY) {
+            setState({ key: 'isTrafficLightLedSteadyOn', val: true });
+        } else if (stateId === constants.STOPLIGHT_STATES.MISS) {
+            setState({ key: 'isTrafficLightLedMissOn', val: true });
+        }
 
         previousSetState = stateId;
     }

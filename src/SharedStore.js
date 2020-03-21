@@ -2,12 +2,11 @@ const { emitEvent, onEvent } = require('./EventUtils');
 
 const store = {};
 
-// Set a state of an item in the store
+// Set the state of an item in the store, and emit an event. `val` may be a
+// function that will be passed the previous state of the store.
 const setState = ({ key, val, meta }) => {
-    console.log('>>>', 'setState', key, val, meta || ''); // DEBUGGGG
-
+    log.info('setState', key, val, meta || '');
     store[key] = typeof val === 'function' ? val(store) : val;
-
     emitEvent(`updated:${key}`, store[key], store);
 };
 

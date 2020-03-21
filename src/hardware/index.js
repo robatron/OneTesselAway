@@ -1,8 +1,8 @@
 const { playSong } = require('../audio/SoundUtils');
 const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
-const { initLcdScreen } = require('./LcdScreen');
-const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
+// const { initLcdScreen } = require('./LcdScreen');
+// const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -26,6 +26,7 @@ const initHardware = ({
         board = new five.Board({ io: new Tessel() });
     } else {
         log.info('Initializing mock hardware...');
+
         board = {
             on: (event, cb) => cb(),
         };
@@ -46,15 +47,15 @@ const initHardware = ({
                 piezoPort,
             });
 
-            // Traffic light: Set of 3 LEDs
-            initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
+            // // Traffic light: Set of 3 LEDs
+            // initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
 
-            // Init LCD last b/c it's slow
-            initLcdScreen(lcdPins);
+            // // Init LCD last b/c it's slow
+            // initLcdScreen(lcdPins);
 
-            // Play a tune and flash traffic light once the hardware is ready to go
-            playSong({ piezoPin, piezoPort, song: nyanIntro });
-            setTrafficLightState('go');
+            // // Play a tune and flash traffic light once the hardware is ready to go
+            // playSong({ piezoPin, piezoPort, song: nyanIntro });
+            // setTrafficLightState('go');
 
             // Resolve once hardware initialized
             resolve();

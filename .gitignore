@@ -1,3 +1,4 @@
 node_modules
 oba-api-key.json
 logs/
+.vscode/

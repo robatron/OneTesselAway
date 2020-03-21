@@ -1,14 +1,12 @@
 const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
-const { setState } = require('../SharedStore');
+const { getState, setState } = require('../SharedStore');
 const { playSong } = require('../audio/SoundUtils');
 const songs = require('../audio/songs');
 
-let isAlarmEnabled = false;
 let ledAlarmStatus;
+let buttonAlarmToggle;
 
-// When the button is released, toggle the alarm status. When the button is held
-// toggle a
 const initAlarmHardware = ({
     buttonAlarmTogglePin,
     isDeviceEnabled,
@@ -21,13 +19,32 @@ const initAlarmHardware = ({
         const five = require('johnny-five');
 
         ledAlarmStatus = new five.Led(ledAlarmStatusPin);
-        const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+        buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+    } else {
+        log.info('Initializing mock alarm hardware...');
+        ledAlarmStatus = {
+            off: () => {
+                log.info('Mock ledAlarmStates.off');
+            },
+            on: () => {
+                log.info('Mock ledAlarmStates.on');
+            },
+        };
+        buttonAlarmToggle = {
+            on: (...rest) => {
+                log.info(
+                    ['Mock buttonAlarmToggle.on', [...rest].join(' ')].join(
+                        ' ',
+                    ),
+                );
+            },
+        };
     }
 
     buttonAlarmToggle.on('release', () => {
         setState({
             key: 'isAlarmEnabled',
-            val: currentState => !currentState['isAlarmEnabled'],
+            val: currentState => !currentState.isAlarmEnabled,
         });
     });
 
@@ -44,16 +61,17 @@ const initAlarmHardware = ({
 // - The alarm is enabled
 // - The traffic light state is 'go'
 const triggerAlarmBuzzer = async trafficLightState => {
-    if (isAlarmEnabled && trafficLightState === constants.STOPLIGHT_STATES.GO) {
+    if (
+        getState.isAlarmEnabled &&
+        trafficLightState === constants.STOPLIGHT_STATES.GO
+    ) {
         emitEvent('action:playAlarm', 'nyanIntro');
-
-        isAlarmEnabled = false;
+        setState('isAlarmEnabled', false);
         ledAlarmStatus.off();
     }
 };
 
 module.exports = {
-    getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
     triggerAlarmBuzzer,
 };

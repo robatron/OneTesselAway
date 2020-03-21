@@ -21,6 +21,7 @@ const constants = require('./src/Constants');
 const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
+const { initHardware } = require('./src/hardware');
 const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
@@ -68,11 +69,9 @@ const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
 
 // Don't try to require the hardware module unless we're running on the actual
 // device to prevent global import errors
-let initHardware, updateLcdScreen;
+let updateLcdScreen;
 if (DEVICE_ENABLED) {
-    const hardware = require('./src/hardware');
     const lcdScreen = require('./src/hardware/LcdScreen');
-    initHardware = hardware.initHardware;
     updateLcdScreen = lcdScreen.updateLcdScreen;
 }
 
@@ -108,7 +107,7 @@ initSharedStore();
     if (DEVICE_ENABLED) {
         log.info('Initializing hardware...');
     } else {
-        log.info('Hardware is DISABLED. Starting Web UI only...');
+        log.info('Hardware is DISABLED, starting Web UI only...');
     }
 
     await initHardware({

@@ -2,10 +2,7 @@ const constants = require('./Constants');
 const { getUpcomingArrivalTimes } = require('./ArrivalsAndStops');
 const { getLatestLogFromFile } = require('./Logger');
 const { getLcdDisplayLines } = require('./DisplayUtils');
-const {
-    getIsAlarmEnabled,
-    // getIsDebugForceGoState,
-} = require('./hardware/Alarm');
+const { getState } = require('./SharedStore');
 
 // Main arrival info cache
 let arrivalInfo = {};
@@ -17,18 +14,13 @@ const getDeviceState = () => ({
         reverseLines: true,
     }),
     displayLines: getLcdDisplayLines(arrivalInfo),
-    isAlarmEnabled: getIsAlarmEnabled(),
+    isAlarmEnabled: getState().isAlarmEnabled,
     stoplightState: getStoplightState(arrivalInfo),
 });
 
 // Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
 // the closest arrival time of the primary route
 const getStoplightState = arrivalInfo => {
-    // Debug force 'go' state
-    // if (getIsDebugForceGoState()) {
-    //     return 'go';
-    // }
-
     const closestMinsUntilArrival =
         arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
             .minsUntilArrival;

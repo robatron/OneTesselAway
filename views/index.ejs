@@ -167,10 +167,7 @@
 
             // Set a key on the server state
             const setServerState = (key, val) =>
-                emitEvent('setState', {
-                    key: 'isAlarmEnabled',
-                    val: !store.isAlarmEnabled,
-                });
+                emitEvent('setState', { key, val });
 
             // On device update ------------------------------------------------
 

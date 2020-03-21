@@ -1,7 +1,7 @@
-const { playSong } = require('../audio/SoundUtils');
-const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
-const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
+const { initTrafficLight } = require('./TrafficLight');
+// const { playSong } = require('../audio/SoundUtils');
+// const { nyanIntro } = require('../audio/songs');
 // const { initLcdScreen } = require('./LcdScreen');
 
 const initHardware = ({

@@ -61,35 +61,20 @@ const initTrafficLight = ({
             }
         });
     });
-};
 
-// Enable one of the traffic light states. The special state 'go' means to set state of all at once.
-// Keep track of previous set state so we don't update unnecessarily
-let previousSetState = null;
-const setTrafficLightState = stateId => {
-    if (stateId !== previousSetState) {
-        setState({ key: 'isTrafficLightLedReadyOn', val: true });
-        setState({ key: 'isTrafficLightLedSteadyOn', val: true });
-        setState({ key: 'isTrafficLightLedMissOn', val: true });
-
-        if (stateId === constants.STOPLIGHT_STATES.GO) {
-            setState({ key: 'isTrafficLightLedReadyOn', val: true });
-            setState({ key: 'isTrafficLightLedSteadyOn', val: true });
-            setState({ key: 'isTrafficLightLedMissOn', val: true });
-        } else if (stateId === constants.STOPLIGHT_STATES.READY) {
-            setState({ key: 'isTrafficLightLedReadyOn', val: true });
-        } else if (stateId === constants.STOPLIGHT_STATES.STEADY) {
-            setState({ key: 'isTrafficLightLedSteadyOn', val: true });
-        } else if (stateId === constants.STOPLIGHT_STATES.MISS) {
-            setState({ key: 'isTrafficLightLedMissOn', val: true });
-        }
-
-        previousSetState = stateId;
-    }
+    // Set up stoplight state change action. Enable one of the traffic light
+    // states. The special state 'go' means to set state of all at once.
+    onEvent('action:setTrafficLightState', tfState => {
+        Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+            setState({
+                key: 'isTrafficLightStateOn_' + state,
+                val: state === tfState,
+            });
+        });
+    });
 };
 
 module.exports = {
     getLeds: () => leds,
     initTrafficLight,
-    setTrafficLightState,
 };

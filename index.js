@@ -22,7 +22,6 @@ const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
-const { setTrafficLightState } = require('./src/hardware/TrafficLight');
 const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
     getDeviceState,
@@ -43,7 +42,10 @@ const updateArrivalsAndHardware = async () => {
     if (DEVICE_ENABLED) {
         // Set the traffic light state and trigger buzzer based on arrival
         // of next bus on primary route
-        setTrafficLightState(currentDeviceState.stoplightState);
+        emitEvent(
+            'action:setTrafficLightState',
+            currentDeviceState.stoplightState,
+        );
         triggerAlarmBuzzer(currentDeviceState.stoplightState);
 
         // Update LCD. Do last b/c it's very slow.

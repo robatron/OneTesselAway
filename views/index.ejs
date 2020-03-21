@@ -146,15 +146,14 @@
             // Web UI -> server event communication ----------------------------
             const store = {};
 
-            // When a button is clicked, emit an event to the server
-            const onClickEmitEvent = (e, ...rest) => {
-                console.log('onClickEmitEvent', ...rest);
-                e.preventDefault();
+            // Emit an event to the server
+            const emitEvent = (...rest) => {
+                console.log('emitEvent', ...rest);
                 socket.emit(...rest);
             };
 
-            // When the server state updates a particular key...
-            const onStateKeyUpdateEvent = (stateKey, cb) => {
+            // When the server state updates a key...
+            const onServerStateUpdate = (stateKey, cb) => {
                 socket.on('updated:' + stateKey, updatedVal => {
                     console.log(
                         'onStateUpdatedEvent',
@@ -165,6 +164,13 @@
                     cb(updatedVal);
                 });
             };
+
+            // Set a key on the server state
+            const setServerState = (key, val) =>
+                emitEvent('setState', {
+                    key: 'isAlarmEnabled',
+                    val: !store.isAlarmEnabled,
+                });
 
             // On device update ------------------------------------------------
 
@@ -192,7 +198,7 @@
             // Alarm -----------------------------------------------------------
 
             // Sync `isAlarmEnabled` state w/ server
-            onStateKeyUpdateEvent('isAlarmEnabled', isAlarmEnabled => {
+            onServerStateUpdate('isAlarmEnabled', isAlarmEnabled => {
                 const ledAlarmColor = getComputedStyle(ledAlarmEl).borderColor;
                 ledAlarmEl.style.backgroundColor = isAlarmEnabled
                     ? ledAlarmColor
@@ -200,14 +206,15 @@
             });
 
             // Set button click handlers
-            btnAlarmSetEl.onclick = e =>
-                onClickEmitEvent(e, 'setState', {
-                    key: 'isAlarmEnabled',
-                    val: !store.isAlarmEnabled,
-                });
+            btnAlarmSetEl.onclick = e => {
+                e.preventDefault();
+                setServerState('isAlarmEnabled', !store.isAlarmEnabled);
+            };
 
-            btnAlarmPlayEl.onclick = e =>
-                onClickEmitEvent(e, 'action:playAlarm', 'nyanIntro');
+            btnAlarmPlayEl.onclick = e => {
+                e.preventDefault();
+                emitEvent('action:playAlarm', 'nyanIntro');
+            };
         </script>
     </body>
 </html>

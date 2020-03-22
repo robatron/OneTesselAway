@@ -7,7 +7,7 @@ const store = {};
 const setState = ({ key, val, meta }) => {
     log.info(['setState', key, val, JSON.stringify(meta) || ''].join(' '));
     store[key] = typeof val === 'function' ? val(store) : val;
-    emitEvent(`updated:${key}`, store[key], store);
+    emitEvent(`updated:${key}`, store[key]);
 };
 
 // Allow state to be set via the Web UI

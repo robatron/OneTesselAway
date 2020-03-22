@@ -1,8 +1,8 @@
 const { initAlarmHardware } = require('./Alarm');
 const { initStoplight } = require('./Stoplight');
 const { initBuzzerHardware } = require('./Buzzer');
+const { initLcdScreen } = require('./LcdScreen');
 // const { nyanIntro } = require('../audio/songs');
-// const { initLcdScreen } = require('./LcdScreen');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -60,8 +60,8 @@ const initHardware = ({
                 ledMissPin,
             });
 
-            // // Init LCD last b/c it's slow
-            // initLcdScreen(lcdPins);
+            // Init LCD last b/c it's slow
+            initLcdScreen({ isDeviceEnabled, lcdPins });
 
             // // Play a tune and flash stoplight once the hardware is ready to go
             // playSong({ piezoPin, piezoPort, song: nyanIntro });

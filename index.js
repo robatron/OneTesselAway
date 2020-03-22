@@ -22,6 +22,7 @@ const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
+const { updateLcdScreen } = require('./src/hardware/LcdScreen');
 const {
     getDeviceState,
     processDeviceStateForDisplay,
@@ -42,10 +43,8 @@ const updateArrivalsAndHardware = async () => {
     // of next bus on primary route
     emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
 
-    if (DEVICE_ENABLED) {
-        // Update LCD. Do last b/c it's very slow.
-        updateLcdScreen(currentDeviceState.displayLines);
-    }
+    // Update LCD. Do last b/c it's very slow.
+    updateLcdScreen(currentDeviceState.displayLines);
 
     // Send device state to the Web UI
     emitEvent(
@@ -63,14 +62,6 @@ log.info('Initializing OneTesselAway...');
 
 // Should we enable the device, or run in web-only mode?
 const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
-
-// Don't try to require the hardware module unless we're running on the actual
-// device to prevent global import errors
-let updateLcdScreen;
-if (DEVICE_ENABLED) {
-    const lcdScreen = require('./src/hardware/LcdScreen');
-    updateLcdScreen = lcdScreen.updateLcdScreen;
-}
 
 // Set up Express server for the web UI
 const app = express();

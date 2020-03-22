@@ -19,6 +19,7 @@ const initAlarmHardware = ({
         buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
     } else {
         log.info('Initializing mock alarm hardware...');
+
         ledAlarmStatus = {
             off: () => {
                 log.info('Mock ledAlarmStates.off');
@@ -38,6 +39,7 @@ const initAlarmHardware = ({
         };
     }
 
+    // Toggle un/set alarm when the button is pressed
     buttonAlarmToggle.on('release', () => {
         setState({
             key: 'isAlarmEnabled',
@@ -45,6 +47,7 @@ const initAlarmHardware = ({
         });
     });
 
+    // The alarm LED should be on when the alarm is set, and off when unset
     onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
     });

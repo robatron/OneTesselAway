@@ -1,9 +1,23 @@
-const five = require('johnny-five');
-
 let lcdScreen;
 
-const initLcdScreen = lcdPins => {
-    lcdScreen = new five.LCD({ pins: lcdPins });
+const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
+    if (isDeviceEnabled) {
+        log.info('Initializing LCD screen hardware...');
+
+        const five = require('johnny-five');
+
+        lcdScreen = new five.LCD({ pins: lcdPins });
+    } else {
+        log.info('Initializing mock LED screen hardware...');
+
+        lcdScreen = {
+            cursor: i => ({
+                print: line => {
+                    log.info(`Mock LCD screen print line "${i}": "${line}"`);
+                },
+            }),
+        };
+    }
 };
 
 const updateLcdScreen = displayLines => {

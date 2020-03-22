@@ -20,6 +20,7 @@ const getDeviceState = () => ({
 
 // Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
 // the closest arrival time of the primary route
+// TODO: Move logic to Stoplight hardware?
 const getStoplightState = arrivalInfo => {
     const closestMinsUntilArrival =
         arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
@@ -69,7 +70,7 @@ const updateArrivalInfo = async targetRoutes => {
                 routeId,
             );
         } catch (e) {
-            log.error(
+            log.warn(
                 `Failed to get upcoming arrival times for route ${routeId} and stop ${stopId}: ${e.toString()}`,
             );
         }

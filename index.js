@@ -111,6 +111,7 @@ initSharedStore();
         log.info('Hardware is DISABLED, starting Web UI only...');
     }
 
+    // Initialize all hardware, even when in "web-only" mode
     await initHardware({
         buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
         isDeviceEnabled: DEVICE_ENABLED,

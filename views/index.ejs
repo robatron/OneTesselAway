@@ -181,6 +181,13 @@
                 socket.emit(...rest);
             };
 
+            const onEvent = (eventName, cb) => {
+                socket.on(eventName, (...cbArgs) => {
+                    console.log('onEvent', eventName, ...cbArgs);
+                    cb(...cbArgs);
+                });
+            };
+
             // When the server state updates a key...
             const onServerStateUpdate = (stateKey, cb) => {
                 socket.on('updated:' + stateKey, updatedVal => {
@@ -233,10 +240,19 @@
 
             // Alarm -----------------------------------------------------------
 
+            // Speaker
+            onServerStateUpdate('isAlarmPlaying', isAlarmPlaying => {
+                imgBuzzerEl.src = `static/buzzer-${
+                    isAlarmPlaying ? 'on.gif' : 'off.png'
+                }`;
+            });
+
+            // LED
             onServerStateUpdate('isAlarmEnabled', isAlarmEnabled => {
                 setLed(ledAlarmEl, isAlarmEnabled);
             });
 
+            // Button
             btnAlarmSetEl.onclick = e => {
                 e.preventDefault();
                 setServerState('isAlarmEnabled', !store.isAlarmEnabled);

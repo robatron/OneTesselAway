@@ -1,6 +1,7 @@
 const noteToFreq = require('../audio/Notes');
 const { wait } = require('../AsyncRepeatUtils');
 const { onEvent } = require('../EventUtils');
+const { setState } = require('../SharedStore');
 const songs = require('../audio/songs');
 
 const PLAY_DUTY_CYCLE = 0.2;
@@ -51,7 +52,7 @@ const initBuzzerHardware = ({ isDeviceEnabled, piezoPort, piezoPin }) => {
 
     // Play a j5-format song
     // https://github.com/julianduque/j5-songs
-    const playSong = async ({ piezoPort, piezoPin, song }) => {
+    const playSong = async ({ cb, piezoPort, piezoPin, song }) => {
         const notes = song.song;
         notes.push([null, 0]);
         for (let i = 0; i < notes.length; ++i) {
@@ -64,10 +65,26 @@ const initBuzzerHardware = ({ isDeviceEnabled, piezoPort, piezoPin }) => {
                 duration,
             });
         }
+        cb();
     };
 
     onEvent('action:playAlarm', songName => {
-        playSong({ piezoPin, piezoPort, song: songs[songName] });
+        setState({
+            key: 'isAlarmPlaying',
+            val: true,
+        });
+
+        playSong({
+            cb: () => {
+                setState({
+                    key: 'isAlarmPlaying',
+                    val: false,
+                });
+            },
+            piezoPin,
+            piezoPort,
+            song: songs[songName],
+        });
     });
 };
 

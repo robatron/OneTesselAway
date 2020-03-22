@@ -39,12 +39,18 @@ const initTrafficLight = ({
     }
 
     // Initialize LED state in global store
-    Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
-        setState({ key: 'isTrafficLightStateOn_' + state, val: false });
+    Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
+        const state = constants.STOPLIGHT_STATES[stateKey];
+        setState({
+            key: 'isTrafficLightStateOn_' + state,
+            val: false,
+        });
     });
 
     // Set up stoplight state change handlers
-    Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
+    Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
+        const state = constants.STOPLIGHT_STATES[stateKey];
+
         onEvent('updated:isTrafficLightStateOn_' + state, result => {
             // Always start by disabling all LEDs
             Object.keys(leds).forEach(led => {
@@ -64,12 +70,10 @@ const initTrafficLight = ({
 
     // Set up stoplight state change action. Enable one of the traffic light
     // states. The special state 'go' means to set state of all at once.
-    onEvent('action:setTrafficLightState', tfState => {
-        Object.keys(constants.STOPLIGHT_STATES).forEach(state => {
-            setState({
-                key: 'isTrafficLightStateOn_' + state,
-                val: state === tfState,
-            });
+    onEvent('action:setTrafficLightState', slState => {
+        setState({
+            key: 'isTrafficLightStateOn_' + slState,
+            val: true,
         });
     });
 };

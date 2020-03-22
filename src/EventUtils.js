@@ -8,6 +8,7 @@ const ee = new eventEmitter();
 let io;
 
 const emitEvent = (eventName, ...rest) => {
+    log.info(['emitEvent', eventName, ...rest].join(' '));
     ee.emit(eventName, ...rest);
     io.emit(eventName, ...rest);
 };

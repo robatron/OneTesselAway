@@ -38,9 +38,9 @@ const updateArrivalsAndHardware = async () => {
     // Grab the updated device state
     const currentDeviceState = getDeviceState();
 
-    // Set the traffic light state and trigger buzzer based on arrival
+    // Set the stoplight state and trigger buzzer based on arrival
     // of next bus on primary route
-    emitEvent('action:setTrafficLightState', currentDeviceState.stoplightState);
+    emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
 
     if (DEVICE_ENABLED) {
         // Update LCD. Do last b/c it's very slow.

@@ -209,33 +209,30 @@
 
             Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
                 const state = constants.STOPLIGHT_STATES[stateKey];
-                onServerStateUpdate(
-                    'isTrafficLightStateOn_' + state,
-                    result => {
-                        // Turn on all stoplight LEDs if 'go' state
-                        if (state === constants.STOPLIGHT_STATES.GO) {
-                            Object.keys(ledStoplightEls).forEach(
-                                ledStoplightElKey => {
-                                    const ledStoplightEl =
-                                        ledStoplightEls[ledStoplightElKey];
-                                    setLed(ledStoplightEl, true);
-                                },
-                            );
-                        } else {
-                            // Otherwise, turn off all stoplight LEDs except the one
-                            Object.keys(ledStoplightEls).forEach(
-                                ledStoplightElKey => {
-                                    const ledStoplightEl =
-                                        ledStoplightEls[ledStoplightElKey];
-                                    setLed(ledStoplightEl, false);
-                                },
-                            );
+                onServerStateUpdate('isStoplightStateOn_' + state, result => {
+                    // Turn on all stoplight LEDs if 'go' state
+                    if (state === constants.STOPLIGHT_STATES.GO) {
+                        Object.keys(ledStoplightEls).forEach(
+                            ledStoplightElKey => {
+                                const ledStoplightEl =
+                                    ledStoplightEls[ledStoplightElKey];
+                                setLed(ledStoplightEl, true);
+                            },
+                        );
+                    } else {
+                        // Otherwise, turn off all stoplight LEDs except the one
+                        Object.keys(ledStoplightEls).forEach(
+                            ledStoplightElKey => {
+                                const ledStoplightEl =
+                                    ledStoplightEls[ledStoplightElKey];
+                                setLed(ledStoplightEl, false);
+                            },
+                        );
 
-                            const ledStoplightEl = ledStoplightEls[state];
-                            setLed(ledStoplightEl, result);
-                        }
-                    },
-                );
+                        const ledStoplightEl = ledStoplightEls[state];
+                        setLed(ledStoplightEl, result);
+                    }
+                });
             });
 
             // Alarm -----------------------------------------------------------

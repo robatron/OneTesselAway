@@ -1,5 +1,5 @@
 const { initAlarmHardware } = require('./Alarm');
-const { initTrafficLight } = require('./TrafficLight');
+const { initStoplight } = require('./Stoplight');
 const { initBuzzerHardware } = require('./Buzzer');
 // const { nyanIntro } = require('../audio/songs');
 // const { initLcdScreen } = require('./LcdScreen');
@@ -53,7 +53,7 @@ const initHardware = ({
             });
 
             // Init stoplight hardware
-            initTrafficLight({
+            initStoplight({
                 isDeviceEnabled,
                 ledReadyPin,
                 ledSteadyPin,
@@ -63,9 +63,9 @@ const initHardware = ({
             // // Init LCD last b/c it's slow
             // initLcdScreen(lcdPins);
 
-            // // Play a tune and flash traffic light once the hardware is ready to go
+            // // Play a tune and flash stoplight once the hardware is ready to go
             // playSong({ piezoPin, piezoPort, song: nyanIntro });
-            // setTrafficLightState('go');
+            // setStoplightState('go');
 
             // Resolve once hardware initialized
             resolve();

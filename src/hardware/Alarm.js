@@ -52,9 +52,9 @@ const initAlarmHardware = ({
     // When the stoplight state changes to 'go', and the alarm is enabled, play
     // the alarm, then disable the alarm
     onEvent(
-        'updated:isTrafficLightStateOn_' + constants.STOPLIGHT_STATES.GO,
-        isTrafficLightGoState => {
-            if (getState.isAlarmEnabled && isTrafficLightGoState) {
+        'updated:isStoplightStateOn_' + constants.STOPLIGHT_STATES.GO,
+        isStoplightGoState => {
+            if (getState.isAlarmEnabled && isStoplightGoState) {
                 emitEvent('action:playAlarm', 'nyanIntro');
                 setState('isAlarmEnabled', false);
                 ledAlarmStatus.off();

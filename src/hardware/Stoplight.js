@@ -9,7 +9,7 @@ const leds = constants.STOPLIGHT_LED_NAMES.reduce((accum, ledName) => {
     return accum;
 }, {});
 
-const initTrafficLight = ({
+const initStoplight = ({
     isDeviceEnabled,
     ledReadyPin,
     ledSteadyPin,
@@ -42,7 +42,7 @@ const initTrafficLight = ({
     Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
         const state = constants.STOPLIGHT_STATES[stateKey];
         setState({
-            key: 'isTrafficLightStateOn_' + state,
+            key: 'isStoplightStateOn_' + state,
             val: false,
         });
     });
@@ -51,7 +51,7 @@ const initTrafficLight = ({
     Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
         const state = constants.STOPLIGHT_STATES[stateKey];
 
-        onEvent('updated:isTrafficLightStateOn_' + state, result => {
+        onEvent('updated:isStoplightStateOn_' + state, result => {
             // Always start by disabling all LEDs
             Object.keys(leds).forEach(led => {
                 leds[led].off();
@@ -68,17 +68,16 @@ const initTrafficLight = ({
         });
     });
 
-    // Set up stoplight state change action. Enable one of the traffic light
+    // Set up stoplight state change action. Enable one of the stoplight
     // states. The special state 'go' means to set state of all at once.
-    onEvent('action:setTrafficLightState', slState => {
+    onEvent('action:setStoplightState', slState => {
         setState({
-            key: 'isTrafficLightStateOn_' + slState,
+            key: 'isStoplightStateOn_' + slState,
             val: true,
         });
     });
 };
 
 module.exports = {
-    getLeds: () => leds,
-    initTrafficLight,
+    initStoplight,
 };

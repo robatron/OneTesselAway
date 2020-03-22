@@ -16,7 +16,7 @@
  * Supports up to two routes and two stops.
  */
 const http = require('http');
-const Express = require('express');
+const express = require('express');
 const constants = require('./src/Constants');
 const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
@@ -76,12 +76,15 @@ if (DEVICE_ENABLED) {
 }
 
 // Set up Express server for the web UI
-const app = new Express();
+const app = express();
 const server = new http.Server(app);
 
 // Set up the templating engine
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
+
+// Set up static file middleware
+app.use('/static', express.static(__dirname + '/views/static'));
 
 // Set up event system for sending data to the Web UI w/o refreshing the page
 initEvents(server);

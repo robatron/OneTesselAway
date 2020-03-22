@@ -48,23 +48,21 @@ const initAlarmHardware = ({
     onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
     });
-};
 
-// Trigger the alarm buzzer if all true:
-// - The alarm is enabled
-// - The traffic light state is 'go'
-const triggerAlarmBuzzer = async trafficLightState => {
-    if (
-        getState.isAlarmEnabled &&
-        trafficLightState === constants.STOPLIGHT_STATES.GO
-    ) {
-        emitEvent('action:playAlarm', 'nyanIntro');
-        setState('isAlarmEnabled', false);
-        ledAlarmStatus.off();
-    }
+    // When the stoplight state changes to 'go', and the alarm is enabled, play
+    // the alarm, then disable the alarm
+    onEvent(
+        'updated:isTrafficLightStateOn_' + constants.STOPLIGHT_STATES.GO,
+        isTrafficLightGoState => {
+            if (getState.isAlarmEnabled && isTrafficLightGoState) {
+                emitEvent('action:playAlarm', 'nyanIntro');
+                setState('isAlarmEnabled', false);
+                ledAlarmStatus.off();
+            }
+        },
+    );
 };
 
 module.exports = {
     initAlarmHardware,
-    triggerAlarmBuzzer,
 };

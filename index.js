@@ -22,7 +22,6 @@ const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
-const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
     getDeviceState,
     processDeviceStateForDisplay,
@@ -44,8 +43,6 @@ const updateArrivalsAndHardware = async () => {
     emitEvent('action:setTrafficLightState', currentDeviceState.stoplightState);
 
     if (DEVICE_ENABLED) {
-        triggerAlarmBuzzer(currentDeviceState.stoplightState);
-
         // Update LCD. Do last b/c it's very slow.
         updateLcdScreen(currentDeviceState.displayLines);
     }

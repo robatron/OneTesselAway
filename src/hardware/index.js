@@ -1,6 +1,6 @@
 const { initAlarmHardware } = require('./Alarm');
 const { initTrafficLight } = require('./TrafficLight');
-// const { playSong } = require('../audio/SoundUtils');
+const { initBuzzerHardware } = require('./Buzzer');
 // const { nyanIntro } = require('../audio/songs');
 // const { initLcdScreen } = require('./LcdScreen');
 
@@ -38,16 +38,21 @@ const initHardware = ({
                 `Device board ready. Configuring LCD display with pins ${lcdPins}...`,
             );
 
-            // Alarm button, buzzer, and light
-            initAlarmHardware({
-                buttonAlarmTogglePin,
+            // Init buzzer hardware
+            initBuzzerHardware({
                 isDeviceEnabled,
-                ledAlarmStatusPin,
                 piezoPin,
                 piezoPort,
             });
 
-            // Traffic light: Set of 3 LEDs
+            // Init alarm hardware
+            initAlarmHardware({
+                buttonAlarmTogglePin,
+                isDeviceEnabled,
+                ledAlarmStatusPin,
+            });
+
+            // Init stoplight hardware
             initTrafficLight({
                 isDeviceEnabled,
                 ledReadyPin,

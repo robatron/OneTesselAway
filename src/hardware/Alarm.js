@@ -1,8 +1,6 @@
 const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
 const { getState, setState } = require('../SharedStore');
-const { playSong } = require('../audio/SoundUtils');
-const songs = require('../audio/songs');
 
 let ledAlarmStatus;
 let buttonAlarmToggle;
@@ -11,8 +9,6 @@ const initAlarmHardware = ({
     buttonAlarmTogglePin,
     isDeviceEnabled,
     ledAlarmStatusPin,
-    piezoPin,
-    piezoPort,
 }) => {
     if (isDeviceEnabled) {
         log.info('Initializing alarm hardware...');
@@ -51,10 +47,6 @@ const initAlarmHardware = ({
 
     onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
-    });
-
-    onEvent('action:playAlarm', songName => {
-        playSong({ piezoPin, piezoPort, song: songs[songName] });
     });
 };
 

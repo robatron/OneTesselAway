@@ -3,9 +3,8 @@ const {
     dateTo24HourClockString,
     getMinutesBetweenDates,
 } = require('./TimeUtils');
-const { setState } = require('./SharedStore');
-const constants = require('./Constants');
 const { apiKey } = require('../oba-api-key.json');
+const constants = require('./Constants');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
@@ -82,47 +81,9 @@ const getUpcomingArrivalTimes = async (stopId, routeId) => {
     });
 };
 
-// Updates the arrival info from API
-const updateArrivalInfo = async targetRoutes => {
-    const targetRouteIds = Object.keys(targetRoutes);
-    const arrivalInfo = {};
-
-    for (let i = 0; i < targetRouteIds.length; ++i) {
-        const currentDate = new Date();
-        const routeId = targetRouteIds[i];
-        const routeName = targetRoutes[routeId].routeName;
-        const stopId = targetRoutes[routeId].stopId;
-        const stopName = targetRoutes[routeId].stopName;
-        let upcomingArrivalTimes;
-
-        try {
-            upcomingArrivalTimes = await getUpcomingArrivalTimes(
-                stopId,
-                routeId,
-            );
-        } catch (e) {
-            log.warn(
-                `Failed to get upcoming arrival times for route ${routeId} and stop ${stopId}: ${e.toString()}`,
-            );
-        }
-
-        if (upcomingArrivalTimes) {
-            arrivalInfo[routeId] = {
-                deviceRequestDate: currentDate,
-                routeName,
-                stopName,
-                upcomingArrivalTimes,
-            };
-        }
-    }
-
-    setState('arrivalInfo', arrivalInfo);
-};
-
 module.exports = {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
     getUpcomingArrivalTimes,
-    updateArrivalInfo,
 };

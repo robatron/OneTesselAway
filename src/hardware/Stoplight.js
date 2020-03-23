@@ -68,39 +68,14 @@ const initStoplight = ({
         });
     });
 
-    // When arrivalInfo is updated, set a stoplight state
-    onEvent('updated:arrivalInfo', arrivalInfo => {
-        const stoplightState = getStoplightState(arrivalInfo);
+    // Set up stoplight state change action. Enable one of the stoplight
+    // states. The special state 'go' means to set state of all at once.
+    onEvent('action:setStoplightState', slState => {
         setState({
-            key: 'isStoplightStateOn_' + stoplightState,
+            key: 'isStoplightStateOn_' + slState,
             val: true,
         });
     });
-};
-
-// Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
-// the closest arrival time of the primary route
-const getStoplightState = arrivalInfo => {
-    const closestMinsUntilArrival =
-        arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
-            .minsUntilArrival;
-    const stoplightStates = Object.keys(constants.STOPLIGHT_TIME_RANGES);
-
-    let stoplightState;
-    for (let i = 0; stoplightStates.length; ++i) {
-        const curStoplightState = stoplightStates[i];
-        const curStoplightStateRange =
-            constants.STOPLIGHT_TIME_RANGES[curStoplightState];
-        if (
-            closestMinsUntilArrival >= curStoplightStateRange[0] &&
-            closestMinsUntilArrival < curStoplightStateRange[1]
-        ) {
-            stoplightState = curStoplightState;
-            break;
-        }
-    }
-
-    return stoplightState;
 };
 
 module.exports = {

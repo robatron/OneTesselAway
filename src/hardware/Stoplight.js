@@ -38,42 +38,25 @@ const initStoplight = ({
         });
     }
 
-    // Initialize LED state in global store
-    Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
-        const state = constants.STOPLIGHT_STATES[stateKey];
-        setState({
-            key: 'isStoplightStateOn_' + state,
-            val: false,
+    // When the stoplight state is updated, turn on the corresponding LED(s)
+    onEvent('updated:stoplightState', stoplightState => {
+        Object.keys(leds).forEach(ledName => {
+            leds[ledName][
+                stoplightState ===
+                [constants.STOPLIGHT_STATES.GO, ledName].includes(
+                    stoplightState,
+                )
+                    ? 'on'
+                    : 'off'
+            ]();
         });
     });
 
-    // Set up stoplight state change handlers
-    Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
-        const state = constants.STOPLIGHT_STATES[stateKey];
-
-        onEvent('updated:isStoplightStateOn_' + state, result => {
-            // Always start by disabling all LEDs
-            Object.keys(leds).forEach(led => {
-                leds[led].off();
-            });
-
-            // The 'GO' state is special: Turn on all LEDs
-            if (state === constants.STOPLIGHT_STATES.GO) {
-                Object.keys(leds).forEach(led => {
-                    leds[led].on();
-                });
-            } else {
-                leds[state][result ? 'on' : 'off']();
-            }
-        });
-    });
-
-    // Set up stoplight state change action. Enable one of the stoplight
-    // states. The special state 'go' means to set state of all at once.
-    onEvent('action:setStoplightState', slState => {
+    // Allow the stoplight state to be set manually
+    onEvent('action:setStoplightState', stoplightState => {
         setState({
-            key: 'isStoplightStateOn_' + slState,
-            val: true,
+            key: 'stoplightState',
+            val: stoplightState,
         });
     });
 };

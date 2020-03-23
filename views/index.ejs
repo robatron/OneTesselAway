@@ -207,31 +207,19 @@
 
             // Stoplight -------------------------------------------------------
 
-            Object.keys(constants.STOPLIGHT_STATES).forEach(stateKey => {
-                const state = constants.STOPLIGHT_STATES[stateKey];
-                onServerStateUpdate('isStoplightStateOn_' + state, result => {
-                    // Turn on all stoplight LEDs if 'go' state
-                    if (state === constants.STOPLIGHT_STATES.GO) {
-                        Object.keys(ledStoplightEls).forEach(
-                            ledStoplightElKey => {
-                                const ledStoplightEl =
-                                    ledStoplightEls[ledStoplightElKey];
-                                setLed(ledStoplightEl, true);
-                            },
-                        );
-                    } else {
-                        // Otherwise, turn off all stoplight LEDs except the one
-                        Object.keys(ledStoplightEls).forEach(
-                            ledStoplightElKey => {
-                                const ledStoplightEl =
-                                    ledStoplightEls[ledStoplightElKey];
-                                setLed(ledStoplightEl, false);
-                            },
-                        );
-
-                        const ledStoplightEl = ledStoplightEls[state];
-                        setLed(ledStoplightEl, result);
-                    }
+            // When the stoplight state is updated, turn on the corresponding
+            // LED(s). Turn on all of them if stoplight state is 'go';
+            onServerStateUpdate('stoplightState', stoplightState => {
+                constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
+                    const ledStoplightEl = document.querySelector(
+                        '.led-stoplight-' + ledName,
+                    );
+                    setLed(
+                        ledStoplightEl,
+                        [constants.STOPLIGHT_STATES.GO, ledName].includes(
+                            stoplightState,
+                        ),
+                    );
                 });
             });
 

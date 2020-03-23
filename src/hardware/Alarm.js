@@ -54,16 +54,16 @@ const initAlarmHardware = ({
 
     // When the stoplight state changes to 'go', and the alarm is enabled, play
     // the alarm, then disable the alarm
-    onEvent(
-        'updated:isStoplightStateOn_' + constants.STOPLIGHT_STATES.GO,
-        isStoplightGoState => {
-            if (getState.isAlarmEnabled && isStoplightGoState) {
-                emitEvent('action:playAlarm', 'nyanIntro');
-                setState('isAlarmEnabled', false);
-                ledAlarmStatus.off();
-            }
-        },
-    );
+    onEvent('updated:stoplightState', stoplightState => {
+        if (
+            stoplightState === constants.STOPLIGHT_STATES.GO &&
+            getState.isAlarmEnabled
+        ) {
+            emitEvent('action:playAlarm', 'nyanIntro');
+            setState('isAlarmEnabled', false);
+            ledAlarmStatus.off();
+        }
+    });
 };
 
 module.exports = {

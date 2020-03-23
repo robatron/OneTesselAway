@@ -26,8 +26,8 @@ const { updateLcdScreen } = require('./src/hardware/LcdScreen');
 const {
     getDeviceState,
     processDeviceStateForDisplay,
-    updateArrivalInfo,
 } = require('./src/DeviceState');
+const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
 
 // Helper Functions / Data -----------------------------------------------------
 
@@ -38,10 +38,6 @@ const updateArrivalsAndHardware = async () => {
 
     // Grab the updated device state
     const currentDeviceState = getDeviceState();
-
-    // Set the stoplight state and trigger buzzer based on arrival
-    // of next bus on primary route
-    emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
 
     // Update LCD. Do last b/c it's very slow.
     updateLcdScreen(currentDeviceState.displayLines);
@@ -137,11 +133,11 @@ initSharedStore();
     }
 
     // Wait for the first arrival info to return before starting up
-    await updateArrivalsAndHardware();
+    await updateArrivalInfo();
 
     // After the initial API fetch, continue updating asynchronously
     const apiIntervalId = setInterval(
-        updateArrivalsAndHardware,
+        updateArrivalInfo,
         constants.API_UPDATE_INTERVAL,
     );
 

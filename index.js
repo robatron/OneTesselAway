@@ -23,35 +23,37 @@ const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
 const { updateLcdScreen } = require('./src/hardware/LcdScreen');
+const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
+
+// Deprecated
 const {
     getDeviceState,
     processDeviceStateForDisplay,
-    updateArrivalInfo,
 } = require('./src/DeviceState');
 
 // Helper Functions / Data -----------------------------------------------------
 
-// Update arrivals from API and hardware from state
-const updateArrivalsAndHardware = async () => {
-    // Fetch a new arrival info synchronously
-    await updateArrivalInfo(constants.TARGET_ROUTES);
+// // Update arrivals from API and hardware from state
+// const updateArrivalsAndHardware = async () => {
+//     // Fetch a new arrival info synchronously
+//     await updateArrivalInfo(constants.TARGET_ROUTES);
 
-    // Grab the updated device state
-    const currentDeviceState = getDeviceState();
+//     // Grab the updated device state
+//     const currentDeviceState = getDeviceState();
 
-    // Set the stoplight state and trigger buzzer based on arrival
-    // of next bus on primary route
-    emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
+//     // Set the stoplight state and trigger buzzer based on arrival
+//     // of next bus on primary route
+//     emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
 
-    // Update LCD. Do last b/c it's very slow.
-    updateLcdScreen(currentDeviceState.displayLines);
+//     // Update LCD. Do last b/c it's very slow.
+//     updateLcdScreen(currentDeviceState.displayLines);
 
-    // Send device state to the Web UI
-    emitEvent(
-        'deviceStateUpdated',
-        processDeviceStateForDisplay(currentDeviceState),
-    );
-};
+//     // Send device state to the Web UI
+//     emitEvent(
+//         'deviceStateUpdated',
+//         processDeviceStateForDisplay(currentDeviceState),
+//     );
+// };
 
 // Initialize ------------------------------------------------------------------
 
@@ -137,11 +139,11 @@ initSharedStore();
     }
 
     // Wait for the first arrival info to return before starting up
-    await updateArrivalsAndHardware();
+    await updateArrivalInfo();
 
     // After the initial API fetch, continue updating asynchronously
     const apiIntervalId = setInterval(
-        updateArrivalsAndHardware,
+        updateArrivalInfo,
         constants.API_UPDATE_INTERVAL,
     );
 

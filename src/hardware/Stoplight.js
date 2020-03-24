@@ -52,13 +52,39 @@ const initStoplight = ({
         });
     });
 
-    // Allow the stoplight state to be set manually
-    onEvent('action:setStoplightState', stoplightState => {
+    // When arrivalInfo is updated, get the stoplight state, and set it
+    onEvent('updated:arrivalInfo', arrivalInfo => {
+        const stoplightState = getStoplightState(arrivalInfo);
         setState({
             key: 'stoplightState',
             val: stoplightState,
         });
     });
+};
+
+// Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
+// the closest arrival time of the primary route
+const getStoplightState = arrivalInfo => {
+    const closestMinsUntilArrival =
+        arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
+            .minsUntilArrival;
+    const stoplightStates = Object.keys(constants.STOPLIGHT_TIME_RANGES);
+
+    let stoplightState;
+    for (let i = 0; stoplightStates.length; ++i) {
+        const curStoplightState = stoplightStates[i];
+        const curStoplightStateRange =
+            constants.STOPLIGHT_TIME_RANGES[curStoplightState];
+        if (
+            closestMinsUntilArrival >= curStoplightStateRange[0] &&
+            closestMinsUntilArrival < curStoplightStateRange[1]
+        ) {
+            stoplightState = curStoplightState;
+            break;
+        }
+    }
+
+    return stoplightState;
 };
 
 module.exports = {

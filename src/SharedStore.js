@@ -7,6 +7,7 @@ const store = {};
 const setState = ({ key, val, meta }) => {
     log.info(['setState', key, val, JSON.stringify(meta) || ''].join(' '));
     store[key] = typeof val === 'function' ? val(store) : val;
+    emitEvent('updated:storeState', store);
     emitEvent(`updated:${key}`, store[key]);
 };
 

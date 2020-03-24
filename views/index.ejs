@@ -125,12 +125,11 @@
             </button>
         </ul>
 
-        <h2>Arrival Info</h2>
+        <h2>Global Store State</h2>
         <p>
-            Latest "arrival info" state in memory, from which the LCD screen
-            contents are derived
+            Contents of the global store
         </p>
-        <textarea id="arrivalInfo" class="text-area">
+        <textarea id="store-state" class="text-area">
 <%= arrivalInfo %>
         </textarea>
 
@@ -164,6 +163,7 @@
                 },
                 {},
             );
+            const textStoreStateEl = document.querySelector('#store-state');
 
             // Utilities -------------------------------------------------------
 
@@ -249,6 +249,16 @@
                 e.preventDefault();
                 setServerState('isAlarmEnabled', !store.isAlarmEnabled);
             };
+
+            // Debug -----------------------------------------------------------
+
+            onServerStateUpdate('storeState', storeState => {
+                textStoreStateEl.innerHTML = JSON.stringify(
+                    storeState,
+                    null,
+                    2,
+                );
+            });
 
             // EXTENDED DEVICE CONTROLS ========================================
 

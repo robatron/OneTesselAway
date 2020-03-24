@@ -144,7 +144,7 @@
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
-        <%- jsConstants %>
+        <%- jsConstants %> <%- initialStore %>
         <script>
             const socket = io.connect();
 
@@ -174,8 +174,6 @@
             };
 
             // Web UI -> server event communication ----------------------------
-
-            const store = {};
 
             // Emit an event to the server
             const emitEvent = (...rest) => {
@@ -215,9 +213,7 @@
 
             // Stoplight -------------------------------------------------------
 
-            // When the stoplight state is updated, turn on the corresponding
-            // LED(s). Turn on all of them if stoplight state is 'go';
-            onServerStateUpdate('stoplightState', stoplightState => {
+            const updateStoplight = stoplightState => {
                 constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
                     const ledStoplightEl = document.querySelector(
                         '.led-stoplight-' + ledName,
@@ -229,7 +225,14 @@
                         ),
                     );
                 });
-            });
+            };
+
+            // When the stoplight state is updated, turn on the corresponding
+            // LED(s). Turn on all of them if stoplight state is 'go';
+            onServerStateUpdate('stoplightState', updateStoplight);
+
+            // Set stoplight on startup
+            updateStoplight(store.stoplightState);
 
             // Alarm -----------------------------------------------------------
 
@@ -250,6 +253,9 @@
                 e.preventDefault();
                 setServerState('isAlarmEnabled', !store.isAlarmEnabled);
             };
+
+            // Set alarm LED on startup
+            setLed(ledAlarmEl, store.isAlarmEnabled);
 
             // Debug -----------------------------------------------------------
 

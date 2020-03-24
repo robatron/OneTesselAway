@@ -4,13 +4,8 @@
  * Display: 2 lines w/ 16 characters each. Example display:
  *
  *  ----------------
- *  11! 15:37 15:49
- *  12  08:11 06:47
- *  ----------------
- *
- *  ----------------
- *  11: 03!  15  45
- *  12: 18   32  51
+ *  11.   03  15  45
+ *  12:   18  32  51
  *  ----------------
  *
  * Supports up to two routes and two stops.
@@ -58,6 +53,13 @@ app.get('/', (req, res) => {
         deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
             reverseLines: true,
         }),
+
+        // Provide the entire store when the page is rendered server-side
+        initialStore: `<script>const store = ${JSON.stringify(
+            getState(),
+            null,
+            2,
+        )}</script>`,
 
         // Supply the constants file to the Web UI to make hardware simulation
         // easier

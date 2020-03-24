@@ -22,7 +22,6 @@ const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
 const { initLogger } = require('./src/Logger');
 const { initSharedStore, setState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
-const { updateLcdScreen } = require('./src/hardware/LcdScreen');
 const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
 
 // Deprecated
@@ -135,7 +134,7 @@ initSharedStore();
     );
 
     if (DEVICE_ENABLED) {
-        updateLcdScreen(['Getting bus', 'arrival info...']);
+        emitEvent('printToScreen', ['Getting bus', 'arrival info...']);
     }
 
     // Wait for the first arrival info to return before starting up

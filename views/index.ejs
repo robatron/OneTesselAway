@@ -22,7 +22,7 @@
                 font-size: 1em;
             }
 
-            .display {
+            .lcd-screen {
                 background-color: green;
                 font-size: 1.2em;
                 font-weight: bold;
@@ -85,8 +85,8 @@
             This simulated state should match exactly what's currently on the
             device.
         </p>
-        <h3>Display</h3>
-        <pre id="displayLines" class="display"><%= displayLines %></pre>
+        <h3>LCD Screen</h3>
+        <pre class="lcd-screen"><%= displayLines %></pre>
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
             <li class="component-row">
@@ -127,8 +127,8 @@
 
         <h2>Arrival Info</h2>
         <p>
-            Latest "arrival info" state in memory, from which the display is
-            derived
+            Latest "arrival info" state in memory, from which the LCD screen
+            contents are derived
         </p>
         <textarea id="arrivalInfo" class="text-area">
 <%= arrivalInfo %>
@@ -153,6 +153,7 @@
             const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
             const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
             const imgBuzzerEl = document.querySelector('.img-buzzer');
+            const lcdScreenEl = document.querySelector('.lcd-screen');
             const ledAlarmEl = document.querySelector('.led-alarm');
             const ledStoplightEls = constants.STOPLIGHT_LED_NAMES.reduce(
                 (accum, ledName) => {
@@ -205,6 +206,12 @@
             const setServerState = (key, val) =>
                 emitEvent('setState', { key, val });
 
+            // LCD Screen ------------------------------------------------------
+
+            onServerStateUpdate('lcdScreenContents', screenLines => {
+                lcdScreenEl.innerHTML = screenLines.join('\n');
+            });
+
             // Stoplight -------------------------------------------------------
 
             // When the stoplight state is updated, turn on the corresponding
@@ -243,9 +250,17 @@
                 setServerState('isAlarmEnabled', !store.isAlarmEnabled);
             };
 
-            // LCD display & debug info ----------------------------------------
+            // EXTENDED DEVICE CONTROLS ========================================
 
-            // Update the display when the device state updates
+            // Play alarm
+            btnAlarmPlayEl.onclick = e => {
+                e.preventDefault();
+                emitEvent('action:playAlarm', 'nyanIntro');
+            };
+
+            // DEPRICATED LCD screen & debug info -----------------------------
+
+            // Update the screen when the device state updates
             socket.on('deviceStateUpdated', deviceState => {
                 //console.log('Device state updated:', deviceState);
 
@@ -258,14 +273,6 @@
                     }
                 });
             });
-
-            // EXTENDED DEVICE CONTROLS ========================================
-
-            // Play alarm
-            btnAlarmPlayEl.onclick = e => {
-                e.preventDefault();
-                emitEvent('action:playAlarm', 'nyanIntro');
-            };
         </script>
     </body>
 </html>

@@ -1,6 +1,5 @@
-const { wait } = require('../AsyncRepeatUtils');
 const constants = require('../Constants');
-const { emitEvent, onEvent } = require('../EventUtils');
+const { onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 
 // Object containing references to LED hardware

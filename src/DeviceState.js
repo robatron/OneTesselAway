@@ -1,7 +1,6 @@
 const constants = require('./Constants');
-const { getUpcomingArrivalTimes } = require('./ArrivalsAPIUtils');
 const { getLatestLogFromFile } = require('./Logger');
-const { getLcdDisplayLines } = require('./DisplayUtils');
+const { getLcdScreenLines } = require('./hardware/LcdScreen');
 const { getState } = require('./SharedStore');
 
 // Main arrival info cache
@@ -13,7 +12,7 @@ const getDeviceState = () => ({
     deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
         reverseLines: true,
     }),
-    displayLines: getLcdDisplayLines(arrivalInfo),
+    displayLines: getLcdScreenLines(arrivalInfo),
     isAlarmEnabled: getState().isAlarmEnabled,
 });
 

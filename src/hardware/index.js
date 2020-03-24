@@ -1,8 +1,10 @@
+const constants = require('../Constants');
+const { emitEvent } = require('../EventUtils');
+const { setState } = require('../SharedStore');
 const { initAlarmHardware } = require('./Alarm');
 const { initStoplight } = require('./Stoplight');
 const { initBuzzerHardware } = require('./Buzzer');
 const { initLcdScreen } = require('./LcdScreen');
-// const { nyanIntro } = require('../audio/songs');
 
 const initHardware = ({
     buttonAlarmTogglePin,
@@ -63,9 +65,12 @@ const initHardware = ({
             // Init LCD last b/c it's slow
             initLcdScreen({ isDeviceEnabled, lcdPins });
 
-            // // Play a tune and flash stoplight once the hardware is ready to go
-            // playSong({ piezoPin, piezoPort, song: nyanIntro });
-            // setStoplightState('go');
+            // Play a tune and flash stoplight once the hardware is ready to go
+            emitEvent('action:playAlarm', 'nyanIntro');
+            setState({
+                key: 'stoplightState',
+                val: constants.STOPLIGHT_STATES.GO,
+            });
 
             // Resolve once hardware initialized
             resolve();

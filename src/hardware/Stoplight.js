@@ -41,7 +41,6 @@ const initStoplight = ({
     onEvent('updated:stoplightState', stoplightState => {
         Object.keys(leds).forEach(ledName => {
             leds[ledName][
-                stoplightState ===
                 [constants.STOPLIGHT_STATES.GO, ledName].includes(
                     stoplightState,
                 )

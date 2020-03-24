@@ -86,7 +86,7 @@
             device.
         </p>
         <h3>LCD Screen</h3>
-        <pre class="lcd-screen"><%= displayLines %></pre>
+        <pre class="lcd-screen"><%= lcdScreenContents %></pre>
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
             <li class="component-row">
@@ -130,14 +130,15 @@
             Contents of the global store
         </p>
         <textarea id="store-state" class="text-area">
-<%= arrivalInfo %>
+<%= storeState %>
         </textarea>
 
         <h2>Device Logs</h2>
         <p>
-            Device logs from the OneTesselAway program, latest first.
+            Device logs from the OneTesselAway program, latest first. Refresh
+            browser to get latest logs.
         </p>
-        <textarea id="deviceLogs" class="text-area">
+        <textarea id="device-logs" class="text-area">
 <%= deviceLogs %>
         </textarea>
 
@@ -267,22 +268,6 @@
                 e.preventDefault();
                 emitEvent('action:playAlarm', 'nyanIntro');
             };
-
-            // DEPRICATED LCD screen & debug info -----------------------------
-
-            // Update the screen when the device state updates
-            socket.on('deviceStateUpdated', deviceState => {
-                //console.log('Device state updated:', deviceState);
-
-                // Update text-based elements
-                Object.keys(deviceState).forEach(stateKey => {
-                    const stateValue = deviceState[stateKey];
-                    const el = document.querySelector(`#${stateKey}`);
-                    if (el) {
-                        el.innerHTML = stateValue;
-                    }
-                });
-            });
         </script>
     </body>
 </html>

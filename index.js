@@ -19,40 +19,10 @@ const http = require('http');
 const express = require('express');
 const constants = require('./src/Constants');
 const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
-const { initLogger } = require('./src/Logger');
-const { initSharedStore, setState } = require('./src/SharedStore');
+const { getLatestLogFromFile, initLogger } = require('./src/Logger');
+const { initSharedStore, getState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
 const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
-
-// Deprecated
-const {
-    getDeviceState,
-    processDeviceStateForDisplay,
-} = require('./src/DeviceState');
-
-// Helper Functions / Data -----------------------------------------------------
-
-// // Update arrivals from API and hardware from state
-// const updateArrivalsAndHardware = async () => {
-//     // Fetch a new arrival info synchronously
-//     await updateArrivalInfo(constants.TARGET_ROUTES);
-
-//     // Grab the updated device state
-//     const currentDeviceState = getDeviceState();
-
-//     // Set the stoplight state and trigger buzzer based on arrival
-//     // of next bus on primary route
-//     emitEvent('action:setStoplightState', currentDeviceState.stoplightState);
-
-//     // Update LCD. Do last b/c it's very slow.
-//     updateLcdScreen(currentDeviceState.displayLines);
-
-//     // Send device state to the Web UI
-//     emitEvent(
-//         'deviceStateUpdated',
-//         processDeviceStateForDisplay(currentDeviceState),
-//     );
-// };
 
 // Initialize ------------------------------------------------------------------
 
@@ -83,9 +53,11 @@ app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
-    const currentDeviceState = getDeviceState();
     res.render('index', {
-        ...processDeviceStateForDisplay(currentDeviceState),
+        // Supply the device logs on render. Must refresh to get new ones.
+        deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
+            reverseLines: true,
+        }),
 
         // Supply the constants file to the Web UI to make hardware simulation
         // easier
@@ -94,6 +66,12 @@ app.get('/', (req, res) => {
             null,
             2,
         )}</script>`,
+
+        // Initial LCD screen contents
+        lcdScreenContents: getState().lcdScreenContents.join('\n'),
+
+        // Global store
+        storeState: JSON.stringify(getState(), null, 2),
     });
 });
 

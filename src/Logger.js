@@ -1,8 +1,8 @@
 // Sets up global logger
 
 const fs = require('fs');
-const { createLogger, transports } = require('winston');
 const { format } = require('logform');
+const { createLogger, transports } = require('winston');
 
 // Global shared log
 global.log;

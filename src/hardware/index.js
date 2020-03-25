@@ -1,10 +1,10 @@
+const { initAlarmHardware } = require('./Alarm');
+const { initBuzzerHardware } = require('./Buzzer');
+const { initLcdScreen } = require('./LcdScreen');
+const { initStoplight } = require('./Stoplight');
 const constants = require('../Constants');
 const { emitEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
-const { initAlarmHardware } = require('./Alarm');
-const { initStoplight } = require('./Stoplight');
-const { initBuzzerHardware } = require('./Buzzer');
-const { initLcdScreen } = require('./LcdScreen');
 
 const initHardware = ({
     buttonAlarmTogglePin,

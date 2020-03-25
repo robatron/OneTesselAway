@@ -1,7 +1,7 @@
-const noteToFreq = require('../audio/Notes');
 const { wait } = require('../AsyncRepeatUtils');
 const { onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
+const noteToFreq = require('../audio/Notes');
 const songs = require('../audio/songs');
 
 const PLAY_DUTY_CYCLE = 0.2;

@@ -10,14 +10,14 @@
  *
  * Supports up to two routes and two stops.
  */
-const http = require('http');
 const express = require('express');
+const http = require('http');
+const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const { emitEvent, initEvents, onEvent } = require('./src/EventUtils');
+const { emitEvent, initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { initSharedStore, getState } = require('./src/SharedStore');
 const { initHardware } = require('./src/hardware');
-const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
 
 // Initialize ------------------------------------------------------------------
 

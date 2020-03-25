@@ -1,4 +1,4 @@
-const { emitEvent, onEvent } = require('../EventUtils');
+const { onEvent } = require('../EventUtils');
 const { setState } = require('../SharedStore');
 
 // LCD screen hardware and utilities

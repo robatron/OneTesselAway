@@ -86,7 +86,8 @@
             device.
         </p>
         <h3>LCD Screen</h3>
-        <pre class="lcd-screen"><%= lcdScreenContents %></pre>
+        <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
+        <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
             <li class="component-row">
@@ -153,7 +154,7 @@
             const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
             const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
             const imgBuzzerEl = document.querySelector('.img-buzzer');
-            const lcdScreenEl = document.querySelector('.lcd-screen');
+            const lcdScreenEls = document.querySelectorAll('.lcd-screen');
             const ledAlarmEl = document.querySelector('.led-alarm');
             const ledStoplightEls = constants.STOPLIGHT_LED_NAMES.reduce(
                 (accum, ledName) => {
@@ -207,8 +208,12 @@
 
             // LCD Screen ------------------------------------------------------
 
-            onServerStateUpdate('lcdScreenContents', screenLines => {
-                lcdScreenEl.innerHTML = screenLines.join('\n');
+            onServerStateUpdate('lcdScreenLines', screenLines => {
+                lcdScreenEls.forEach(
+                    (lcdScreenEl, i) =>
+                        (lcdScreenEl.innerHTML =
+                            screenLines[i] || lcdScreenEl.innerHTML),
+                );
             });
 
             // Stoplight -------------------------------------------------------

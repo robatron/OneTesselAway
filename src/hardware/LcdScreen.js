@@ -33,14 +33,14 @@ const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
         };
     }
 
-    onEvent('updated:lcdScreenContents', screenLines => {
+    onEvent('updated:lcdScreenLines', screenLines => {
         updateLcdScreen(screenLines);
     });
 
     onEvent('updated:arrivalInfo', arrivalInfo => {
         const screenLines = getLcdScreenLines(arrivalInfo);
         setState({
-            key: 'lcdScreenContents',
+            key: 'lcdScreenLines',
             val: screenLines,
         });
     });

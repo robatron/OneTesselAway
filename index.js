@@ -70,7 +70,7 @@ app.get('/', (req, res) => {
         )}</script>`,
 
         // Initial LCD screen contents
-        lcdScreenContents: getState().lcdScreenContents.join('\n'),
+        lcdScreenLines: getState().lcdScreenLines,
 
         // Global store
         storeState: JSON.stringify(getState(), null, 2),

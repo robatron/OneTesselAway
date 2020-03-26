@@ -14,7 +14,11 @@ const express = require('express');
 const http = require('http');
 const { updateArrivalInfo } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const { emitEvent, initEvents } = require('./src/EventUtils');
+const {
+    emitEvent,
+    initEvents,
+    onGlobalStateUpdate,
+} = require('./src/EventUtils');
 const { setState } = require('./src/GlobalState');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { initGlobalState, getState } = require('./src/GlobalState');
@@ -89,6 +93,8 @@ app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
     log.info(`Returning example OneBusAway response from "${egRespPath}"`);
 
     const egResp = require(egRespPath);
+    setState('forcedOBAResponse', egResp);
+    setState('APIUpdateInterval', constants.API_UPDATE_INTERVAL);
 
 });
 

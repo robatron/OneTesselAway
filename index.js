@@ -136,7 +136,7 @@ app.get('/forced-oba-resp/:exampleResponse', (req, res) => {
     // Wait for the first arrival info to return before starting up
     await updateArrivalInfo();
 
-    // After the initial API fetch, continue updating asynchronously
+    // After the initial API fetch, continue updating
     const apiIntervalId = setInterval(
         updateArrivalInfo,
         constants.API_UPDATE_INTERVAL,

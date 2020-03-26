@@ -1,5 +1,5 @@
 const constants = require('../Constants');
-const { onEvent } = require('../EventUtils');
+const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
 
 // Object containing references to LED hardware
@@ -38,7 +38,7 @@ const initStoplight = ({
     }
 
     // When the stoplight state is updated, turn on the corresponding LED(s)
-    onEvent('updated:stoplightState', stoplightState => {
+    onGlobalStateUpdate('stoplightState', stoplightState => {
         Object.keys(leds).forEach(ledName => {
             leds[ledName][
                 [constants.STOPLIGHT_STATES.GO, ledName].includes(
@@ -51,7 +51,7 @@ const initStoplight = ({
     });
 
     // When arrivalInfo is updated, get the stoplight state, and set it
-    onEvent('updated:arrivalInfo', arrivalInfo => {
+    onGlobalStateUpdate('arrivalInfo', arrivalInfo => {
         const stoplightState = getStoplightState(arrivalInfo);
         setState('stoplightState', stoplightState);
     });

@@ -182,8 +182,9 @@
                 socket.emit(eventName, ...rest);
             };
 
-            // When the server state updates an item in the global store...
-            const onServerStateUpdate = (stateKey, cb) => {
+            // When the server state updates an item in the global store, call
+            // the callback, and sync the front-end state with the back-end
+            const onGlobalStateUpdate = (stateKey, cb) => {
                 socket.on('updated:' + stateKey, updatedVal => {
                     console.log(
                         'onStateUpdatedEvent',
@@ -201,7 +202,7 @@
 
             // LCD Screen ------------------------------------------------------
 
-            onServerStateUpdate('lcdScreenLines', screenLines => {
+            onGlobalStateUpdate('lcdScreenLines', screenLines => {
                 lcdScreenEls.forEach(
                     (lcdScreenEl, i) =>
                         (lcdScreenEl.innerHTML =
@@ -227,7 +228,7 @@
 
             // When the stoplight state is updated, turn on the corresponding
             // LED(s). Turn on all of them if stoplight state is 'go';
-            onServerStateUpdate('stoplightState', updateStoplight);
+            onGlobalStateUpdate('stoplightState', updateStoplight);
 
             // Set stoplight on startup
             updateStoplight(globalState.stoplightState);
@@ -235,14 +236,14 @@
             // Alarm -----------------------------------------------------------
 
             // Speaker
-            onServerStateUpdate('isAlarmPlaying', isAlarmPlaying => {
+            onGlobalStateUpdate('isAlarmPlaying', isAlarmPlaying => {
                 imgBuzzerEl.src = `/static/buzzer-${
                     isAlarmPlaying ? 'on.gif' : 'off.png'
                 }`;
             });
 
             // LED
-            onServerStateUpdate('isAlarmEnabled', isAlarmEnabled => {
+            onGlobalStateUpdate('isAlarmEnabled', isAlarmEnabled => {
                 setLed(ledAlarmEl, isAlarmEnabled);
             });
 
@@ -257,7 +258,7 @@
 
             // Debug -----------------------------------------------------------
 
-            onServerStateUpdate('globalState', globalState => {
+            onGlobalStateUpdate('globalState', globalState => {
                 textGlobalStateEl.innerHTML = JSON.stringify(
                     globalState,
                     null,

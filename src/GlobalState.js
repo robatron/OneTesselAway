@@ -1,4 +1,4 @@
-const { emitEvent, onEvent } = require('./EventUtils');
+const { emitGlobalStateUpdateEvent, onEvent } = require('./EventUtils');
 
 // Global state which is a flat object
 const globalState = {};
@@ -8,8 +8,8 @@ const globalState = {};
 const setState = (key, val, meta) => {
     log.info(['setState', key, val, JSON.stringify(meta) || ''].join(' '));
     globalState[key] = typeof val === 'function' ? val(globalState) : val;
-    emitEvent('updated:globalState', globalState);
-    emitEvent(`updated:${key}`, globalState[key]);
+    emitGlobalStateUpdateEvent('globalState', globalState);
+    emitGlobalStateUpdateEvent(key, globalState[key]);
 };
 
 // Allow state to be set via the Web UI

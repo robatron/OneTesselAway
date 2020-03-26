@@ -1,5 +1,5 @@
 const constants = require('../Constants');
-const { emitEvent, onEvent } = require('../EventUtils');
+const { emitEvent, onGlobalStateUpdate } = require('../EventUtils');
 const { getState, setState } = require('../GlobalState');
 
 let ledAlarmStatus;
@@ -48,13 +48,13 @@ const initAlarmHardware = ({
     });
 
     // The alarm LED should be on when the alarm is set, and off when unset
-    onEvent('updated:isAlarmEnabled', isAlarmEnabled => {
+    onGlobalStateUpdate('isAlarmEnabled', isAlarmEnabled => {
         ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
     });
 
     // When the stoplight state changes to 'go', and the alarm is enabled, play
     // the alarm, then disable the alarm
-    onEvent('updated:stoplightState', stoplightState => {
+    onGlobalStateUpdate('stoplightState', stoplightState => {
         if (
             stoplightState === constants.STOPLIGHT_STATES.GO &&
             getState().isAlarmEnabled

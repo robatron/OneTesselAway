@@ -1,4 +1,4 @@
-const { onEvent } = require('../EventUtils');
+const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
 
 // LCD screen hardware and utilities
@@ -33,11 +33,11 @@ const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
         };
     }
 
-    onEvent('updated:lcdScreenLines', screenLines => {
+    onGlobalStateUpdate('lcdScreenLines', screenLines => {
         updateLcdScreen(screenLines);
     });
 
-    onEvent('updated:arrivalInfo', arrivalInfo => {
+    onGlobalStateUpdate('arrivalInfo', arrivalInfo => {
         const screenLines = getLcdScreenLines(arrivalInfo);
         setState('lcdScreenLines', screenLines);
     });

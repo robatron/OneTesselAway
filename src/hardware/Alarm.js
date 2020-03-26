@@ -1,6 +1,6 @@
 const constants = require('../Constants');
 const { emitEvent, onEvent } = require('../EventUtils');
-const { getState, setState } = require('../SharedStore');
+const { getState, setState } = require('../GlobalState');
 
 let ledAlarmStatus;
 let buttonAlarmToggle;

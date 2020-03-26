@@ -16,7 +16,7 @@ const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
 const { emitEvent, initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
-const { initSharedStore, getState } = require('./src/SharedStore');
+const { initGlobalState, getState } = require('./src/GlobalState');
 const { initHardware } = require('./src/hardware');
 
 // Initialize ------------------------------------------------------------------
@@ -54,8 +54,8 @@ app.get('/', (req, res) => {
             reverseLines: true,
         }),
 
-        // Provide the entire store when the page is rendered server-side
-        initialStore: `<script>const store = ${JSON.stringify(
+        // Provide the entire state when the page is rendered server-side
+        globalState: `<script>const globalState = ${JSON.stringify(
             getState(),
             null,
             2,
@@ -71,14 +71,11 @@ app.get('/', (req, res) => {
 
         // Initial LCD screen contents
         lcdScreenLines: getState().lcdScreenLines,
-
-        // Global store
-        storeState: JSON.stringify(getState(), null, 2),
     });
 });
 
-// Init shared store for the server and the web UI
-initSharedStore();
+// Init global state for the server and the web UI
+initGlobalState();
 
 // Start -----------------------------------------------------------------------
 

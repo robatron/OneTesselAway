@@ -1,5 +1,5 @@
 const { onEvent } = require('../EventUtils');
-const { setState } = require('../SharedStore');
+const { setState } = require('../GlobalState');
 
 // LCD screen hardware and utilities
 

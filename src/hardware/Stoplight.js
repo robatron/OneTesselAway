@@ -1,6 +1,6 @@
 const constants = require('../Constants');
 const { onEvent } = require('../EventUtils');
-const { setState } = require('../SharedStore');
+const { setState } = require('../GlobalState');
 
 // Object containing references to LED hardware
 const leds = constants.STOPLIGHT_LED_NAMES.reduce((accum, ledName) => {

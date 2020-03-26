@@ -4,7 +4,7 @@ const { initLcdScreen } = require('./LcdScreen');
 const { initStoplight } = require('./Stoplight');
 const constants = require('../Constants');
 const { emitEvent } = require('../EventUtils');
-const { setState } = require('../SharedStore');
+const { setState } = require('../GlobalState');
 
 const initHardware = ({
     buttonAlarmTogglePin,

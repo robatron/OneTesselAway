@@ -1,6 +1,6 @@
 const { wait } = require('../AsyncUtils');
 const { onEvent } = require('../EventUtils');
-const { setState } = require('../SharedStore');
+const { setState } = require('../GlobalState');
 const noteToFreq = require('../audio/Notes');
 const songs = require('../audio/songs');
 

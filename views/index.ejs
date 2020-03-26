@@ -126,12 +126,12 @@
             </button>
         </ul>
 
-        <h2>Global Store State</h2>
+        <h2>Global State</h2>
         <p>
-            Contents of the global store
+            Contents of the global state
         </p>
-        <textarea id="store-state" class="text-area">
-<%= storeState %>
+        <textarea id="global-state" class="text-area">
+<%= globalState %>
         </textarea>
 
         <h2>Device Logs</h2>
@@ -145,7 +145,7 @@
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
-        <%- jsConstants %> <%- initialStore %>
+        <%- jsConstants %> <%- globalState %>
         <script>
             const socket = io.connect();
 
@@ -165,7 +165,7 @@
                 },
                 {},
             );
-            const textStoreStateEl = document.querySelector('#store-state');
+            const textGlobalStateEl = document.querySelector('#global-state');
 
             // Utilities -------------------------------------------------------
 
@@ -197,7 +197,7 @@
                         'updated:' + stateKey,
                         updatedVal,
                     );
-                    store[stateKey] = updatedVal;
+                    globalState[stateKey] = updatedVal;
                     cb(updatedVal);
                 });
             };
@@ -237,7 +237,7 @@
             onServerStateUpdate('stoplightState', updateStoplight);
 
             // Set stoplight on startup
-            updateStoplight(store.stoplightState);
+            updateStoplight(globalState.stoplightState);
 
             // Alarm -----------------------------------------------------------
 
@@ -256,17 +256,17 @@
             // Button
             btnAlarmSetEl.onclick = e => {
                 e.preventDefault();
-                setServerState('isAlarmEnabled', !store.isAlarmEnabled);
+                setServerState('isAlarmEnabled', !globalState.isAlarmEnabled);
             };
 
             // Set alarm LED on startup
-            setLed(ledAlarmEl, store.isAlarmEnabled);
+            setLed(ledAlarmEl, globalState.isAlarmEnabled);
 
             // Debug -----------------------------------------------------------
 
-            onServerStateUpdate('storeState', storeState => {
-                textStoreStateEl.innerHTML = JSON.stringify(
-                    storeState,
+            onServerStateUpdate('globalState', globalState => {
+                textGlobalStateEl.innerHTML = JSON.stringify(
+                    globalState,
                     null,
                     2,
                 );

@@ -77,7 +77,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Allow songs to be changed via Web UI
 -   Extract audio library
 -   Make mock endpoint
--   Fix alarm (why doesn't it turn itself off?);;
+-   Fix alarm (why doesn't it turn itself off?)
 
 ## References
 

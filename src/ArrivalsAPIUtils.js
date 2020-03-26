@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const constants = require('./Constants');
-const { setState } = require('./SharedStore');
+const { setState } = require('./GlobalState');
 const {
     dateTo24HourClockString,
     getMinutesBetweenDates,

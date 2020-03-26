@@ -1,11 +1,11 @@
 const fetch = require('node-fetch');
-const constants = require('./Constants');
-const { setState } = require('./GlobalState');
+const constants = require('../Constants');
+const { setState } = require('../GlobalState');
 const {
     dateTo24HourClockString,
     getMinutesBetweenDates,
-} = require('./TimeUtils');
-const { apiKey } = require('../oba-api-key.json');
+} = require('../TimeUtils');
+const { apiKey } = require('../../oba-api-key.json');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {

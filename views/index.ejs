@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="shortcut icon" href="static/favicon.ico" />
+        <link rel="shortcut icon" href="/static/favicon.ico" />
         <style>
             body * {
                 font-family: 'Courier New', Courier, monospace;
@@ -106,7 +106,7 @@
         <h3>Alarm</h3>
         <ul class="component-list">
             <li class="component-row">
-                <img class="img-buzzer" src="static/buzzer-off.png" />
+                <img class="img-buzzer" src="/static/buzzer-off.png" />
                 <div class="component-label">Buzzer</div>
             </li>
             <li class="component-row">
@@ -145,7 +145,7 @@
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
-        <%- jsConstants %> <%- globalState %>
+        <%- injectConstants %> <%- injectGlobalState %>
         <script>
             const socket = io.connect();
 
@@ -243,7 +243,7 @@
 
             // Speaker
             onServerStateUpdate('isAlarmPlaying', isAlarmPlaying => {
-                imgBuzzerEl.src = `static/buzzer-${
+                imgBuzzerEl.src = `/static/buzzer-${
                     isAlarmPlaying ? 'on.gif' : 'off.png'
                 }`;
             });

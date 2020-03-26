@@ -1,0 +1,551 @@
+{
+    "code": 200,
+    "currentTime": 1585190113213,
+    "data": {
+        "entry": {
+            "arrivalsAndDepartures": [
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 0,
+                    "departureEnabled": true,
+                    "distanceFromStop": 1001.3567147142908,
+                    "frequency": null,
+                    "historicalOccupancy": "",
+                    "lastUpdateTime": 1585190053000,
+                    "numberOfStopsAway": 3,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1585190238000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1585190238000,
+                    "predictedOccupancy": "",
+                    "routeId": "1_100009",
+                    "routeLongName": "",
+                    "routeShortName": "11",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1585190165000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1585190165000,
+                    "serviceDate": 1585119600000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "1_12351",
+                    "stopSequence": 13,
+                    "totalStopsInTrip": 24,
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripId": "1_47581120",
+                    "tripStatus": {
+                        "activeTripId": "1_47581120",
+                        "blockTripSequence": 0,
+                        "closestStop": "1_12322",
+                        "closestStopTimeOffset": 27,
+                        "distanceAlongTrip": 2365.5249490058254,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": {
+                            "lat": 47.623477935791016,
+                            "lon": -122.29618835449219
+                        },
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 1585190053000,
+                        "lastUpdateTime": 1585190053000,
+                        "nextStop": "1_12322",
+                        "nextStopTimeOffset": 27,
+                        "orientation": 214.14195513022506,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 47.62424422117353,
+                            "lon": -122.29506363650944
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": 73,
+                        "scheduledDistanceAlongTrip": 2365.5249490058254,
+                        "serviceDate": 1585119600000,
+                        "situationIds": [
+                            "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac"
+                        ],
+                        "status": "SCHEDULED",
+                        "totalDistanceAlongTrip": 5616.782135766597,
+                        "vehicleId": "1_7083"
+                    },
+                    "vehicleId": "1_7083"
+                },
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 10,
+                    "departureEnabled": true,
+                    "distanceFromStop": 3366.881663720109,
+                    "frequency": null,
+                    "historicalOccupancy": "",
+                    "lastUpdateTime": 1585190049000,
+                    "numberOfStopsAway": 13,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1585191551000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1585191551000,
+                    "predictedOccupancy": "",
+                    "routeId": "1_100009",
+                    "routeLongName": "",
+                    "routeShortName": "11",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1585191065000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1585191065000,
+                    "serviceDate": 1585119600000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "1_12351",
+                    "stopSequence": 13,
+                    "totalStopsInTrip": 24,
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripId": "1_47581121",
+                    "tripStatus": {
+                        "activeTripId": "1_47581121",
+                        "blockTripSequence": 10,
+                        "closestStop": "1_12210",
+                        "closestStopTimeOffset": -3,
+                        "distanceAlongTrip": 0,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": {
+                            "lat": 47.63910675048828,
+                            "lon": -122.27708435058594
+                        },
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 1585190049000,
+                        "lastUpdateTime": 1585190049000,
+                        "nextStop": "1_12210",
+                        "nextStopTimeOffset": 957,
+                        "orientation": 182.50313977983976,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 47.640709,
+                            "lon": -122.278122
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": 486,
+                        "scheduledDistanceAlongTrip": 0,
+                        "serviceDate": 1585119600000,
+                        "situationIds": [
+                            "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac"
+                        ],
+                        "status": "SCHEDULED",
+                        "totalDistanceAlongTrip": 5616.782135766597,
+                        "vehicleId": "1_2794"
+                    },
+                    "vehicleId": "1_2794"
+                },
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 22,
+                    "departureEnabled": true,
+                    "distanceFromStop": 4791.545493537298,
+                    "frequency": null,
+                    "historicalOccupancy": "",
+                    "lastUpdateTime": 1585189977000,
+                    "numberOfStopsAway": 19,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1585191965000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1585191965000,
+                    "predictedOccupancy": "",
+                    "routeId": "1_100009",
+                    "routeLongName": "",
+                    "routeShortName": "11",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1585191965000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1585191965000,
+                    "serviceDate": 1585119600000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "1_12351",
+                    "stopSequence": 13,
+                    "totalStopsInTrip": 24,
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripId": "1_47582001",
+                    "tripStatus": {
+                        "activeTripId": "1_47581050",
+                        "blockTripSequence": 21,
+                        "closestStop": "1_12430",
+                        "closestStopTimeOffset": -1,
+                        "distanceAlongTrip": 5952.170763727481,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": {
+                            "lat": 47.631591796875,
+                            "lon": -122.28421020507812
+                        },
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 1585189977000,
+                        "lastUpdateTime": 1585189977000,
+                        "nextStop": "1_12440",
+                        "nextStopTimeOffset": 26,
+                        "orientation": 32.00538320856502,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 47.631628541224806,
+                            "lon": -122.28416813404031
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": 108,
+                        "scheduledDistanceAlongTrip": 5952.170763727481,
+                        "serviceDate": 1585119600000,
+                        "situationIds": [
+                            "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac"
+                        ],
+                        "status": "SCHEDULED",
+                        "totalDistanceAlongTrip": 7376.834593544655,
+                        "vehicleId": "1_2623"
+                    },
+                    "vehicleId": "1_2623"
+                },
+                {
+                    "arrivalEnabled": true,
+                    "blockTripSequence": 22,
+                    "departureEnabled": true,
+                    "distanceFromStop": 5568.990554893273,
+                    "frequency": null,
+                    "historicalOccupancy": "",
+                    "lastUpdateTime": 1585189901000,
+                    "numberOfStopsAway": 22,
+                    "predicted": true,
+                    "predictedArrivalInterval": null,
+                    "predictedArrivalTime": 1585191965000,
+                    "predictedDepartureInterval": null,
+                    "predictedDepartureTime": 1585191965000,
+                    "predictedOccupancy": "",
+                    "routeId": "1_100009",
+                    "routeLongName": "",
+                    "routeShortName": "11",
+                    "scheduledArrivalInterval": null,
+                    "scheduledArrivalTime": 1585191965000,
+                    "scheduledDepartureInterval": null,
+                    "scheduledDepartureTime": 1585191965000,
+                    "serviceDate": 1585119600000,
+                    "situationIds": [],
+                    "status": "default",
+                    "stopId": "1_12351",
+                    "stopSequence": 13,
+                    "totalStopsInTrip": 24,
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripId": "1_47582001",
+                    "tripStatus": {
+                        "activeTripId": "1_47581050",
+                        "blockTripSequence": 21,
+                        "closestStop": "1_12400",
+                        "closestStopTimeOffset": -14,
+                        "distanceAlongTrip": 5174.7257023715065,
+                        "frequency": null,
+                        "lastKnownDistanceAlongTrip": 0,
+                        "lastKnownLocation": null,
+                        "lastKnownOrientation": 0,
+                        "lastLocationUpdateTime": 0,
+                        "lastUpdateTime": 1585189901000,
+                        "nextStop": "1_12410",
+                        "nextStopTimeOffset": 47,
+                        "orientation": 34.29176541736604,
+                        "phase": "in_progress",
+                        "position": {
+                            "lat": 47.62667048168607,
+                            "lon": -122.29148232725873
+                        },
+                        "predicted": true,
+                        "scheduleDeviation": 180,
+                        "scheduledDistanceAlongTrip": 5174.7257023715065,
+                        "serviceDate": 1585119600000,
+                        "situationIds": [
+                            "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac"
+                        ],
+                        "status": "SCHEDULED",
+                        "totalDistanceAlongTrip": 7376.834593544655,
+                        "vehicleId": "1_5659625"
+                    },
+                    "vehicleId": "1_5659625"
+                }
+            ],
+            "nearbyStopIds": [
+                "1_12375",
+                "1_12376"
+            ],
+            "situationIds": [
+                "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac"
+            ],
+            "stopId": "1_12351"
+        },
+        "references": {
+            "agencies": [
+                {
+                    "disclaimer": "",
+                    "email": "",
+                    "fareUrl": "http://metro.kingcounty.gov/tops/bus/fare/fare-info.html#fare_matrix",
+                    "id": "1",
+                    "lang": "EN",
+                    "name": "Metro Transit",
+                    "phone": "206-553-3000",
+                    "privateService": false,
+                    "timezone": "America/Los_Angeles",
+                    "url": "http://metro.kingcounty.gov"
+                }
+            ],
+            "routes": [
+                {
+                    "agencyId": "1",
+                    "color": "",
+                    "description": "Madison Park - Capitol Hill - Downtown Seattle",
+                    "id": "1_100009",
+                    "longName": "",
+                    "shortName": "11",
+                    "textColor": "",
+                    "type": 3,
+                    "url": "http://metro.kingcounty.gov/schedules/011/n0.html"
+                },
+                {
+                    "agencyId": "1",
+                    "color": "",
+                    "description": "Seattle Center - Capitol Hill - Rainier Beach",
+                    "id": "1_100275",
+                    "longName": "",
+                    "shortName": "8",
+                    "textColor": "",
+                    "type": 3,
+                    "url": "http://metro.kingcounty.gov/schedules/008/n0.html"
+                },
+                {
+                    "agencyId": "1",
+                    "color": "",
+                    "description": "Madrona - Lakeside School",
+                    "id": "1_100346",
+                    "longName": "",
+                    "shortName": "988",
+                    "textColor": "",
+                    "type": 3,
+                    "url": "http://metro.kingcounty.gov/schedules/988/n0.html"
+                }
+            ],
+            "situations": [
+                {
+                    "activeWindows": [],
+                    "allAffects": [
+                        {
+                            "agencyId": "29",
+                            "applicationId": "",
+                            "directionId": "",
+                            "routeId": "",
+                            "stopId": "",
+                            "tripId": ""
+                        },
+                        {
+                            "agencyId": "1",
+                            "applicationId": "",
+                            "directionId": "",
+                            "routeId": "",
+                            "stopId": "",
+                            "tripId": ""
+                        },
+                        {
+                            "agencyId": "40",
+                            "applicationId": "",
+                            "directionId": "",
+                            "routeId": "",
+                            "stopId": "",
+                            "tripId": ""
+                        }
+                    ],
+                    "consequences": [],
+                    "creationTime": 1585000593723,
+                    "description": {
+                        "lang": "en",
+                        "value": "Sound Transit, King County Metro, and Community Transit have suspended fares until further notice. "
+                    },
+                    "id": "40_aa6d9ce8-64ea-4cdc-beb5-77574e732eac",
+                    "publicationWindows": [],
+                    "reason": "OTHER_CAUSE",
+                    "severity": "unknown",
+                    "summary": {
+                        "lang": "en",
+                        "value": "Fare Suspensions"
+                    },
+                    "url": null
+                }
+            ],
+            "stops": [
+                {
+                    "code": "12351",
+                    "direction": "SW",
+                    "id": "1_12351",
+                    "lat": 47.617981,
+                    "locationType": 0,
+                    "lon": -122.304611,
+                    "name": "E Madison St & 22nd Ave E",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12322",
+                    "direction": "SW",
+                    "id": "1_12322",
+                    "lat": 47.623165,
+                    "locationType": 0,
+                    "lon": -122.296799,
+                    "name": "E Madison St & 28th Ave E",
+                    "routeIds": [
+                        "1_100275",
+                        "1_100009",
+                        "1_100346"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12210",
+                    "direction": "W",
+                    "id": "1_12210",
+                    "lat": 47.640774,
+                    "locationType": 0,
+                    "lon": -122.278122,
+                    "name": "E Mcgilvra St & 42nd Ave E",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12430",
+                    "direction": "NE",
+                    "id": "1_12430",
+                    "lat": 47.631546,
+                    "locationType": 0,
+                    "lon": -122.284149,
+                    "name": "E Madison St & 38th Ave E",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12440",
+                    "direction": "NE",
+                    "id": "1_12440",
+                    "lat": 47.632427,
+                    "locationType": 0,
+                    "lon": -122.282822,
+                    "name": "E Madison St & 39th Ave E",
+                    "routeIds": [
+                        "1_100009",
+                        "1_100346"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12400",
+                    "direction": "NE",
+                    "id": "1_12400",
+                    "lat": 47.626152,
+                    "locationType": 0,
+                    "lon": -122.292099,
+                    "name": "E Madison St & Lake Washington Blvd",
+                    "routeIds": [
+                        "1_100009",
+                        "1_100346"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12410",
+                    "direction": "NE",
+                    "id": "1_12410",
+                    "lat": 47.628185,
+                    "locationType": 0,
+                    "lon": -122.289093,
+                    "name": "E Madison St & 33rd Ave E",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12375",
+                    "direction": "NE",
+                    "id": "1_12375",
+                    "lat": 47.617363,
+                    "locationType": 0,
+                    "lon": -122.305702,
+                    "name": "E Madison St & 20th Ave",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                },
+                {
+                    "code": "12376",
+                    "direction": "NE",
+                    "id": "1_12376",
+                    "lat": 47.618172,
+                    "locationType": 0,
+                    "lon": -122.303886,
+                    "name": "E Madison St & 22nd Ave",
+                    "routeIds": [
+                        "1_100009"
+                    ],
+                    "wheelchairBoarding": "UNKNOWN"
+                }
+            ],
+            "trips": [
+                {
+                    "blockId": "1_5659497",
+                    "directionId": "1",
+                    "id": "1_47581120",
+                    "routeId": "1_100009",
+                    "routeShortName": "",
+                    "serviceId": "1_121722",
+                    "shapeId": "1_20011004",
+                    "timeZone": "",
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripShortName": "LOCAL"
+                },
+                {
+                    "blockId": "1_5659648",
+                    "directionId": "1",
+                    "id": "1_47581121",
+                    "routeId": "1_100009",
+                    "routeShortName": "",
+                    "serviceId": "1_121722",
+                    "shapeId": "1_20011004",
+                    "timeZone": "",
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripShortName": "LOCAL"
+                },
+                {
+                    "blockId": "1_5659625",
+                    "directionId": "1",
+                    "id": "1_47582001",
+                    "routeId": "1_100009",
+                    "routeShortName": "",
+                    "serviceId": "1_121722",
+                    "shapeId": "1_20011004",
+                    "timeZone": "",
+                    "tripHeadsign": "Downtown Seattle Via E Madison St",
+                    "tripShortName": "LOCAL"
+                },
+                {
+                    "blockId": "1_5659625",
+                    "directionId": "0",
+                    "id": "1_47581050",
+                    "routeId": "1_100009",
+                    "routeShortName": "",
+                    "serviceId": "1_121722",
+                    "shapeId": "1_11011002",
+                    "timeZone": "",
+                    "tripHeadsign": "Madison Park Via E Madison St",
+                    "tripShortName": "LOCAL"
+                }
+            ]
+        }
+    },
+    "text": "OK",
+    "version": 2
+}

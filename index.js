@@ -12,9 +12,10 @@
  */
 const express = require('express');
 const http = require('http');
-const { updateArrivalInfo } = require('./src/ArrivalsAPIUtils');
+const { updateArrivalInfo } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
 const { emitEvent, initEvents } = require('./src/EventUtils');
+const { setState } = require('./src/GlobalState');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { initGlobalState, getState } = require('./src/GlobalState');
 const { initHardware } = require('./src/hardware');
@@ -43,27 +44,32 @@ app.use('/static', express.static(__dirname + '/views/static'));
 // Set up event system for sending data to the Web UI w/o refreshing the page
 initEvents(server);
 
-// Route to index. Render initial Web UI server-side.
-app.get('/', (req, res) => {
+// Init global state for the server and the web UI
+initGlobalState();
+
+// Routing -------------------------------------------------------------
+
+const getIndex = (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
+    const globalStateJson = JSON.stringify(getState(), null, 2);
+
     res.render('index', {
         // Supply the device logs on render. Must refresh to get new ones.
         deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
             reverseLines: true,
         }),
 
-        // Provide the entire state when the page is rendered server-side
-        globalState: `<script>const globalState = ${JSON.stringify(
-            getState(),
-            null,
-            2,
-        )}</script>`,
+        // Supply global state
+        globalState: globalStateJson,
 
-        // Supply the constants file to the Web UI to make hardware simulation
+        // Inject current global state when the page is rendered server-side
+        injectGlobalState: `<script>const globalState = ${globalStateJson}</script>`,
+
+        // Inject constants file to the Web UI to make hardware simulation
         // easier
-        jsConstants: `<script>const constants = ${JSON.stringify(
+        injectConstants: `<script>const constants = ${JSON.stringify(
             constants,
             null,
             2,
@@ -72,10 +78,23 @@ app.get('/', (req, res) => {
         // Initial LCD screen contents
         lcdScreenLines: getState().lcdScreenLines,
     });
-});
+};
 
-// Init global state for the server and the web UI
-initGlobalState();
+// Route to index. Render initial Web UI server-side.
+app.get('/', getIndex);
+
+// Route to force various OneBusAway arrival response examples for testing
+app.get('/forced-oba-resp/:exampleResponse', (req, res) => {
+    const egRespName = req.params.exampleResponse;
+    const egRespPath = `${__dirname}/src/oba-api/example-responses/${egRespName}.json`;
+
+    log.info(`Returning forced OneBusAway response from "${egRespPath}"`);
+
+    const egResp = require(egRespPath);
+    setState({ key: 'forcedOBAResponse', val: egResp });
+
+    getIndex(req, res);
+});
 
 // Start -----------------------------------------------------------------------
 

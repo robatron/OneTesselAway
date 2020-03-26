@@ -78,6 +78,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Extract audio library
 -   Make mock endpoint
 -   Fix alarm (why doesn't it turn itself off?)
+-   Global state updating too much
 
 ## References
 

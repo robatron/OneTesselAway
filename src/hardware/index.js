@@ -67,10 +67,7 @@ const initHardware = ({
 
             // Play a tune and flash stoplight once the hardware is ready to go
             emitEvent('action:playAlarm', 'nyanIntro');
-            setState({
-                key: 'stoplightState',
-                val: constants.STOPLIGHT_STATES.GO,
-            });
+            setState('stoplightState', constants.STOPLIGHT_STATES.GO);
 
             // Resolve once hardware initialized
             resolve();

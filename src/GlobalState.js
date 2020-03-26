@@ -5,7 +5,7 @@ const globalState = {};
 
 // Set a value in the global state, and emit an event. `val` may be a
 // function that will be supplied the current global state
-const setState = ({ key, val, meta }) => {
+const setState = (key, val, meta) => {
     log.info(['setState', key, val, JSON.stringify(meta) || ''].join(' '));
     globalState[key] = typeof val === 'function' ? val(globalState) : val;
     emitEvent('updated:globalState', globalState);
@@ -14,9 +14,7 @@ const setState = ({ key, val, meta }) => {
 
 // Allow state to be set via the Web UI
 const initGlobalState = () => {
-    onEvent('setState', ({ key, val }) =>
-        setState({ key, val, meta: { fromWebUi: true } }),
-    );
+    onEvent('setState', (key, val) => setState(key, val, { fromWebUi: true }));
 };
 
 module.exports = {

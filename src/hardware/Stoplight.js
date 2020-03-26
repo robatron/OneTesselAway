@@ -53,10 +53,7 @@ const initStoplight = ({
     // When arrivalInfo is updated, get the stoplight state, and set it
     onEvent('updated:arrivalInfo', arrivalInfo => {
         const stoplightState = getStoplightState(arrivalInfo);
-        setState({
-            key: 'stoplightState',
-            val: stoplightState,
-        });
+        setState('stoplightState', stoplightState);
     });
 };
 

@@ -13,10 +13,10 @@ const emitEvent = (eventName, ...rest) => {
     io.emit(eventName, ...rest);
 };
 
-const onEvent = (eventName, ...rest) => {
-    ee.on(eventName, ...rest);
+const onEvent = (eventName, cb) => {
+    ee.on(eventName, cb);
     io.on('connection', socket => {
-        socket.on(eventName, ...rest);
+        socket.on(eventName, cb);
     });
 };
 

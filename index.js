@@ -91,7 +91,7 @@ app.get('/forced-oba-resp/:exampleResponse', (req, res) => {
     log.info(`Returning forced OneBusAway response from "${egRespPath}"`);
 
     const egResp = require(egRespPath);
-    setState({ key: 'forcedOBAResponse', val: egResp });
+    setState('forcedOBAResponse', egResp);
 
     getIndex(req, res);
 });

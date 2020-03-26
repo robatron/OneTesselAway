@@ -116,10 +116,7 @@ const updateArrivalInfo = async () => {
         }
     }
 
-    setState({
-        key: 'arrivalInfo',
-        val: arrivalInfo,
-    });
+    setState('arrivalInfo', arrivalInfo);
 };
 
 module.exports = {

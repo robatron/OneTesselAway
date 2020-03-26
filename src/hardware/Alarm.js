@@ -41,10 +41,10 @@ const initAlarmHardware = ({
 
     // Toggle un/set alarm when the button is pressed
     buttonAlarmToggle.on('release', () => {
-        setState({
-            key: 'isAlarmEnabled',
-            val: currentState => !currentState.isAlarmEnabled,
-        });
+        setState(
+            'isAlarmEnabled',
+            currentState => !currentState.isAlarmEnabled,
+        );
     });
 
     // The alarm LED should be on when the alarm is set, and off when unset

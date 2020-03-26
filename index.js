@@ -49,7 +49,8 @@ initGlobalState();
 
 // Routing -------------------------------------------------------------
 
-const getIndex = (req, res) => {
+// Route to index. Render initial Web UI server-side.
+app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
@@ -78,22 +79,17 @@ const getIndex = (req, res) => {
         // Initial LCD screen contents
         lcdScreenLines: getState().lcdScreenLines,
     });
-};
+};);
 
-// Route to index. Render initial Web UI server-side.
-app.get('/', getIndex);
-
-// Route to force various OneBusAway arrival response examples for testing
-app.get('/forced-oba-resp/:exampleResponse', (req, res) => {
+// Endpoint that returns OneBusAway arrival example responses for testing
+app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
     const egRespName = req.params.exampleResponse;
     const egRespPath = `${__dirname}/src/oba-api/example-responses/${egRespName}.json`;
 
-    log.info(`Returning forced OneBusAway response from "${egRespPath}"`);
+    log.info(`Returning example OneBusAway response from "${egRespPath}"`);
 
     const egResp = require(egRespPath);
-    setState('forcedOBAResponse', egResp);
 
-    getIndex(req, res);
 });
 
 // Start -----------------------------------------------------------------------

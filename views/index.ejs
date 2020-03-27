@@ -140,8 +140,8 @@
                 </button>
             </li>
             <li class="component-row">
-                <button class="btn-oba-eg-missed">
-                    Force OneBusAway "Missed" Example Response
+                <button class="btn-oba-eg-miss">
+                    Force OneBusAway "Miss" Example Response
                 </button>
             </li>
         </ul>
@@ -187,27 +187,6 @@
             const ledAlarmEl = document.querySelector('.led-alarm');
             const textGlobalStateEl = document.querySelector('#global-state');
 
-            const btnObaEgGoEl = document.querySelector('.btn-oba-eg-go');
-            const btnObaEgEls = Object.keys(constants.STOPLIGHT_STATES).reduce(
-                (accum, stoplightStateKey) => {
-                    const stoplightState =
-                        constants.STOPLIGHT_STATES[stoplightStateKey];
-                    accum[stoplightState] = document.querySelector(
-                        '.btn-oba-eg-' + stoplightState,
-                    );
-                    return accum;
-                },
-                {},
-            );
-            const ledStoplightEls = constants.STOPLIGHT_LED_NAMES.reduce(
-                (accum, ledName) => {
-                    accum[ledName] = document.querySelector(
-                        '.led-stoplight-' + ledName,
-                    );
-                    return accum;
-                },
-                {},
-            );
             // Utilities -------------------------------------------------------
 
             const setLed = (ledEl, on) => {
@@ -316,29 +295,46 @@
             };
 
             // Force OBA Example Responses
+            Object.keys(constants.STOPLIGHT_STATES).forEach(
+                stoplightStateKey => {
+                    const stoplightState =
+                        constants.STOPLIGHT_STATES[stoplightStateKey];
+                    const btnObaEgEl = document.querySelector(
+                        '.btn-oba-eg-' + stoplightState,
+                    );
 
-            onGlobalStateUpdate('obaApiUrl', obaApiUrl => {
-                const isSelected = RegExp(
-                    `${constants.STOPLIGHT_STATES.GO}$`,
-                ).test(obaApiUrl);
-                btnObaEgGoEl.style.color = isSelected ? 'darkred' : 'inherit';
-                btnObaEgGoEl.style.fontWeight = isSelected ? 'bold' : 'inherit';
-            });
+                    console.log('>>>', btnObaEgEl, stoplightState); // DEBUGGGG
 
-            btnObaEgGoEl.onclick = e => {
-                e.preventDefault();
+                    // Set up click handlers
+                    btnObaEgEl.onclick = e => {
+                        e.preventDefault();
 
-                const isCurrentlySet = RegExp(
-                    `${constants.STOPLIGHT_STATES.GO}$`,
-                ).test(globalState.obaApiUrl);
+                        const isCurrentlySet = RegExp(
+                            `${stoplightState}$`,
+                        ).test(globalState.obaApiUrl);
 
-                const newObaApiUrl = !isCurrentlySet
-                    ? window.location.origin +
-                      '/eg-oba-resp/' +
-                      constants.STOPLIGHT_STATES.GO
-                    : null;
-                setServerState('obaApiUrl', newObaApiUrl);
-            };
+                        const newObaApiUrl = !isCurrentlySet
+                            ? window.location.origin +
+                              '/eg-oba-resp/' +
+                              stoplightState
+                            : null;
+                        setServerState('obaApiUrl', newObaApiUrl);
+                    };
+
+                    // Set up state change handlers
+                    onGlobalStateUpdate('obaApiUrl', obaApiUrl => {
+                        const isSelected = RegExp(`${stoplightState}$`).test(
+                            obaApiUrl,
+                        );
+                        btnObaEgEl.style.color = isSelected
+                            ? 'darkred'
+                            : 'inherit';
+                        btnObaEgEl.style.fontWeight = isSelected
+                            ? 'bold'
+                            : 'inherit';
+                    });
+                },
+            );
         </script>
     </body>
 </html>

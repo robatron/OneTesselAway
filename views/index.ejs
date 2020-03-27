@@ -118,12 +118,41 @@
             </button>
         </ul>
 
-        <h2>Extended Device Control</h2>
+        <h2>Advanced Device Controls</h2>
         <p>Additional controls and settings for the device.</p>
+
+        <h3>OneBusAway API Controls</h3>
+        <p>Control what and when API responses are returned.</p>
         <ul class="component-list">
-            <button class="btn-alarm-play">
-                Play alarm tune
-            </button>
+            <li class="component-row">
+                <button class="btn-oba-eg-ready">
+                    Force OneBusAway "Ready" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-steady">
+                    Force OneBusAway "Steady" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-go">
+                    Force OneBusAway "Go" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-missed">
+                    Force OneBusAway "Missed" Example Response
+                </button>
+            </li>
+        </ul>
+
+        <h3>Alarm Controls</h3>
+        <ul class="component-list">
+            <li class="component-row">
+                <button class="btn-alarm-play">
+                    Play alarm tune
+                </button>
+            </li>
         </ul>
 
         <h2>Global State</h2>
@@ -156,6 +185,20 @@
             const imgBuzzerEl = document.querySelector('.img-buzzer');
             const lcdScreenEls = document.querySelectorAll('.lcd-screen');
             const ledAlarmEl = document.querySelector('.led-alarm');
+            const textGlobalStateEl = document.querySelector('#global-state');
+
+            const btnObaEgGoEl = document.querySelector('.btn-oba-eg-go');
+            const btnObaEgEls = Object.keys(constants.STOPLIGHT_STATES).reduce(
+                (accum, stoplightStateKey) => {
+                    const stoplightState =
+                        constants.STOPLIGHT_STATES[stoplightStateKey];
+                    accum[stoplightState] = document.querySelector(
+                        '.btn-oba-eg-' + stoplightState,
+                    );
+                    return accum;
+                },
+                {},
+            );
             const ledStoplightEls = constants.STOPLIGHT_LED_NAMES.reduce(
                 (accum, ledName) => {
                     accum[ledName] = document.querySelector(
@@ -165,8 +208,6 @@
                 },
                 {},
             );
-            const textGlobalStateEl = document.querySelector('#global-state');
-
             // Utilities -------------------------------------------------------
 
             const setLed = (ledEl, on) => {
@@ -272,6 +313,31 @@
             btnAlarmPlayEl.onclick = e => {
                 e.preventDefault();
                 emitEvent('action:playAlarm', 'nyanIntro');
+            };
+
+            // Force OBA Example Responses
+
+            onGlobalStateUpdate('obaApiUrl', obaApiUrl => {
+                const isSelected = RegExp(
+                    `${constants.STOPLIGHT_STATES.GO}$`,
+                ).test(obaApiUrl);
+                btnObaEgGoEl.style.color = isSelected ? 'darkred' : 'inherit';
+                btnObaEgGoEl.style.fontWeight = isSelected ? 'bold' : 'inherit';
+            });
+
+            btnObaEgGoEl.onclick = e => {
+                e.preventDefault();
+
+                const isCurrentlySet = RegExp(
+                    `${constants.STOPLIGHT_STATES.GO}$`,
+                ).test(globalState.obaApiUrl);
+
+                const newObaApiUrl = !isCurrentlySet
+                    ? window.location.origin +
+                      '/eg-oba-resp/' +
+                      constants.STOPLIGHT_STATES.GO
+                    : null;
+                setServerState('obaApiUrl', newObaApiUrl);
             };
         </script>
     </body>

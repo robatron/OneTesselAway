@@ -83,7 +83,7 @@ app.get('/', (req, res) => {
         // Initial LCD screen contents
         lcdScreenLines: getState().lcdScreenLines,
     });
-};);
+});
 
 // Endpoint that returns OneBusAway arrival example responses for testing
 app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
@@ -93,9 +93,7 @@ app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
     log.info(`Returning example OneBusAway response from "${egRespPath}"`);
 
     const egResp = require(egRespPath);
-    setState('forcedOBAResponse', egResp);
-    setState('APIUpdateInterval', constants.API_UPDATE_INTERVAL);
-
+    res.json(egResp);
 });
 
 // Start -----------------------------------------------------------------------

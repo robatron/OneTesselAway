@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const constants = require('../Constants');
-const { setState } = require('../GlobalState');
+const { getState, setState } = require('../GlobalState');
 const {
     dateTo24HourClockString,
     getMinutesBetweenDates,
@@ -9,9 +9,11 @@ const { apiKey } = require('../../oba-api-key.json');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
-    const response = await fetch(
-        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
-    );
+    // Allow forcing arbitrary API URLs
+    const apiUrl =
+        getState().obaApiUrl ||
+        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
+    const response = await fetch(apiUrl);
 
     // If response is not a 200, throw an error
     if (!response.ok) {

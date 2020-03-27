@@ -18,6 +18,7 @@ const initGlobalState = () => {
 };
 
 module.exports = {
+    // TODO: Allow getState via param
     getState: () => globalState,
     initGlobalState,
     setState,

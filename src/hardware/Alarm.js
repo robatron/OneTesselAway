@@ -1,51 +1,71 @@
-const five = require('johnny-five');
-const { playSong } = require('../audio/SoundUtils');
-const { nyanIntro } = require('../audio/songs');
+const constants = require('../Constants');
+const { emitEvent, onGlobalStateUpdate } = require('../EventUtils');
+const { getState, setState } = require('../GlobalState');
 
-let isAlarmEnabled = false;
 let ledAlarmStatus;
-// let isDebugForceGoState = false;
+let buttonAlarmToggle;
 
-// When the button is released, toggle the alarm status. When the button is held
-// toggle a
-const initAlarmHardware = ({ buttonAlarmTogglePin, ledAlarmStatusPin }) => {
-    ledAlarmStatus = new five.Led(ledAlarmStatusPin);
-    const buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+const initAlarmHardware = ({
+    buttonAlarmTogglePin,
+    isDeviceEnabled,
+    ledAlarmStatusPin,
+}) => {
+    if (isDeviceEnabled) {
+        log.info('Initializing alarm hardware...');
 
+        const five = require('johnny-five');
+
+        ledAlarmStatus = new five.Led(ledAlarmStatusPin);
+        buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
+    } else {
+        log.info('Initializing mock alarm hardware...');
+
+        ledAlarmStatus = {
+            off: () => {
+                log.info('Mock ledAlarmStates.off');
+            },
+            on: () => {
+                log.info('Mock ledAlarmStates.on');
+            },
+        };
+        buttonAlarmToggle = {
+            on: (...rest) => {
+                log.info(
+                    ['Mock buttonAlarmToggle.on', [...rest].join(' ')].join(
+                        ' ',
+                    ),
+                );
+            },
+        };
+    }
+
+    // Toggle un/set alarm when the button is pressed
     buttonAlarmToggle.on('release', () => {
-        // Toggle alarm status and sync the status LED
-        isAlarmEnabled = !isAlarmEnabled;
-        ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
-
-        log.info(`Toggled alarm enabled: ${isAlarmEnabled}`);
+        setState(
+            'isAlarmEnabled',
+            currentState => !currentState.isAlarmEnabled,
+        );
     });
 
-    // Toggle
-    // buttonAlarmToggle.on('hold', () => {
-    //     isDebugForceGoState = !isDebugForceGoState;
-    //     log.info(`Toggled 'go' state to: ${isDebugForceGoState}`);
-    // });
-};
+    // The alarm LED should be on when the alarm is set, and off when unset
+    onGlobalStateUpdate('isAlarmEnabled', isAlarmEnabled => {
+        ledAlarmStatus[isAlarmEnabled ? 'on' : 'off']();
+    });
 
-// Trigger the alarm buzzer if all true:
-// - The alarm is enabled
-// - The traffic light state is 'go'
-const triggerAlarmBuzzer = async ({
-    piezoPin,
-    piezoPort,
-    trafficLightState,
-}) => {
-    if (isAlarmEnabled && trafficLightState === 'go') {
-        playSong({ piezoPin, piezoPort, song: nyanIntro });
-
-        isAlarmEnabled = false;
-        ledAlarmStatus.off();
-    }
+    // When the stoplight state changes to 'go', and the alarm is enabled, play
+    // the alarm, then disable the alarm
+    onGlobalStateUpdate('stoplightState', stoplightState => {
+        if (
+            stoplightState === constants.STOPLIGHT_STATES.GO &&
+            getState().isAlarmEnabled
+        ) {
+            emitEvent('action:playAlarm', 'nyanIntro');
+            setState('isAlarmEnabled', false);
+            ledAlarmStatus.off();
+        }
+    });
 };
 
 module.exports = {
-    getIsAlarmEnabled: () => isAlarmEnabled,
     initAlarmHardware,
-    triggerAlarmBuzzer,
-    // getIsDebugForceGoState: () => isDebugForceGoState,
 };

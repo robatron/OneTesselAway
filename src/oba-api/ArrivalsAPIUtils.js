@@ -1,16 +1,19 @@
 const fetch = require('node-fetch');
+const constants = require('../Constants');
+const { getState, setState } = require('../GlobalState');
 const {
     dateTo24HourClockString,
     getMinutesBetweenDates,
-} = require('./TimeUtils');
-const { apiKey } = require('../oba-api-key.json');
-const constants = require('./Constants');
+} = require('../TimeUtils');
+const { apiKey } = require('../../oba-api-key.json');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
-    const response = await fetch(
-        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`,
-    );
+    // Allow forcing arbitrary API URLs
+    const apiUrl =
+        getState().obaApiUrl ||
+        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
+    const response = await fetch(apiUrl);
 
     // If response is not a 200, throw an error
     if (!response.ok) {
@@ -81,9 +84,47 @@ const getUpcomingArrivalTimes = async (stopId, routeId) => {
     });
 };
 
+const updateArrivalInfo = async () => {
+    const targetRoutes = constants.TARGET_ROUTES;
+    const targetRouteIds = Object.keys(targetRoutes);
+    const arrivalInfo = {};
+
+    for (let i = 0; i < targetRouteIds.length; ++i) {
+        const currentDate = new Date();
+        const routeId = targetRouteIds[i];
+        const routeName = targetRoutes[routeId].routeName;
+        const stopId = targetRoutes[routeId].stopId;
+        const stopName = targetRoutes[routeId].stopName;
+        let upcomingArrivalTimes;
+
+        try {
+            upcomingArrivalTimes = await getUpcomingArrivalTimes(
+                stopId,
+                routeId,
+            );
+        } catch (e) {
+            log.warn(
+                `Failed to get upcoming arrival times for route ${routeId} and stop ${stopId}: ${e.toString()}`,
+            );
+        }
+
+        if (upcomingArrivalTimes) {
+            arrivalInfo[routeId] = {
+                deviceRequestDate: currentDate,
+                routeName,
+                stopName,
+                upcomingArrivalTimes,
+            };
+        }
+    }
+
+    setState('arrivalInfo', arrivalInfo);
+};
+
 module.exports = {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
     getUpcomingArrivalTimes,
+    updateArrivalInfo,
 };

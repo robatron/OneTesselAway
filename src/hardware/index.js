@@ -1,13 +1,14 @@
-const five = require('johnny-five');
-const Tessel = require('tessel-io');
-const { playSong } = require('../audio/SoundUtils');
-const { nyanIntro } = require('../audio/songs');
 const { initAlarmHardware } = require('./Alarm');
+const { initBuzzerHardware } = require('./Buzzer');
 const { initLcdScreen } = require('./LcdScreen');
-const { initTrafficLight, setTrafficLightState } = require('./TrafficLight');
+const { initStoplight } = require('./Stoplight');
+const constants = require('../Constants');
+const { emitEvent } = require('../EventUtils');
+const { setState } = require('../GlobalState');
 
 const initHardware = ({
     buttonAlarmTogglePin,
+    isDeviceEnabled,
     lcdPins,
     ledAlarmStatusPin,
     ledMissPin,
@@ -16,7 +17,22 @@ const initHardware = ({
     piezoPin,
     piezoPort,
 }) => {
-    var board = new five.Board({ io: new Tessel() });
+    let board;
+
+    if (isDeviceEnabled) {
+        log.info('Initializing hardware...');
+
+        const five = require('johnny-five');
+        const Tessel = require('tessel-io');
+
+        board = new five.Board({ io: new Tessel() });
+    } else {
+        log.info('Initializing mock hardware...');
+
+        board = {
+            on: (event, cb) => cb(),
+        };
+    }
 
     return new Promise(resolve => {
         board.on('ready', () => {
@@ -24,21 +40,37 @@ const initHardware = ({
                 `Device board ready. Configuring LCD display with pins ${lcdPins}...`,
             );
 
-            // Alarm button, buzzer, and light
-            initAlarmHardware({ buttonAlarmTogglePin, ledAlarmStatusPin });
+            // Init buzzer hardware
+            initBuzzerHardware({
+                isDeviceEnabled,
+                piezoPin,
+                piezoPort,
+            });
 
-            // Traffic light: Set of 3 LEDs
-            initTrafficLight({ ledReadyPin, ledSteadyPin, ledMissPin });
+            // Init alarm hardware
+            initAlarmHardware({
+                buttonAlarmTogglePin,
+                isDeviceEnabled,
+                ledAlarmStatusPin,
+            });
+
+            // Init stoplight hardware
+            initStoplight({
+                isDeviceEnabled,
+                ledReadyPin,
+                ledSteadyPin,
+                ledMissPin,
+            });
 
             // Init LCD last b/c it's slow
-            initLcdScreen(lcdPins);
+            initLcdScreen({ isDeviceEnabled, lcdPins });
 
-            // Play a tune and flash traffic light once the hardware is ready to go
-            playSong({ piezoPin, piezoPort, song: nyanIntro });
-            setTrafficLightState('go');
+            // Play a tune and flash stoplight once the hardware is ready to go
+            emitEvent('action:playAlarm', 'nyanIntro');
+            setState('stoplightState', constants.STOPLIGHT_STATES.GO);
 
-            // Give the hardware a 1/2 second to initialize before starting
-            setTimeout(resolve, 500);
+            // Resolve once hardware initialized
+            resolve();
         });
     });
 };

@@ -72,6 +72,15 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 
     npm run deploy
 
+## Todo
+
+-   Allow songs to be changed via Web UI
+-   Extract audio library
+-   Make mock endpoint
+-   Fix alarm (why doesn't it turn itself off?)
+-   Global state updating too much client-side
+-   Helper for update events
+
 ## References
 
 -   https://nodejs.org/docs/latest-v8.x/api/index.html (Latest supported by Tessel 2)

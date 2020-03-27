@@ -1,9 +1,14 @@
 <html>
     <head>
+        <link rel="shortcut icon" href="/static/favicon.ico" />
         <style>
             body * {
                 font-family: 'Courier New', Courier, monospace;
                 font-size: 16px;
+            }
+            button {
+                /* border-width: 2px; */
+                font-size: 1em;
             }
             h1 {
                 font-size: 2em;
@@ -17,7 +22,7 @@
                 font-size: 1em;
             }
 
-            .display {
+            .lcd-screen {
                 background-color: green;
                 font-size: 1.2em;
                 font-weight: bold;
@@ -33,37 +38,37 @@
             .component-list {
                 list-style-type: none;
             }
+            .component-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
             .led {
                 display: inline-block;
                 height: 20px;
                 width: 20px;
                 box-sizing: border-box;
             }
-            .led-label {
+            .component-label {
                 margin-left: 10px;
             }
 
-            .stoplight-led-row {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-            .led-missed {
+            .led-stoplight-miss {
                 border: 2px solid red;
             }
-            .led-steady {
+            .led-stoplight-steady {
                 border: 2px solid orange;
             }
-            .led-ready {
+            .led-stoplight-ready {
                 border: 2px solid green;
+            }
+
+            .img-buzzer {
+                height: 20px;
             }
 
             .led-alarm {
                 border: 2px solid blue;
-            }
-            .btn-alarm {
-                /* border-width: 2px; */
-                font-size: 1em;
             }
         </style>
     </head>
@@ -80,87 +85,256 @@
             This simulated state should match exactly what's currently on the
             device.
         </p>
-        <h3>Display</h3>
-        <pre id="displayLines" class="display"><%= displayLines %></pre>
+        <h3>LCD Screen</h3>
+        <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
+        <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
-            <li class="stoplight-led-row">
-                <div class="led led-missed"></div>
-                <div class="led-label">Missed</div>
+            <li class="component-row">
+                <div class="led led-stoplight-miss"></div>
+                <div class="component-label">Missed</div>
             </li>
-            <li class="stoplight-led-row">
-                <div class="led led-steady"></div>
-                <div class="led-label">Steady</div>
+            <li class="component-row">
+                <div class="led led-stoplight-steady"></div>
+                <div class="component-label">Steady</div>
             </li>
-            <li class="stoplight-led-row">
-                <div class="led led-ready"></div>
-                <div class="led-label">Ready</div>
+            <li class="component-row">
+                <div class="led led-stoplight-ready"></div>
+                <div class="component-label">Ready</div>
             </li>
         </ul>
         <h3>Alarm</h3>
         <ul class="component-list">
-            <li class="stoplight-led-row">
-                <div class="led led-alarm"></div>
-                <div class="led-label">Alarm LED</div>
+            <li class="component-row">
+                <img class="img-buzzer" src="/static/buzzer-off.png" />
+                <div class="component-label">Buzzer</div>
             </li>
-            <button class="btn-alarm">
+            <li class="component-row">
+                <div class="led led-alarm"></div>
+                <div class="component-label">Alarm LED</div>
+            </li>
+            <button class="btn-alarm-set">
                 Set alarm
             </button>
         </ul>
 
-        <h2>Arrival Info</h2>
+        <h2>Advanced Device Controls</h2>
+        <p>Additional controls and settings for the device.</p>
+
+        <h3>OneBusAway API Controls</h3>
+        <p>Control what and when API responses are returned.</p>
+        <ul class="component-list">
+            <li class="component-row">
+                <button class="btn-oba-eg-ready">
+                    Force OneBusAway "Ready" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-steady">
+                    Force OneBusAway "Steady" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-go">
+                    Force OneBusAway "Go" Example Response
+                </button>
+            </li>
+            <li class="component-row">
+                <button class="btn-oba-eg-miss">
+                    Force OneBusAway "Miss" Example Response
+                </button>
+            </li>
+        </ul>
+
+        <h3>Alarm Controls</h3>
+        <ul class="component-list">
+            <li class="component-row">
+                <button class="btn-alarm-play">
+                    Play alarm tune
+                </button>
+            </li>
+        </ul>
+
+        <h2>Global State</h2>
         <p>
-            Latest "arrival info" state in memory, from which the display is
-            derived
+            Contents of the global state
         </p>
-        <textarea id="arrivalInfo" class="text-area">
-<%= arrivalInfo %>
+        <textarea id="global-state" class="text-area">
+<%= globalState %>
         </textarea>
 
         <h2>Device Logs</h2>
         <p>
-            Device logs from the OneTesselAway program, latest first.
+            Device logs from the OneTesselAway program, latest first. Refresh
+            browser to get latest logs.
         </p>
-        <textarea id="deviceLogs" class="text-area">
+        <textarea id="device-logs" class="text-area">
 <%= deviceLogs %>
         </textarea>
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>
+        <%- injectConstants %> <%- injectGlobalState %>
         <script>
             const socket = io.connect();
 
+            // Document element references -------------------------------------
+
+            const btnAlarmSetEl = document.querySelector('.btn-alarm-set');
+            const btnAlarmPlayEl = document.querySelector('.btn-alarm-play');
+            const imgBuzzerEl = document.querySelector('.img-buzzer');
+            const lcdScreenEls = document.querySelectorAll('.lcd-screen');
             const ledAlarmEl = document.querySelector('.led-alarm');
-            const btnAlarmEl = document.querySelector('.btn-alarm');
+            const textGlobalStateEl = document.querySelector('#global-state');
 
-            // DEVICE -> WEB UI -----------------------------------------------
+            // Utilities -------------------------------------------------------
 
-            // Update the display when the device state updates
-            socket.on('deviceStateUpdated', deviceState => {
-                console.log('Device state updated:', deviceState);
+            const setLed = (ledEl, on) => {
+                const ledColor = getComputedStyle(ledEl).borderColor;
+                ledEl.style.backgroundColor = on ? ledColor : 'white';
+            };
 
-                // Update text-based elements
-                Object.keys(deviceState).forEach(stateKey => {
-                    const stateValue = deviceState[stateKey];
-                    const el = document.querySelector(`#${stateKey}`);
-                    if (el) {
-                        el.innerHTML = stateValue;
-                    }
+            // Web UI -> server event communication ----------------------------
+
+            // Emit an event to the server
+            const emitEvent = (eventName, ...rest) => {
+                console.log('emitEvent', eventName, ...rest);
+                socket.emit(eventName, ...rest);
+            };
+
+            // When the server state updates an item in the global store, call
+            // the callback, and sync the front-end state with the back-end
+            const onGlobalStateUpdate = (stateKey, cb) => {
+                socket.on('updated:' + stateKey, updatedVal => {
+                    console.log(
+                        'onStateUpdatedEvent',
+                        'updated:' + stateKey,
+                        updatedVal,
+                    );
+                    globalState[stateKey] = updatedVal;
+                    cb(updatedVal);
                 });
+            };
 
-                // Update alarm
-                if (deviceState.isAlarmEnabled) {
-                    const ledAlarmColor = getComputedStyle(ledAlarmEl)
-                        .borderColor;
-                    ledAlarmEl.style.backgroundColor = ledAlarmColor;
-                }
+            // Set an item in the global server state
+            const setServerState = (key, val) =>
+                emitEvent('setState', key, val);
+
+            // LCD Screen ------------------------------------------------------
+
+            onGlobalStateUpdate('lcdScreenLines', screenLines => {
+                lcdScreenEls.forEach(
+                    (lcdScreenEl, i) =>
+                        (lcdScreenEl.innerHTML =
+                            screenLines[i] || lcdScreenEl.innerHTML),
+                );
             });
 
-            // WEB UI -> DEVICE -----------------------------------------------
-            btnAlarmEl.onclick = e => {
-                e.preventDefault();
-                io.emit('');
+            // Stoplight -------------------------------------------------------
+
+            const updateStoplight = stoplightState => {
+                constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
+                    const ledStoplightEl = document.querySelector(
+                        '.led-stoplight-' + ledName,
+                    );
+                    setLed(
+                        ledStoplightEl,
+                        [constants.STOPLIGHT_STATES.GO, ledName].includes(
+                            stoplightState,
+                        ),
+                    );
+                });
             };
+
+            // When the stoplight state is updated, turn on the corresponding
+            // LED(s). Turn on all of them if stoplight state is 'go';
+            onGlobalStateUpdate('stoplightState', updateStoplight);
+
+            // Set stoplight on startup
+            updateStoplight(globalState.stoplightState);
+
+            // Alarm -----------------------------------------------------------
+
+            // Speaker
+            onGlobalStateUpdate('isAlarmPlaying', isAlarmPlaying => {
+                imgBuzzerEl.src = `/static/buzzer-${
+                    isAlarmPlaying ? 'on.gif' : 'off.png'
+                }`;
+            });
+
+            // LED
+            onGlobalStateUpdate('isAlarmEnabled', isAlarmEnabled => {
+                setLed(ledAlarmEl, isAlarmEnabled);
+            });
+
+            // Button
+            btnAlarmSetEl.onclick = e => {
+                e.preventDefault();
+                setServerState('isAlarmEnabled', !globalState.isAlarmEnabled);
+            };
+
+            // Set alarm LED on startup
+            setLed(ledAlarmEl, globalState.isAlarmEnabled);
+
+            // Debug -----------------------------------------------------------
+
+            onGlobalStateUpdate('globalState', globalState => {
+                textGlobalStateEl.innerHTML = JSON.stringify(
+                    globalState,
+                    null,
+                    2,
+                );
+            });
+
+            // EXTENDED DEVICE CONTROLS ========================================
+
+            // Play alarm
+            btnAlarmPlayEl.onclick = e => {
+                e.preventDefault();
+                emitEvent('action:playAlarm', 'nyanIntro');
+            };
+
+            // Force OBA Example Responses
+            Object.keys(constants.STOPLIGHT_STATES).forEach(
+                stoplightStateKey => {
+                    const stoplightState =
+                        constants.STOPLIGHT_STATES[stoplightStateKey];
+                    const btnObaEgEl = document.querySelector(
+                        '.btn-oba-eg-' + stoplightState,
+                    );
+
+                    console.log('>>>', btnObaEgEl, stoplightState); // DEBUGGGG
+
+                    // Set up click handlers
+                    btnObaEgEl.onclick = e => {
+                        e.preventDefault();
+
+                        const isCurrentlySet = RegExp(
+                            `${stoplightState}$`,
+                        ).test(globalState.obaApiUrl);
+
+                        const newObaApiUrl = !isCurrentlySet
+                            ? window.location.origin +
+                              '/eg-oba-resp/' +
+                              stoplightState
+                            : null;
+                        setServerState('obaApiUrl', newObaApiUrl);
+                    };
+
+                    // Set up state change handlers
+                    onGlobalStateUpdate('obaApiUrl', obaApiUrl => {
+                        const isSelected = RegExp(`${stoplightState}$`).test(
+                            obaApiUrl,
+                        );
+                        btnObaEgEl.style.color = isSelected
+                            ? 'darkred'
+                            : 'inherit';
+                        btnObaEgEl.style.fontWeight = isSelected
+                            ? 'bold'
+                            : 'inherit';
+                    });
+                },
+            );
         </script>
     </body>
 </html>

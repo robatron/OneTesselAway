@@ -4,59 +4,25 @@
  * Display: 2 lines w/ 16 characters each. Example display:
  *
  *  ----------------
- *  11! 15:37 15:49
- *  12  08:11 06:47
- *  ----------------
- *
- *  ----------------
- *  11: 03!  15  45
- *  12: 18   32  51
+ *  11.   03  15  45
+ *  12:   18  32  51
  *  ----------------
  *
  * Supports up to two routes and two stops.
  */
+const express = require('express');
 const http = require('http');
-const Express = require('express');
+const { updateArrivalInfo } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const { initLogger } = require('./src/Logger');
-const { setTrafficLightState } = require('./src/hardware/TrafficLight');
-const { triggerAlarmBuzzer } = require('./src/hardware/Alarm');
 const {
-    getDeviceState,
-    processDeviceStateForDisplay,
-    updateArrivalInfo,
-} = require('./src/DeviceState');
-
-// Helper Functions / Data -----------------------------------------------------
-
-// Update arrivals from API and hardware from state
-const updateArrivalsAndHardware = async () => {
-    // Fetch a new arrival info synchronously
-    await updateArrivalInfo(constants.TARGET_ROUTES);
-
-    // Grab the updated device state
-    const currentDeviceState = getDeviceState();
-
-    if (DEVICE_ENABLED) {
-        // Set the traffic light state and trigger buzzer based on arrival
-        // of next bus on primary route
-        setTrafficLightState(currentDeviceState.stoplightState);
-        triggerAlarmBuzzer({
-            piezoPin: constants.PIEZO_PIN,
-            piezoPort: constants.PIEZO_PORT,
-            trafficLightState: currentDeviceState.stoplightState,
-        });
-
-        // Update LCD. Do last b/c it's very slow.
-        updateLcdScreen(currentDeviceState.displayLines);
-    }
-
-    // Send device state to the Web UI
-    io.emit(
-        'deviceStateUpdated',
-        processDeviceStateForDisplay(currentDeviceState),
-    );
-};
+    emitEvent,
+    initEvents,
+    onGlobalStateUpdate,
+} = require('./src/EventUtils');
+const { setState } = require('./src/GlobalState');
+const { getLatestLogFromFile, initLogger } = require('./src/Logger');
+const { initGlobalState, getState } = require('./src/GlobalState');
+const { initHardware } = require('./src/hardware');
 
 // Initialize ------------------------------------------------------------------
 
@@ -68,34 +34,66 @@ log.info('Initializing OneTesselAway...');
 // Should we enable the device, or run in web-only mode?
 const DEVICE_ENABLED = process.env.DISABLE_DEVICE !== '1';
 
-// Don't try to require the hardware module unless we're running on the actual
-// device to prevent global import errors
-let initHardware, updateLcdScreen;
-if (DEVICE_ENABLED) {
-    const hardware = require('./src/hardware');
-    const lcdScreen = require('./src/hardware/LcdScreen');
-    initHardware = hardware.initHardware;
-    updateLcdScreen = lcdScreen.updateLcdScreen;
-}
-
 // Set up Express server for the web UI
-var app = new Express();
-var server = new http.Server(app);
+const app = express();
+const server = new http.Server(app);
 
 // Set up the templating engine
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// Set up Socket.io for sending data to the Web UI w/o refreshing the page
-var io = require('socket.io')(server);
+// Set up static file middleware
+app.use('/static', express.static(__dirname + '/views/static'));
+
+// Set up event system for sending data to the Web UI w/o refreshing the page
+initEvents(server);
+
+// Init global state for the server and the web UI
+initGlobalState();
+
+// Routing -------------------------------------------------------------
 
 // Route to index. Render initial Web UI server-side.
 app.get('/', (req, res) => {
     log.info(
         `IP address ${req.ip} requesting ${req.method} from path ${req.url}`,
     );
-    const currentDeviceState = getDeviceState();
-    res.render('index', processDeviceStateForDisplay(currentDeviceState));
+    const globalStateJson = JSON.stringify(getState(), null, 2);
+
+    res.render('index', {
+        // Supply the device logs on render. Must refresh to get new ones.
+        deviceLogs: getLatestLogFromFile(constants.LOGFILE, {
+            reverseLines: true,
+        }),
+
+        // Supply global state
+        globalState: globalStateJson,
+
+        // Inject current global state when the page is rendered server-side
+        injectGlobalState: `<script>const globalState = ${globalStateJson}</script>`,
+
+        // Inject constants file to the Web UI to make hardware simulation
+        // easier
+        injectConstants: `<script>const constants = ${JSON.stringify(
+            constants,
+            null,
+            2,
+        )}</script>`,
+
+        // Initial LCD screen contents
+        lcdScreenLines: getState().lcdScreenLines,
+    });
+});
+
+// Endpoint that returns OneBusAway arrival example responses for testing
+app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
+    const egRespName = req.params.exampleResponse;
+    const egRespPath = `${__dirname}/src/oba-api/example-responses/${egRespName}.json`;
+
+    log.info(`Returning example OneBusAway response from "${egRespPath}"`);
+
+    const egResp = require(egRespPath);
+    res.json(egResp);
 });
 
 // Start -----------------------------------------------------------------------
@@ -105,20 +103,23 @@ app.get('/', (req, res) => {
 // before starting
 (async () => {
     if (DEVICE_ENABLED) {
-        log.info('Initializing hardware device...');
-        await initHardware({
-            buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
-            lcdPins: constants.LCD_DISPLAY_PINS,
-            ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
-            ledMissPin: constants.LED_MISS_PIN,
-            ledReadyPin: constants.LED_READY_PIN,
-            ledSteadyPin: constants.LED_SET_PIN,
-            piezoPin: constants.PIEZO_PIN,
-            piezoPort: constants.PIEZO_PORT,
-        });
+        log.info('Initializing hardware...');
     } else {
-        log.info('Hardware device DISABLED. Starting web UI only...');
+        log.info('Hardware is DISABLED, starting Web UI only...');
     }
+
+    // Initialize all hardware, even when in "web-only" mode
+    await initHardware({
+        buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
+        isDeviceEnabled: DEVICE_ENABLED,
+        lcdPins: constants.LCD_DISPLAY_PINS,
+        ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
+        ledMissPin: constants.LED_MISS_PIN,
+        ledReadyPin: constants.LED_READY_PIN,
+        ledSteadyPin: constants.LED_SET_PIN,
+        piezoPin: constants.PIEZO_PIN,
+        piezoPort: constants.PIEZO_PORT,
+    });
 
     // Begin updating arrival info and LCD screen regularly
     log.info('Starting OneTesselAway...');
@@ -129,27 +130,27 @@ app.get('/', (req, res) => {
     );
 
     if (DEVICE_ENABLED) {
-        updateLcdScreen(['Getting bus', 'arrival info...']);
+        emitEvent('printToScreen', ['Getting bus', 'arrival info...']);
     }
 
     // Wait for the first arrival info to return before starting up
-    await updateArrivalsAndHardware();
+    await updateArrivalInfo();
 
-    // After the initial API fetch, continue updating asynchronously
+    // After the initial API fetch, continue updating
     const apiIntervalId = setInterval(
-        updateArrivalsAndHardware,
+        updateArrivalInfo,
         constants.API_UPDATE_INTERVAL,
     );
 
     // Start up web UI server
-    server = server.listen(constants.PORT);
+    server.listen(constants.PORT);
     log.info(`Web UI server address: ${constants.ADDRESS}:${constants.PORT}`);
 
     // Shut down everything on ^C
     process.on('SIGINT', () => {
         log.info('Shutting down...');
         clearInterval(apiIntervalId);
-        clearInterval(hardwareIntervalId);
         server.close();
+        process.exit(0);
     });
 })();

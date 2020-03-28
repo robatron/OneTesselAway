@@ -9,10 +9,16 @@ const { apiKey } = require('../../oba-api-key.json');
 
 // Fetch upcoming arrivals data for the given stop from the OneBusAway API
 const _getArrivalsAndDeparturesForStop = async stopId => {
-    // Allow forcing arbitrary API URLs
-    const apiUrl =
-        getState().obaApiUrl ||
-        `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
+    // Allow using example states
+    const obaApiState = getState('obaApiEgState');
+    const egObaApiRespUrl = `${constants.ADDRESS}:${
+        constants.PORT
+    }/eg-oba-api-response/${stopId}/${getState('obaApiEgState')}`;
+    const obaApiUrl = `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
+    const apiUrl = obaApiState ? egObaApiRespUrl : obaApiUrl;
+
+    log.info(`Fetching ${apiUrl}...`);
+
     const response = await fetch(apiUrl);
 
     // If response is not a 200, throw an error

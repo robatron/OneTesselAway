@@ -57,7 +57,7 @@ const initAlarmHardware = ({
     onGlobalStateUpdate('stoplightState', stoplightState => {
         if (
             stoplightState === constants.STOPLIGHT_STATES.GO &&
-            getState().isAlarmEnabled
+            getState('isAlarmEnabled')
         ) {
             emitEvent('action:playAlarm', 'nyanIntro');
             setState('isAlarmEnabled', false);

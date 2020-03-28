@@ -13,3 +13,6 @@ node_modules/logform/node_modules/fecha
 
 # HTML template files
 views/**
+
+# Example OBA response files not included anywhere
+src/oba-api/example-responses/**

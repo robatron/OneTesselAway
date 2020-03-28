@@ -14,12 +14,7 @@ const express = require('express');
 const http = require('http');
 const { updateArrivalInfo } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const {
-    emitEvent,
-    initEvents,
-    onGlobalStateUpdate,
-} = require('./src/EventUtils');
-const { setState } = require('./src/GlobalState');
+const { emitEvent, initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
 const { initGlobalState, getState } = require('./src/GlobalState');
 const { initHardware } = require('./src/hardware');
@@ -81,14 +76,18 @@ app.get('/', (req, res) => {
         )}</script>`,
 
         // Initial LCD screen contents
-        lcdScreenLines: getState().lcdScreenLines,
+        lcdScreenLines: getState('lcdScreenLines'),
     });
 });
 
 // Endpoint that returns OneBusAway arrival example responses for testing
-app.get('/eg-oba-resp/:exampleResponse', (req, res) => {
-    const egRespName = req.params.exampleResponse;
-    const egRespPath = `${__dirname}/src/oba-api/example-responses/${egRespName}.json`;
+app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
+    const stopId = req.params.stopId;
+    const egRespName =
+        stopId === constants.TARGET_ROUTES[constants.PRIMARY_ROUTE].stopId
+            ? req.params.exampleResponse
+            : 'default';
+    const egRespPath = `${__dirname}/src/oba-api/example-responses/${stopId}/${egRespName}.json`;
 
     log.info(`Returning example OneBusAway response from "${egRespPath}"`);
 

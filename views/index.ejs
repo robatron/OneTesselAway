@@ -30,7 +30,7 @@
             }
             .text-area {
                 font-size: 0.8em;
-                height: 250px;
+                height: 600px;
                 padding: 10px;
                 width: 100%;
             }
@@ -298,29 +298,22 @@
                         '.btn-oba-eg-' + stoplightState,
                     );
 
-                    console.log('>>>', btnObaEgEl, stoplightState); // DEBUGGGG
-
-                    // Set up click handlers
+                    // When one of the OBA example response buttons is clicked,
+                    // set the obaApiEgState the corresponding stoplight state
+                    // if it's not already, otherwise toggle it off.
                     btnObaEgEl.onclick = e => {
                         e.preventDefault();
-
-                        const isCurrentlySet = RegExp(
-                            `${stoplightState}$`,
-                        ).test(globalState.obaApiUrl);
-
-                        const newObaApiUrl = !isCurrentlySet
-                            ? window.location.origin +
-                              '/eg-oba-resp/' +
-                              stoplightState
-                            : null;
-                        setServerState('obaApiUrl', newObaApiUrl);
+                        setServerState(
+                            'obaApiEgState',
+                            globalState.obaApiEgState !== stoplightState
+                                ? stoplightState
+                                : null,
+                        );
                     };
 
-                    // Set up state change handlers
-                    onGlobalStateUpdate('obaApiUrl', obaApiUrl => {
-                        const isSelected = RegExp(`${stoplightState}$`).test(
-                            obaApiUrl,
-                        );
+                    // Highlight a button if its corresponding state is set
+                    onGlobalStateUpdate('obaApiEgState', obaApiEgState => {
+                        const isSelected = obaApiEgState === stoplightState;
                         btnObaEgEl.style.color = isSelected
                             ? 'darkred'
                             : 'inherit';

@@ -85,5 +85,5 @@ module.exports.LCD_DISPLAY_PINS = ['b2', 'b3', 'b4', 'b5', 'b6', 'b7'];
 // LEDs
 module.exports.LED_READY_PIN = 'a7'; // Green LED
 module.exports.LED_SET_PIN = 'a2'; // Yellow LED
-module.exports.LED_MISS_PIN = 'a5'; // Red LED
+module.exports.LED_MISS_PIN = 'a1'; // Red LED
 module.exports.LED_ALARM_STATUS_PIN = 'a3'; // Blue LED

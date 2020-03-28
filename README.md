@@ -80,6 +80,15 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Fix alarm (why doesn't it turn itself off?)
 -   Global state updating too much client-side
 -   Helper for update events
+-   Stagger hardware callbacks
+-   Wait between calls to OBA
+
+## Topics to Write About
+
+-   Red LED not working on pin 6 when buzzer (pin 7) was playing
+-   Buzzer w/ PWM and music
+-   Frontend/backend event system
+-   Software architecture
 
 ## References
 
@@ -88,4 +97,5 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   https://github.com/rwaldron/johnny-five/blob/master/docs/lcd-16x2-tessel.md
 -   https://learn.sparkfun.com/tutorials/experiment-guide-for-the-johnny-five-inventors-kit/experiment-2-multiple-leds-
 -   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
+-   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pin-mapping
 -   http://johnny-five.io/api/led/

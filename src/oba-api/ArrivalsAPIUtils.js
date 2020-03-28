@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const { wait } = require('../AsyncUtils');
 const constants = require('../Constants');
 const { getState, setState } = require('../GlobalState');
 const {
@@ -73,7 +74,7 @@ const _getArrivalDatesByTripId = arrivals =>
     }, {});
 
 // Returns a list of upcomming arrival times for the specified stop and route
-const getUpcomingArrivalTimes = async (stopId, routeId) => {
+const _getUpcomingArrivalTimes = async (stopId, routeId) => {
     const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
     const basisDate = new Date(arrivalsForStop.currentTime);
     const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
@@ -90,7 +91,7 @@ const getUpcomingArrivalTimes = async (stopId, routeId) => {
     });
 };
 
-const updateArrivalInfo = async () => {
+const _updateArrivalInfoOnce = async () => {
     const targetRoutes = constants.TARGET_ROUTES;
     const targetRouteIds = Object.keys(targetRoutes);
     const arrivalInfo = {};
@@ -104,7 +105,7 @@ const updateArrivalInfo = async () => {
         let upcomingArrivalTimes;
 
         try {
-            upcomingArrivalTimes = await getUpcomingArrivalTimes(
+            upcomingArrivalTimes = await _getUpcomingArrivalTimes(
                 stopId,
                 routeId,
             );
@@ -127,10 +128,32 @@ const updateArrivalInfo = async () => {
     setState('arrivalInfo', arrivalInfo);
 };
 
+// Update arrival info forever at the specified interval. Blocks until first
+// arrival info is returned. Update interval can be overridden at runtime
+// w/ the `obaApiUpdateInterval` global state item.
+const updateArrivalInfoUntilStopped = async updateInterval => {
+    let isStopped = false;
+
+    // Await the first arrival info fetch
+    await _updateArrivalInfoOnce();
+
+    // Throw repeat calls into the background so we don't block forever
+    (async () => {
+        while (!isStopped) {
+            await _updateArrivalInfoOnce();
+            await wait(getState('obaApiUpdateInterval') || updateInterval);
+        }
+    })();
+
+    // Return a function to allow the updating to be stopped
+    return () => (isStopped = true);
+};
+
 module.exports = {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
-    getUpcomingArrivalTimes,
-    updateArrivalInfo,
+    _getUpcomingArrivalTimes,
+    _updateArrivalInfoOnce,
+    updateArrivalInfoUntilStopped,
 };

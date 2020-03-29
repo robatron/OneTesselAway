@@ -1,4 +1,6 @@
-# OneTesselAway
+# OneTesselAway: Transit Status Board
+
+> A simple transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with a Tessel 2 and the OneBusAway API.
 
 I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning.
 

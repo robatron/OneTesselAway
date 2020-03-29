@@ -1,7 +1,7 @@
+// LCD screen hardware and utilities. Consists of one 2x16 LCD screen.
+
 const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
-
-// LCD screen hardware and utilities
 
 // LCD screen hardware info
 const SCREEN_LINE_LENGTH = 16;

@@ -1,3 +1,6 @@
+// Buzzer hardware and utilities. Consists of one piezo speaker.
+
+const mockRequire = require('./mock-hardware');
 const { wait } = require('../AsyncUtils');
 const { onEvent } = require('../EventUtils');
 const { setState } = require('../GlobalState');
@@ -10,28 +13,10 @@ const STOP_DUTY_CYCLE = 0;
 let tesselLowLevel;
 
 const initBuzzerHardware = ({ isDeviceEnabled, piezoPort, piezoPin }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing buzzer hardware...');
-        tesselLowLevel = require('tessel');
-    } else {
-        log.info('Initializing mock buzzer hardware...');
-        tesselLowLevel = {
-            port: {
-                [piezoPort]: {
-                    pin: {
-                        [piezoPin]: {
-                            pwmDutyCycle: DS => {
-                                log.info(`Mock pwmDutyCycle "${DS}"`);
-                            },
-                        },
-                    },
-                },
-            },
-            pwmFrequency: freq => {
-                log.info(`Mock pwmFrequency "${freq}"`);
-            },
-        };
-    }
+    tesselLowLevel = mockRequire('tessel', isDeviceEnabled, {
+        piezoPort,
+        piezoPin,
+    });
 
     // Play a frequency on the specified PWM pin until stopped. Returns a
     // promise.

@@ -1,3 +1,7 @@
+// Alarm module hardware and utilities. Consists of one button and one (blue)
+// LED.
+
+const mockRequire = require('./mock-hardware');
 const constants = require('../Constants');
 const { emitEvent, onGlobalStateUpdate } = require('../EventUtils');
 const { getState, setState } = require('../GlobalState');
@@ -10,37 +14,22 @@ const initAlarmHardware = ({
     isDeviceEnabled,
     ledAlarmStatusPin,
 }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing alarm hardware...');
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'Alarm',
+    });
 
-        const five = require('johnny-five');
-
-        ledAlarmStatus = new five.Led(ledAlarmStatusPin);
-        buttonAlarmToggle = new five.Button(buttonAlarmTogglePin);
-    } else {
-        log.info('Initializing mock alarm hardware...');
-
-        ledAlarmStatus = {
-            off: () => {
-                log.info('Mock ledAlarmStates.off');
-            },
-            on: () => {
-                log.info('Mock ledAlarmStates.on');
-            },
-        };
-        buttonAlarmToggle = {
-            on: (...rest) => {
-                log.info(
-                    ['Mock buttonAlarmToggle.on', [...rest].join(' ')].join(
-                        ' ',
-                    ),
-                );
-            },
-        };
-    }
+    ledAlarmStatus = new five.Led({
+        id: 'ledAlarmStatus',
+        pin: ledAlarmStatusPin,
+    });
+    buttonAlarmToggle = new five.Button({
+        id: 'buttonAlarmToggle',
+        pin: buttonAlarmTogglePin,
+    });
 
     // Toggle un/set alarm when the button is pressed
     buttonAlarmToggle.on('release', () => {
+        log.info('buttonAlarmToggle released');
         setState(
             'isAlarmEnabled',
             currentState => !currentState.isAlarmEnabled,

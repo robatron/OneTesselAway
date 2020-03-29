@@ -1,3 +1,6 @@
+// Hardware for set of "stoplight" status LEDs. Consists of three LEDs, red,
+// yellow, and green.
+
 const constants = require('../Constants');
 const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');

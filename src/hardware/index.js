@@ -1,3 +1,5 @@
+// Entrypoint for all hardware modules.
+
 const { initAlarmHardware } = require('./Alarm');
 const { initBuzzerHardware } = require('./Buzzer');
 const { initLcdScreen } = require('./LcdScreen');

@@ -15,6 +15,14 @@ This device includes a web UI where you can view the real-time contents of the d
 
 <img src="./img/web-ui.png" width="300"/>
 
+## WIP: How it Works
+
+### Mock Hardware in Web-Only Mode
+
+Files in [src/hardware/mock-hardware/*] are mocked hardware that can be imported when the device hardware is not present, i.e., when running in "web-only" mode. They simply define the required object, and log info about what _would_ happen if the hardware were present.
+
+### Simulated hardware in Web UI
+
 ## Development
 
 Here's how to develop on the OneTesselAway device.
@@ -92,6 +100,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Flux data-management pattern
 -   Software architecture
 -   Async utils
+-   Web-only mode, hardware mocking
 
 ## References
 

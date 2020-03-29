@@ -92,6 +92,7 @@ const _getUpcomingArrivalTimes = async (stopId, routeId) => {
 };
 
 const _updateArrivalInfoOnce = async () => {
+    const serialRequestWait
     const targetRoutes = constants.TARGET_ROUTES;
     const targetRouteIds = Object.keys(targetRoutes);
     const arrivalInfo = {};

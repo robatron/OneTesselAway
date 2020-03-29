@@ -92,7 +92,6 @@ const _getUpcomingArrivalTimes = async (stopId, routeId) => {
 };
 
 const _updateArrivalInfoOnce = async () => {
-    const serialRequestWait
     const targetRoutes = constants.TARGET_ROUTES;
     const targetRouteIds = Object.keys(targetRoutes);
     const arrivalInfo = {};
@@ -123,6 +122,14 @@ const _updateArrivalInfoOnce = async () => {
                 stopName,
                 upcomingArrivalTimes,
             };
+        }
+
+        // If there's another fetch to be made, wait a moment to avoid hitting
+        // the OneBusAway API rate limit
+        if (i !== targetRouteIds.length - 1) {
+            const waitMs = constants.API_CONSECUTIVE_FETCH_PADDING;
+            log.info(`Waiting ${waitMs} ms before making the next fetch...`);
+            await wait(waitMs);
         }
     }
 

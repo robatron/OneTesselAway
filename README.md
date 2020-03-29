@@ -89,6 +89,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Buzzer w/ PWM and music
 -   Frontend/backend event system
 -   Software architecture
+-   Async utils
 
 ## References
 

@@ -25,8 +25,12 @@ module.exports.PRIMARY_ROUTE = '1_100009';
 // OneBusAway API endpoint for "arrivals" data at a stop
 module.exports.API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
-// How often to request updates from the OneBusAway API
+// How often (in ms) to request updates from the OneBusAway API
 module.exports.API_UPDATE_INTERVAL = 5000;
+
+// How long to wait (in ms) between back-to-back calls to the OneBusAway API in
+// a single update to avoid hitting the rate limit
+module.exports.API_CONSECUTIVE_FETCH_PADDING = 500;
 
 // Path to the log file
 module.exports.LOGFILE = __dirname + '/../logs/device.log';

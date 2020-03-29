@@ -30,7 +30,7 @@ module.exports.API_UPDATE_INTERVAL = 5000;
 
 // How long to wait (in ms) between back-to-back calls to the OneBusAway API in
 // a single update to avoid hitting the rate limit
-module.exports.API_CONSECUTIVE_FETCH_PADDING = 1000;
+module.exports.API_CONSECUTIVE_FETCH_PADDING = 500;
 
 // Path to the log file
 module.exports.LOGFILE = __dirname + '/../logs/device.log';

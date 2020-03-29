@@ -318,10 +318,13 @@
                                 ? stoplightState
                                 : null,
                         );
+
+                        // Update arrival info immediately
+                        emitEvent('action:updateArrivalInfo');
                     };
 
                     // Highlight a button if its corresponding state is set
-                    onGlobalStateUpdate('obaApiEgState', obaApiEgState => {
+                    const handleObaApiEgStateUpdate = obaApiEgState => {
                         const isSelected = obaApiEgState === stoplightState;
                         btnObaEgEl.style.color = isSelected
                             ? 'darkred'
@@ -329,7 +332,12 @@
                         btnObaEgEl.style.fontWeight = isSelected
                             ? 'bold'
                             : 'inherit';
-                    });
+                    };
+                    onGlobalStateUpdate(
+                        'obaApiEgState',
+                        handleObaApiEgStateUpdate,
+                    );
+                    handleObaApiEgStateUpdate(globalState.obaApiEgState);
                 },
             );
         </script>

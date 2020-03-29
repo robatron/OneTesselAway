@@ -26,7 +26,14 @@
                 background-color: green;
                 font-size: 1.2em;
                 font-weight: bold;
-                padding: 10px;
+                padding: 0.5em 1em;
+                margin: 0;
+            }
+            .lcd-screen:last-child {
+                padding-top: 0;
+            }
+            .lcd-screen:not(:last-child) {
+                padding-bottom: 0;
             }
             .text-area {
                 font-size: 0.8em;
@@ -76,31 +83,33 @@
         <h1>OneTesselAway Web UI</h1>
 
         <p>
-            This is a simple web UI for the OneTesselAway device. It shows raw
-            arrival info and device logs to help with diagnostics.
+            This is a web UI for the OneTesselAway device. It shows simulated
+            hardware, advanced controls, debug info, and logs.
         </p>
 
-        <h2>Simulated Device</h2>
+        <h2>Simulated Hardware</h2>
         <p>
-            This simulated state should match exactly what's currently on the
-            device.
+            This simulated hardware is synchronized with the device state. It
+            should show exactly what is on the device.
         </p>
         <h3>LCD Screen</h3>
-        <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
-        <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
+        <div>
+            <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
+            <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
+        </div>
         <h3>Stoplight LEDs</h3>
         <ul class="component-list">
             <li class="component-row">
-                <div class="led led-stoplight-miss"></div>
-                <div class="component-label">Missed</div>
+                <div class="led led-stoplight-ready"></div>
+                <div class="component-label">Ready LED</div>
             </li>
             <li class="component-row">
                 <div class="led led-stoplight-steady"></div>
-                <div class="component-label">Steady</div>
+                <div class="component-label">Steady LED</div>
             </li>
             <li class="component-row">
-                <div class="led led-stoplight-ready"></div>
-                <div class="component-label">Ready</div>
+                <div class="led led-stoplight-miss"></div>
+                <div class="component-label">Miss LED</div>
             </li>
         </ul>
         <h3>Alarm</h3>
@@ -128,16 +137,16 @@
         </p>
         <ul class="component-list">
             <li class="component-row">
-                <button class="btn-oba-eg-ready">Ready</button>
+                <button class="btn-oba-eg-ready">Ready (Green LED)</button>
             </li>
             <li class="component-row">
-                <button class="btn-oba-eg-steady">Steady</button>
+                <button class="btn-oba-eg-steady">Steady (Yellow LED)</button>
             </li>
             <li class="component-row">
-                <button class="btn-oba-eg-go">Go</button>
+                <button class="btn-oba-eg-go">Go (All LEDs)</button>
             </li>
             <li class="component-row">
-                <button class="btn-oba-eg-miss">Miss</button>
+                <button class="btn-oba-eg-miss">Miss (Red)</button>
             </li>
         </ul>
 

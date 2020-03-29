@@ -76,20 +76,20 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 
 ## Todo
 
+-   ~~Make mock endpoint~~
+-   ~~Fix alarm (why doesn't it turn itself off?)~~
+-   ~~Wait between calls to OBA~~
+-   ~~Helper for update events~~
+-   Stagger hardware callbacks, or at least let buzzer update on its own
 -   Allow songs to be changed via Web UI
--   Extract audio library
--   Make mock endpoint
--   Fix alarm (why doesn't it turn itself off?)
--   Global state updating too much client-side
--   Helper for update events
--   Stagger hardware callbacks
--   Wait between calls to OBA
+-   Fix global state updating too much client-side
 
 ## Topics to Write About
 
 -   Red LED not working on pin 6 when buzzer (pin 7) was playing
--   Buzzer w/ PWM and music
+-   Buzzer audio library, utilities, and music via PWM
 -   Frontend/backend event system
+-   Flux data-management pattern
 -   Software architecture
 -   Async utils
 

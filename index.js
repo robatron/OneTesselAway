@@ -12,7 +12,9 @@
  */
 const express = require('express');
 const http = require('http');
-const { updateArrivalInfo } = require('./src/oba-api/ArrivalsAPIUtils');
+const {
+    updateArrivalInfoUntilStopped,
+} = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
 const { emitEvent, initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
@@ -132,12 +134,9 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
         emitEvent('printToScreen', ['Getting bus', 'arrival info...']);
     }
 
-    // Wait for the first arrival info to return before starting up
-    await updateArrivalInfo();
-
-    // After the initial API fetch, continue updating
-    const apiIntervalId = setInterval(
-        updateArrivalInfo,
+    // Wait for the first arrival info to return before starting up, then
+    // continue to fetch at the specified interval
+    const stopUpdatingArrivalInfo = await updateArrivalInfoUntilStopped(
         constants.API_UPDATE_INTERVAL,
     );
 
@@ -148,7 +147,7 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
     // Shut down everything on ^C
     process.on('SIGINT', () => {
         log.info('Shutting down...');
-        clearInterval(apiIntervalId);
+        stopUpdatingArrivalInfo();
         server.close();
         process.exit(0);
     });

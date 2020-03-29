@@ -1,4 +1,6 @@
-# OneTesselAway
+# OneTesselAway: Transit Status Board
+
+> A simple transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with a Tessel 2 and the OneBusAway API.
 
 I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning.
 
@@ -74,12 +76,22 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 
 ## Todo
 
+-   ~~Make mock endpoint~~
+-   ~~Fix alarm (why doesn't it turn itself off?)~~
+-   ~~Wait between calls to OBA~~
+-   ~~Helper for update events~~
+-   Stagger hardware callbacks, or at least let buzzer update on its own
 -   Allow songs to be changed via Web UI
--   Extract audio library
--   Make mock endpoint
--   Fix alarm (why doesn't it turn itself off?)
--   Global state updating too much client-side
--   Helper for update events
+-   Fix global state updating too much client-side
+
+## Topics to Write About
+
+-   Red LED not working on pin 6 when buzzer (pin 7) was playing
+-   Buzzer audio library, utilities, and music via PWM
+-   Frontend/backend event system
+-   Flux data-management pattern
+-   Software architecture
+-   Async utils
 
 ## References
 
@@ -88,4 +100,5 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   https://github.com/rwaldron/johnny-five/blob/master/docs/lcd-16x2-tessel.md
 -   https://learn.sparkfun.com/tutorials/experiment-guide-for-the-johnny-five-inventors-kit/experiment-2-multiple-leds-
 -   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
+-   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pin-mapping
 -   http://johnny-five.io/api/led/

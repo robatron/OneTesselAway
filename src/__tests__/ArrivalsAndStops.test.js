@@ -2,7 +2,7 @@ const {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
-    getUpcomingArrivalTimes,
+    _getUpcomingArrivalTimes,
 } = require('../ArrivalsAndStops');
 const { apiKey } = require('../../oba-api-key.json');
 const {
@@ -93,10 +93,10 @@ describe('_getArrivalDatesByTripId', () => {
     });
 });
 
-describe('getUpcomingArrivalTimes', () => {
+describe('_getUpcomingArrivalTimes', () => {
     it('returns formatted upcoming arrival time information', async () => {
         const callDate = new Date(1577721840746);
-        const upcomingArrivalTimes = await getUpcomingArrivalTimes(
+        const upcomingArrivalTimes = await _getUpcomingArrivalTimes(
             DEFAULT_TEST_STOP_ID,
             DEFAULT_TEST_ROUTE_ID,
             callDate,

@@ -1,5 +1,7 @@
 const fetch = require('node-fetch');
+const { wait } = require('../AsyncUtils');
 const constants = require('../Constants');
+const { onEvent } = require('../EventUtils');
 const { getState, setState } = require('../GlobalState');
 const {
     dateTo24HourClockString,
@@ -11,9 +13,7 @@ const { apiKey } = require('../../oba-api-key.json');
 const _getArrivalsAndDeparturesForStop = async stopId => {
     // Allow using example states
     const obaApiState = getState('obaApiEgState');
-    const egObaApiRespUrl = `${constants.ADDRESS}:${
-        constants.PORT
-    }/eg-oba-api-response/${stopId}/${getState('obaApiEgState')}`;
+    const egObaApiRespUrl = `${constants.ADDRESS}:${constants.PORT}/eg-oba-api-response/${stopId}/${obaApiState}`;
     const obaApiUrl = `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
     const apiUrl = obaApiState ? egObaApiRespUrl : obaApiUrl;
 
@@ -72,8 +72,8 @@ const _getArrivalDatesByTripId = arrivals =>
         return arrivalDates;
     }, {});
 
-// Returns a list of upcomming arrival times for the specified stop and route
-const getUpcomingArrivalTimes = async (stopId, routeId) => {
+// Returns a list of upcoming arrival times for the specified stop and route
+const _getUpcomingArrivalTimes = async (stopId, routeId) => {
     const arrivalsForStop = await _getArrivalsAndDeparturesForStop(stopId);
     const basisDate = new Date(arrivalsForStop.currentTime);
     const arrivalsForRoute = _getArrivalsForRoute(arrivalsForStop, routeId);
@@ -90,7 +90,7 @@ const getUpcomingArrivalTimes = async (stopId, routeId) => {
     });
 };
 
-const updateArrivalInfo = async () => {
+const _updateArrivalInfoOnce = async isManualTrigger => {
     const targetRoutes = constants.TARGET_ROUTES;
     const targetRouteIds = Object.keys(targetRoutes);
     const arrivalInfo = {};
@@ -104,7 +104,7 @@ const updateArrivalInfo = async () => {
         let upcomingArrivalTimes;
 
         try {
-            upcomingArrivalTimes = await getUpcomingArrivalTimes(
+            upcomingArrivalTimes = await _getUpcomingArrivalTimes(
                 stopId,
                 routeId,
             );
@@ -122,15 +122,52 @@ const updateArrivalInfo = async () => {
                 upcomingArrivalTimes,
             };
         }
+
+        // If there's another fetch to be made, wait a moment to avoid hitting
+        // the OneBusAway API rate limit. Skip waiting if this update was
+        // triggered manually.
+        if (i !== targetRouteIds.length - 1 && !isManualTrigger) {
+            const waitMs = constants.API_CONSECUTIVE_FETCH_PADDING;
+            log.info(`Waiting ${waitMs} ms before making the next fetch...`);
+            await wait(waitMs);
+        }
     }
 
     setState('arrivalInfo', arrivalInfo);
+};
+
+// Update arrival info forever at the specified interval. Blocks until first
+// arrival info is returned. Also sets up an immediate update arrival info
+// action.
+const updateArrivalInfoUntilStopped = async updateInterval => {
+    let isStopped = false;
+
+    // Allow arrival time update on-command
+    onEvent('action:updateArrivalInfo', () => {
+        log.info('IMMEDIATELY updating arrival info');
+        _updateArrivalInfoOnce(true);
+    });
+
+    // Await the first arrival info fetch before continuing
+    await _updateArrivalInfoOnce();
+
+    // Throw repeat calls into the background so we don't block forever
+    (async () => {
+        while (!isStopped) {
+            await _updateArrivalInfoOnce();
+            await wait(updateInterval);
+        }
+    })();
+
+    // Return a function to allow the updating to be stopped
+    return () => (isStopped = true);
 };
 
 module.exports = {
     _getArrivalDatesByTripId,
     _getArrivalsAndDeparturesForStop,
     _getArrivalsForRoute,
-    getUpcomingArrivalTimes,
-    updateArrivalInfo,
+    _getUpcomingArrivalTimes,
+    _updateArrivalInfoOnce,
+    updateArrivalInfoUntilStopped,
 };

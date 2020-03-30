@@ -18,28 +18,22 @@ const initStoplight = ({
     ledSteadyPin,
     ledMissPin,
 }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing stoplight hardware...');
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'Stoplight',
+    });
 
-        const five = require('johnny-five');
-
-        leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
-        leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
-        leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
-    } else {
-        log.info('Initializing mock alarm hardware...');
-
-        constants.STOPLIGHT_LED_NAMES.forEach(stoplightState => {
-            leds[stoplightState] = {
-                off: () => {
-                    log.info(`Mock "${stoplightState}" off`);
-                },
-                on: () => {
-                    log.info(`Mock "${stoplightState}" on`);
-                },
-            };
-        });
-    }
+    leds[constants.STOPLIGHT_STATES.READY] = new five.Led({
+        id: 'ledStoplightReady',
+        pin: ledReadyPin,
+    });
+    leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led({
+        id: 'ledStoplightSteady',
+        pin: ledSteadyPin,
+    });
+    leds[constants.STOPLIGHT_STATES.MISS] = new five.Led({
+        id: 'ledStoplightMiss',
+        pin: ledMissPin,
+    });
 
     // When the stoplight state is updated, turn on the corresponding LED(s)
     onGlobalStateUpdate('stoplightState', stoplightState => {

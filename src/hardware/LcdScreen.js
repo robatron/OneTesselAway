@@ -15,7 +15,7 @@ let getLcdScreenLinesCount = 0;
 // LCD screen hardware
 let lcdScreen;
 
-const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
+const initLcdScreen = ({ isDeviceEnabled, pinsAndPorts: { lcdPins } }) => {
     const five = mockRequire('johnny-five', isDeviceEnabled, {
         moduleName: 'LcdScreen',
     });

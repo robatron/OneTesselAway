@@ -12,7 +12,10 @@ const STOP_DUTY_CYCLE = 0;
 
 let tesselLowLevel;
 
-const initBuzzerHardware = ({ isDeviceEnabled, piezoPort, piezoPin }) => {
+const initBuzzerHardware = ({
+    isDeviceEnabled,
+    pinsAndPorts: { piezoPort, piezoPin },
+}) => {
     tesselLowLevel = mockRequire('tessel', isDeviceEnabled, {
         piezoPort,
         piezoPin,

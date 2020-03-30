@@ -6,7 +6,8 @@ module.exports = ({ moduleName }) => ({
         return {
             on: (eventName, cb) => {
                 log.info(
-                    `[${moduleName}] [${id}] [io ${io}] Set and immediately exec cb for mock Board.on('${eventName}') handler`,
+                    `[${moduleName}] [${id}] [io %o] Set and immediately exec cb for mock Board.on('${eventName}') handler`,
+                    io,
                 );
                 cb();
             },

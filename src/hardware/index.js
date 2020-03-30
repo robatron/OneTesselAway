@@ -5,21 +5,10 @@ const { initBuzzerHardware } = require('./Buzzer');
 const { initLcdScreen } = require('./LcdScreen');
 const mockRequire = require('./mock-hardware');
 const { initStoplight } = require('./Stoplight');
-const constants = require('../Constants');
 const { emitEvent } = require('../EventUtils');
-const { setState } = require('../GlobalState');
 
-const initHardware = ({
-    buttonAlarmTogglePin,
-    isDeviceEnabled,
-    lcdPins,
-    ledAlarmStatusPin,
-    ledMissPin,
-    ledReadyPin,
-    ledSteadyPin,
-    piezoPin,
-    piezoPort,
-}) => {
+const initHardware = hardwareParams => {
+    const { isDeviceEnabled } = hardwareParams;
     const five = mockRequire('johnny-five', isDeviceEnabled, {
         moduleName: 'Index',
     });
@@ -28,40 +17,20 @@ const initHardware = ({
 
     return new Promise(resolve => {
         board.on('ready', () => {
-            log.info(
-                `Device board ready. Configuring LCD display with pins ${lcdPins}...`,
-            );
-
             // Init buzzer hardware
-            initBuzzerHardware({
-                isDeviceEnabled,
-                piezoPin,
-                piezoPort,
-            });
+            initBuzzerHardware(hardwareParams);
 
             // Init alarm hardware
-            initAlarmHardware({
-                buttonAlarmTogglePin,
-                isDeviceEnabled,
-                ledAlarmStatusPin,
-            });
+            initAlarmHardware(hardwareParams);
 
             // Init stoplight hardware
-            initStoplight({
-                isDeviceEnabled,
-                ledReadyPin,
-                ledSteadyPin,
-                ledMissPin,
-            });
+            initStoplight(hardwareParams);
 
-            // Init LCD last b/c it's slow
-            initLcdScreen({ isDeviceEnabled, lcdPins });
+            // Init LCD screen (do last b/c it's slow)
+            initLcdScreen(hardwareParams);
 
-            // Play a tune and flash stoplight once the hardware is ready to go
+            // Play a tune and resolve once the hardware is ready to go
             emitEvent('action:playAlarm', 'nyanIntro');
-            setState('stoplightState', constants.STOPLIGHT_STATES.GO);
-
-            // Resolve once hardware initialized
             resolve();
         });
     });

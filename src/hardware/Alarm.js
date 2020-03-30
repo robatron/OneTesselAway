@@ -10,9 +10,8 @@ let ledAlarmStatus;
 let buttonAlarmToggle;
 
 const initAlarmHardware = ({
-    buttonAlarmTogglePin,
     isDeviceEnabled,
-    ledAlarmStatusPin,
+    pinsAndPorts: { btnAlarmTogglePin, ledAlarmStatusPin },
 }) => {
     const five = mockRequire('johnny-five', isDeviceEnabled, {
         moduleName: 'Alarm',
@@ -24,7 +23,7 @@ const initAlarmHardware = ({
     });
     buttonAlarmToggle = new five.Button({
         id: 'buttonAlarmToggle',
-        pin: buttonAlarmTogglePin,
+        pin: btnAlarmTogglePin,
     });
 
     // Toggle un/set alarm when the button is pressed

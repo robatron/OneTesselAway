@@ -63,12 +63,12 @@ You can run an instance of OneTesselAway on your local machine without the hardw
 You can also use the following environment variables to configure how OneTesselAway runs.
 
 -   `ADDR` - The address on which to run the Web UI
--   `PORT` - The port on which to run the Web UI
+-   `WEB_UI_PORT` - The port on which to run the Web UI
 -   `DISABLE_DEVICE` - Run in web-only mode (disable device hardware)
 
 E.g., to run the web UI on a different port:
 
-    PORT=8081 npm start
+    WEB_UI_PORT=8081 npm start
 
 ### Run OneTesselAway on Tessel 2 Hardware
 
@@ -89,7 +89,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   ~~Wait between calls to OBA~~
 -   ~~Helper for update events~~
 -   ~~Make mock hardware utils~~
--   Clean up pins
+-   ~~Clean up hardware pins~~
 -   Stagger hardware callbacks, or at least let buzzer update on its own
 -   Allow songs to be changed via Web UI
 -   Fix global state updating too much client-side

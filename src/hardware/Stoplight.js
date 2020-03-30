@@ -14,9 +14,7 @@ const leds = constants.STOPLIGHT_LED_NAMES.reduce((accum, ledName) => {
 
 const initStoplight = ({
     isDeviceEnabled,
-    ledReadyPin,
-    ledSteadyPin,
-    ledMissPin,
+    pinsAndPorts: { ledReadyPin, ledSteadyPin, ledMissPin },
 }) => {
     const five = mockRequire('johnny-five', isDeviceEnabled, {
         moduleName: 'Stoplight',

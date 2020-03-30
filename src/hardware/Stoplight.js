@@ -1,6 +1,7 @@
 // Hardware for set of "stoplight" status LEDs. Consists of three LEDs, red,
 // yellow, and green.
 
+const mockRequire = require('./mock-hardware');
 const constants = require('../Constants');
 const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
@@ -63,9 +64,20 @@ const initStoplight = ({
 // Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
 // the closest arrival time of the primary route
 const getStoplightState = arrivalInfo => {
-    const closestMinsUntilArrival =
-        arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
-            .minsUntilArrival;
+    let closestMinsUntilArrival;
+
+    try {
+        closestMinsUntilArrival =
+            arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
+                .minsUntilArrival;
+    } catch (e) {
+        log.warn(
+            'Malformed arrivalInfo. Unable to calculate stoplight state: %o',
+            arrivalInfo,
+        );
+        return;
+    }
+
     const stoplightStates = Object.keys(constants.STOPLIGHT_TIME_RANGES);
 
     let stoplightState;

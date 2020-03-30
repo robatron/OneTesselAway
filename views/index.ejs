@@ -236,18 +236,21 @@
 
             // Stoplight -------------------------------------------------------
 
+            // Update the stoplight LEDs if stoplight state is valid
             const updateStoplight = stoplightState => {
-                constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
-                    const ledStoplightEl = document.querySelector(
-                        '.led-stoplight-' + ledName,
-                    );
-                    setLed(
-                        ledStoplightEl,
-                        [constants.STOPLIGHT_STATES.GO, ledName].includes(
-                            stoplightState,
-                        ),
-                    );
-                });
+                if (stoplightState) {
+                    constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
+                        const ledStoplightEl = document.querySelector(
+                            '.led-stoplight-' + ledName,
+                        );
+                        setLed(
+                            ledStoplightEl,
+                            [constants.STOPLIGHT_STATES.GO, ledName].includes(
+                                stoplightState,
+                            ),
+                        );
+                    });
+                }
             };
 
             // When the stoplight state is updated, turn on the corresponding

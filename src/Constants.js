@@ -32,7 +32,7 @@ module.exports.API_UPDATE_INTERVAL = 5000;
 // a single update to avoid hitting the rate limit
 module.exports.API_CONSECUTIVE_FETCH_PADDING = 500;
 
-// Path to the log file
+// Path to the current log file. Logs will be rotated every 100k w/ max 10 files
 module.exports.LOGFILE = __dirname + '/../logs/device.log';
 
 // Server settings. If started locally in "web only" mode w/ `npm start`, it'll

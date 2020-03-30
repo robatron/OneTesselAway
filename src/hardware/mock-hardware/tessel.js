@@ -1,4 +1,5 @@
 // Mock hardware for the `tessel` low-level hardware API
+
 module.exports = ({ piezoPort, piezoPin }) => ({
     port: {
         [piezoPort]: {

@@ -88,6 +88,8 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   ~~Fix alarm (why doesn't it turn itself off?)~~
 -   ~~Wait between calls to OBA~~
 -   ~~Helper for update events~~
+-   Make mock hardware utils
+-   Clean up pins
 -   Stagger hardware callbacks, or at least let buzzer update on its own
 -   Allow songs to be changed via Web UI
 -   Fix global state updating too much client-side

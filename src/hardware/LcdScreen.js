@@ -1,5 +1,6 @@
 // LCD screen hardware and utilities. Consists of one 2x16 LCD screen.
 
+const mockRequire = require('./mock-hardware');
 const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
 
@@ -15,23 +16,11 @@ let getLcdScreenLinesCount = 0;
 let lcdScreen;
 
 const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing LCD screen hardware...');
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'LcdScreen',
+    });
 
-        const five = require('johnny-five');
-
-        lcdScreen = new five.LCD({ pins: lcdPins });
-    } else {
-        log.info('Initializing mock LED screen hardware...');
-
-        lcdScreen = {
-            cursor: i => ({
-                print: line => {
-                    log.info(`Mock LCD screen print line "${i}": "${line}"`);
-                },
-            }),
-        };
-    }
+    lcdScreen = new five.LCD({ id: 'lcdScreen', pins: lcdPins });
 
     onGlobalStateUpdate('lcdScreenLines', screenLines => {
         updateLcdScreen(screenLines);

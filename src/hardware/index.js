@@ -3,6 +3,7 @@
 const { initAlarmHardware } = require('./Alarm');
 const { initBuzzerHardware } = require('./Buzzer');
 const { initLcdScreen } = require('./LcdScreen');
+const mockRequire = require('./mock-hardware');
 const { initStoplight } = require('./Stoplight');
 const constants = require('../Constants');
 const { emitEvent } = require('../EventUtils');
@@ -19,22 +20,11 @@ const initHardware = ({
     piezoPin,
     piezoPort,
 }) => {
-    let board;
-
-    if (isDeviceEnabled) {
-        log.info('Initializing hardware...');
-
-        const five = require('johnny-five');
-        const Tessel = require('tessel-io');
-
-        board = new five.Board({ io: new Tessel() });
-    } else {
-        log.info('Initializing mock hardware...');
-
-        board = {
-            on: (event, cb) => cb(),
-        };
-    }
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'Index',
+    });
+    const Tessel = mockRequire('tessel-io', isDeviceEnabled);
+    const board = new five.Board({ id: 'Index', io: new Tessel() });
 
     return new Promise(resolve => {
         board.on('ready', () => {

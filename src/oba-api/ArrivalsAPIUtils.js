@@ -137,7 +137,7 @@ const _updateArrivalInfoOnce = async isManualTrigger => {
 };
 
 // Update arrival info forever at the specified interval. Blocks until first
-// arrival info is returned. Also sets up an immediate update arrival info
+// arrival info is returned. Also registers an immediate update arrival info
 // action.
 const updateArrivalInfoUntilStopped = async updateInterval => {
     let isStopped = false;

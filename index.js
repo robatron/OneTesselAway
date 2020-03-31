@@ -124,7 +124,7 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
     );
 
     if (DEVICE_ENABLED) {
-        emitEvent('printToScreen', ['Getting bus', 'arrival info...']);
+        setState('lcdScreenLines', ['Getting bus', 'arrival info...']);
     }
 
     // Wait for the first arrival info to return before starting up, then

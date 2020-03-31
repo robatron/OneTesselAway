@@ -23,7 +23,7 @@ All data is managed by a global state for the entire app, server and client-side
 | Global State Item | Type          | Description                              |
 | ----------------- | ------------- | ---------------------------------------- |
 | arrivalInfo       | object        | Upcoming bus arrival information         |
-| isAlarmPlaying    | bool          | If the alarm buzzer is currently playing |
+| isBuzzerPlaying   | bool          | If the alarm buzzer is currently playing |
 | lcdScreenLines    | array<string> | Lines to display on the LCD screen       |
 | stoplightState    | string        | State of the 'stoplight' module          |
 

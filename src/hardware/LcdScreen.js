@@ -2,7 +2,7 @@
 
 const mockRequire = require('./mock-hardware');
 const { onGlobalStateUpdate } = require('../EventUtils');
-const { setState } = require('../GlobalState');
+const { getState, setState } = require('../GlobalState');
 
 // LCD screen hardware info
 const SCREEN_LINE_LENGTH = 16;
@@ -32,11 +32,18 @@ const initLcdScreen = ({ isDeviceEnabled, pinsAndPorts: { lcdPins } }) => {
     });
 };
 
-// Write lines to the LCD screen
+// Print lines to the LCD screen. If the alarm is currently playing, wait until
+// it's finished before printing so we don't slow the alarm music.
 const updateLcdScreen = screenLines => {
-    screenLines.forEach((line, i) => {
-        lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));
-    });
+    const printLines = () =>
+        screenLines.forEach((line, i) => {
+            lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));
+        });
+    if (getState('isBuzzerPlaying')) {
+        onGlobalStateUpdate('isBuzzerPlaying', printLines);
+    } else {
+        printLines();
+    }
 };
 
 // Create screen lines from arrival info and dynamic delimeters

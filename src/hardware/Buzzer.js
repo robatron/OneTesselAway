@@ -57,11 +57,11 @@ const initBuzzerHardware = ({
     };
 
     onEvent('action:playAlarm', songName => {
-        setState('isAlarmPlaying', true);
+        setState('isBuzzerPlaying', true);
 
         playSong({
             cb: () => {
-                setState('isAlarmPlaying', false);
+                setState('isBuzzerPlaying', false);
             },
             piezoPin,
             piezoPort,

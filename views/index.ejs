@@ -266,9 +266,9 @@
             // Alarm -----------------------------------------------------------
 
             // Speaker
-            onGlobalStateUpdate('isAlarmPlaying', isAlarmPlaying => {
+            onGlobalStateUpdate('isBuzzerPlaying', isBuzzerPlaying => {
                 imgBuzzerEl.src = `/static/buzzer-${
-                    isAlarmPlaying ? 'on.gif' : 'off.png'
+                    isBuzzerPlaying ? 'on.gif' : 'off.png'
                 }`;
             });
 

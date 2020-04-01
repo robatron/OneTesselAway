@@ -32,17 +32,13 @@ const initLcdScreen = ({ isDeviceEnabled, pinsAndPorts: { lcdPins } }) => {
     });
 };
 
-// Print lines to the LCD screen. If the alarm is currently playing, wait until
-// it's finished before printing so we don't slow the alarm music.
+// Print lines to the LCD screen, unless the buzzer is currently playing b/c
+// it slows the buzzer tune which makes it sound weird.
 const updateLcdScreen = screenLines => {
-    const printLines = () =>
+    if (!getState('isBuzzerPlaying')) {
         screenLines.forEach((line, i) => {
             lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));
         });
-    if (getState('isBuzzerPlaying')) {
-        onGlobalStateUpdate('isBuzzerPlaying', printLines);
-    } else {
-        printLines();
     }
 };
 

@@ -16,9 +16,9 @@ const {
     updateArrivalInfoUntilStopped,
 } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const { emitEvent, initEvents } = require('./src/EventUtils');
+const { initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
-const { initGlobalState, getState } = require('./src/GlobalState');
+const { getState, initGlobalState, setState } = require('./src/GlobalState');
 const { initHardware } = require('./src/hardware');
 
 // Initialize ------------------------------------------------------------------

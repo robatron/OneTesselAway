@@ -16,7 +16,7 @@ const { Response } = jest.requireActual('node-fetch');
 
 const DEFAULT_TEST_STOP_ID = '1_12353';
 const DEFAULT_TEST_ROUTE_ID = '1_100009';
-const API_ARRIVALS_AND_DEPARTURES_FOR_STOP = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
+const API_URL = `http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop`;
 
 beforeEach(() => {
     fetch.mockReturnValue(
@@ -38,7 +38,7 @@ describe('_getArrivalsAndDeparturesForStop', () => {
 
         expect(fetch).toHaveBeenCalledTimes(1);
         expect(fetch).toHaveBeenCalledWith(
-            `${API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${DEFAULT_TEST_STOP_ID}.json?key=${apiKey}`,
+            `${API_URL}/${DEFAULT_TEST_STOP_ID}.json?key=${apiKey}`,
         );
         expect(response).toEqual(
             DEFAULT_ARRIVALS_AND_DEPARTURES_FOR_STOP_RESPONSE,

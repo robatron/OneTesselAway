@@ -1,18 +1,24 @@
-# Files to include when deploying the Tessel device
+# Files to include when deploying the Tessel device that don't get picked up
+# automatically via require analysis, i.e.,
+#   - Anything that is used but not `require`d
+#   - Any `require`s that are not at the root level of the module
 
-# Main file. Redundant, but won't hurt.
-index.js
+# Dynamically-required modules (in mock hardware)
+node_modules/johnny-five
+node_modules/tessel-io
+node_modules/tessel
 
-# Dependencies that don't get picked up automatically via require analysis
-node_modules/ejs
+# Winston Log formatters
 node_modules/logform/combine.js
 node_modules/logform/errors.js
-node_modules/logform/printf.js
-node_modules/logform/timestamp.js
 node_modules/logform/node_modules/fecha
+node_modules/logform/printf.js
+node_modules/logform/splat.js
+node_modules/logform/timestamp.js
 
 # HTML template files
+node_modules/ejs
 views/**
 
-# Example OBA response files not included anywhere
+# Example OBA API responses
 src/oba-api/example-responses/**

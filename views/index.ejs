@@ -2,6 +2,9 @@
     <head>
         <link rel="shortcut icon" href="/static/favicon.ico" />
         <style>
+            body {
+                min-width: 425px;
+            }
             body * {
                 font-family: 'Courier New', Courier, monospace;
                 font-size: 16px;
@@ -236,18 +239,21 @@
 
             // Stoplight -------------------------------------------------------
 
+            // Update the stoplight LEDs if stoplight state is valid
             const updateStoplight = stoplightState => {
-                constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
-                    const ledStoplightEl = document.querySelector(
-                        '.led-stoplight-' + ledName,
-                    );
-                    setLed(
-                        ledStoplightEl,
-                        [constants.STOPLIGHT_STATES.GO, ledName].includes(
-                            stoplightState,
-                        ),
-                    );
-                });
+                if (stoplightState) {
+                    constants.STOPLIGHT_LED_NAMES.forEach(ledName => {
+                        const ledStoplightEl = document.querySelector(
+                            '.led-stoplight-' + ledName,
+                        );
+                        setLed(
+                            ledStoplightEl,
+                            [constants.STOPLIGHT_STATES.GO, ledName].includes(
+                                stoplightState,
+                            ),
+                        );
+                    });
+                }
             };
 
             // When the stoplight state is updated, turn on the corresponding
@@ -260,9 +266,9 @@
             // Alarm -----------------------------------------------------------
 
             // Speaker
-            onGlobalStateUpdate('isAlarmPlaying', isAlarmPlaying => {
+            onGlobalStateUpdate('isBuzzerPlaying', isBuzzerPlaying => {
                 imgBuzzerEl.src = `/static/buzzer-${
-                    isAlarmPlaying ? 'on.gif' : 'off.png'
+                    isBuzzerPlaying ? 'on.gif' : 'off.png'
                 }`;
             });
 

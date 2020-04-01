@@ -16,9 +16,9 @@ const {
     updateArrivalInfoUntilStopped,
 } = require('./src/oba-api/ArrivalsAPIUtils');
 const constants = require('./src/Constants');
-const { emitEvent, initEvents } = require('./src/EventUtils');
+const { initEvents } = require('./src/EventUtils');
 const { getLatestLogFromFile, initLogger } = require('./src/Logger');
-const { initGlobalState, getState } = require('./src/GlobalState');
+const { getState, initGlobalState, setState } = require('./src/GlobalState');
 const { initHardware } = require('./src/hardware');
 
 // Initialize ------------------------------------------------------------------
@@ -111,15 +111,8 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
 
     // Initialize all hardware, even when in "web-only" mode
     await initHardware({
-        buttonAlarmTogglePin: constants.BUTTON_ALARM_PIN,
         isDeviceEnabled: DEVICE_ENABLED,
-        lcdPins: constants.LCD_DISPLAY_PINS,
-        ledAlarmStatusPin: constants.LED_ALARM_STATUS_PIN,
-        ledMissPin: constants.LED_MISS_PIN,
-        ledReadyPin: constants.LED_READY_PIN,
-        ledSteadyPin: constants.LED_SET_PIN,
-        piezoPin: constants.PIEZO_PIN,
-        piezoPort: constants.PIEZO_PORT,
+        pinsAndPorts: constants.PINS_AND_PORTS,
     });
 
     // Begin updating arrival info and LCD screen regularly
@@ -131,7 +124,7 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
     );
 
     if (DEVICE_ENABLED) {
-        emitEvent('printToScreen', ['Getting bus', 'arrival info...']);
+        setState('lcdScreenLines', ['Getting bus', 'arrival info...']);
     }
 
     // Wait for the first arrival info to return before starting up, then
@@ -141,8 +134,10 @@ app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
     );
 
     // Start up web UI server
-    server.listen(constants.PORT);
-    log.info(`Web UI server address: ${constants.ADDRESS}:${constants.PORT}`);
+    server.listen(constants.WEB_UI_PORT);
+    log.info(
+        `Web UI server address: ${constants.WEB_UI_ADDRESS}:${constants.WEB_UI_PORT}`,
+    );
 
     // Shut down everything on ^C
     process.on('SIGINT', () => {

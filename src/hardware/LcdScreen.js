@@ -1,7 +1,8 @@
-const { onGlobalStateUpdate } = require('../EventUtils');
-const { setState } = require('../GlobalState');
+// LCD screen hardware and utilities. Consists of one 2x16 LCD screen.
 
-// LCD screen hardware and utilities
+const mockRequire = require('./mock-hardware');
+const { onGlobalStateUpdate } = require('../EventUtils');
+const { getState, setState } = require('../GlobalState');
 
 // LCD screen hardware info
 const SCREEN_LINE_LENGTH = 16;
@@ -14,24 +15,12 @@ let getLcdScreenLinesCount = 0;
 // LCD screen hardware
 let lcdScreen;
 
-const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing LCD screen hardware...');
+const initLcdScreen = ({ isDeviceEnabled, pinsAndPorts: { lcdPins } }) => {
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'LcdScreen',
+    });
 
-        const five = require('johnny-five');
-
-        lcdScreen = new five.LCD({ pins: lcdPins });
-    } else {
-        log.info('Initializing mock LED screen hardware...');
-
-        lcdScreen = {
-            cursor: i => ({
-                print: line => {
-                    log.info(`Mock LCD screen print line "${i}": "${line}"`);
-                },
-            }),
-        };
-    }
+    lcdScreen = new five.LCD({ id: 'lcdScreen', pins: lcdPins });
 
     onGlobalStateUpdate('lcdScreenLines', screenLines => {
         updateLcdScreen(screenLines);
@@ -43,11 +32,14 @@ const initLcdScreen = ({ isDeviceEnabled, lcdPins }) => {
     });
 };
 
-// Write lines to the LCD screen
+// Print lines to the LCD screen, unless the buzzer is currently playing b/c
+// it slows the buzzer tune which makes it sound weird.
 const updateLcdScreen = screenLines => {
-    screenLines.forEach((line, i) => {
-        lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));
-    });
+    if (!getState('isBuzzerPlaying')) {
+        screenLines.forEach((line, i) => {
+            lcdScreen.cursor(i, 0).print(line.padEnd(16, ' '));
+        });
+    }
 };
 
 // Create screen lines from arrival info and dynamic delimeters

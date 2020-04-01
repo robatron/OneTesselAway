@@ -13,8 +13,8 @@ const { apiKey } = require('../../oba-api-key.json');
 const _getArrivalsAndDeparturesForStop = async stopId => {
     // Allow using example states
     const obaApiState = getState('obaApiEgState');
-    const egObaApiRespUrl = `${constants.ADDRESS}:${constants.PORT}/eg-oba-api-response/${stopId}/${obaApiState}`;
-    const obaApiUrl = `${constants.API_ARRIVALS_AND_DEPARTURES_FOR_STOP}/${stopId}.json?key=${apiKey}`;
+    const egObaApiRespUrl = `${constants.WEB_UI_ADDRESS}:${constants.WEB_UI_PORT}/eg-oba-api-response/${stopId}/${obaApiState}`;
+    const obaApiUrl = `${constants.API_URL}/${stopId}.json?key=${apiKey}`;
     const apiUrl = obaApiState ? egObaApiRespUrl : obaApiUrl;
 
     log.info(`Fetching ${apiUrl}...`);
@@ -137,7 +137,7 @@ const _updateArrivalInfoOnce = async isManualTrigger => {
 };
 
 // Update arrival info forever at the specified interval. Blocks until first
-// arrival info is returned. Also sets up an immediate update arrival info
+// arrival info is returned. Also registers an immediate update arrival info
 // action.
 const updateArrivalInfoUntilStopped = async updateInterval => {
     let isStopped = false;

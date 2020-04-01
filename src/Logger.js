@@ -11,6 +11,7 @@ const initLogger = logfileName => {
     log = createLogger({
         level: 'info',
         format: format.combine(
+            format.splat(),
             format.timestamp(),
             format.errors({ stack: true }),
             format.printf(

@@ -1,3 +1,7 @@
+// Hardware for set of "stoplight" status LEDs. Consists of three LEDs, red,
+// yellow, and green.
+
+const mockRequire = require('./mock-hardware');
 const constants = require('../Constants');
 const { onGlobalStateUpdate } = require('../EventUtils');
 const { setState } = require('../GlobalState');
@@ -10,32 +14,24 @@ const leds = constants.STOPLIGHT_LED_NAMES.reduce((accum, ledName) => {
 
 const initStoplight = ({
     isDeviceEnabled,
-    ledReadyPin,
-    ledSteadyPin,
-    ledMissPin,
+    pinsAndPorts: { ledReadyPin, ledSteadyPin, ledMissPin },
 }) => {
-    if (isDeviceEnabled) {
-        log.info('Initializing stoplight hardware...');
+    const five = mockRequire('johnny-five', isDeviceEnabled, {
+        moduleName: 'Stoplight',
+    });
 
-        const five = require('johnny-five');
-
-        leds[constants.STOPLIGHT_STATES.READY] = new five.Led(ledReadyPin);
-        leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led(ledSteadyPin);
-        leds[constants.STOPLIGHT_STATES.MISS] = new five.Led(ledMissPin);
-    } else {
-        log.info('Initializing mock alarm hardware...');
-
-        constants.STOPLIGHT_LED_NAMES.forEach(stoplightState => {
-            leds[stoplightState] = {
-                off: () => {
-                    log.info(`Mock "${stoplightState}" off`);
-                },
-                on: () => {
-                    log.info(`Mock "${stoplightState}" on`);
-                },
-            };
-        });
-    }
+    leds[constants.STOPLIGHT_STATES.READY] = new five.Led({
+        id: 'ledStoplightReady',
+        pin: ledReadyPin,
+    });
+    leds[constants.STOPLIGHT_STATES.STEADY] = new five.Led({
+        id: 'ledStoplightSteady',
+        pin: ledSteadyPin,
+    });
+    leds[constants.STOPLIGHT_STATES.MISS] = new five.Led({
+        id: 'ledStoplightMiss',
+        pin: ledMissPin,
+    });
 
     // When the stoplight state is updated, turn on the corresponding LED(s)
     onGlobalStateUpdate('stoplightState', stoplightState => {
@@ -60,9 +56,20 @@ const initStoplight = ({
 // Return one of the 'ready', 'steady', 'go', 'miss' stoplight states based on
 // the closest arrival time of the primary route
 const getStoplightState = arrivalInfo => {
-    const closestMinsUntilArrival =
-        arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
-            .minsUntilArrival;
+    let closestMinsUntilArrival;
+
+    try {
+        closestMinsUntilArrival =
+            arrivalInfo[constants.PRIMARY_ROUTE].upcomingArrivalTimes[0]
+                .minsUntilArrival;
+    } catch (e) {
+        log.warn(
+            'Malformed arrivalInfo. Unable to calculate stoplight state: %o',
+            arrivalInfo,
+        );
+        return;
+    }
+
     const stoplightStates = Object.keys(constants.STOPLIGHT_TIME_RANGES);
 
     let stoplightState;

@@ -2,18 +2,18 @@
 
 > A simple transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with a Tessel 2 and the OneBusAway API.
 
-I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning.
+I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning, and because I wanted to have some fun learning about hardware programming.
 
 Here's a photo of the device, which is mounted by my front door. The display shows:
 
--   Bus 11 is coming in 0 minutes (there now!), in 15 minutes, and in 30 minutes
--   Bus 12 left 3 minutes ago, but others are coming in 14 minutes, and in 29 minutes
+-   Bus #11 is coming in -1 minute (left 1 minute ago!), 11 minutes, and 26 minutes
+-   Bus #12 is coming in 1 minute, 11 minutes, and 26 minutes
 
-<img src="./img/device.jpg" width="250"/>
+<img src="./docs/img/device-hero.jpg" width="300"/>
 
 This device includes a web UI where you can view the real-time contents of the display, raw OneBusAway response data, and device logs. By default, it runs on port 8080.
 
-<img src="./img/web-ui.png" width="300"/>
+<img src="./docs/img/web-ui.png" width="300"/>
 
 ## Development
 
@@ -55,12 +55,12 @@ You can run an instance of OneTesselAway on your local machine without the hardw
 You can also use the following environment variables to configure how OneTesselAway runs.
 
 -   `ADDR` - The address on which to run the Web UI
--   `PORT` - The port on which to run the Web UI
+-   `WEB_UI_PORT` - The port on which to run the Web UI
 -   `DISABLE_DEVICE` - Run in web-only mode (disable device hardware)
 
 E.g., to run the web UI on a different port:
 
-    PORT=8081 npm start
+    WEB_UI_PORT=8081 npm start
 
 ### Run OneTesselAway on Tessel 2 Hardware
 
@@ -80,9 +80,12 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   ~~Fix alarm (why doesn't it turn itself off?)~~
 -   ~~Wait between calls to OBA~~
 -   ~~Helper for update events~~
+-   ~~Make mock hardware utils~~
+-   ~~Clean up hardware pins~~
 -   Stagger hardware callbacks, or at least let buzzer update on its own
 -   Allow songs to be changed via Web UI
 -   Fix global state updating too much client-side
+-   Fix mobile view for web ui
 
 ## Topics to Write About
 
@@ -92,6 +95,7 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   Flux data-management pattern
 -   Software architecture
 -   Async utils
+-   Web-only mode, hardware mocking
 
 ## References
 
@@ -102,3 +106,4 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pwm-pins
 -   https://tessel.gitbooks.io/t2-docs/content/API/Hardware_API.html#pin-mapping
 -   http://johnny-five.io/api/led/
+-   https://app.diagrams.net/

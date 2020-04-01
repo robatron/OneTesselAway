@@ -42,9 +42,9 @@ const updateLcdScreen = screenLines => {
     }
 };
 
-// Create screen lines from arrival info and dynamic delimeters
+// Create screen lines from arrival info and dynamic delimeters. Alternate
+// between the delimeters each call.
 const getLcdScreenLines = arrivalInfo => {
-    // Animate route delimiter characters, alternating frames between calls
     const ROUTE_DELIMS = [':', '.'];
 
     if (getLcdScreenLinesCount % ROUTE_DELIMS.length) {
@@ -61,23 +61,28 @@ const getLcdScreenLines = arrivalInfo => {
 // Convert arrival info to display lines for the LCD screen. Ignore
 // lines beyond what the screen supports, ignore any characters beyond
 // what each line supports. `routeDelims` control the the delimiters between the
-// route name and the arrival times.
+// route name and the arrival times. If a route is using old arrival times,
+// force the delimeter to be `oldTimeDelim`.
 const arrivalInfoToScreenLines = (
     arrivalInfo,
+    oldTimeDelim = '*',
     routeDelims = Array(SCREEN_LINE_COUNT).fill(':'),
 ) => {
     const routeIds = Object.keys(arrivalInfo).slice(0, SCREEN_LINE_COUNT);
 
     return routeIds.map((routeId, i) => {
         const screenSections = [];
-        const routeInfo = arrivalInfo[routeId];
+        const {
+            isUsingOldArrivalTimes,
+            routeName,
+            upcomingArrivalTimes,
+        } = arrivalInfo[routeId];
 
-        // Route name + colon, end-padded to 4 chars with a space, e.g.,
+        // Route name + delimeter, end-padded to 4 chars with a space, e.g.,
         //  '11:  '
         //  '150: '
-        screenSections.push(
-            (routeInfo.routeName + routeDelims[i]).padEnd(4, ' '),
-        );
+        const delim = isUsingOldArrivalTimes ? oldTimeDelim : routeDelims[i];
+        screenSections.push((routeName + delim).padEnd(4, ' '));
 
         // For each arrival time, usually 2 or 3, push a start-padded "minutes-
         // 'till" section to 3 chars, e.g.,
@@ -85,7 +90,7 @@ const arrivalInfoToScreenLines = (
         //  ' 35'
         //  '  1'
         //  ' -3'
-        routeInfo.upcomingArrivalTimes.forEach(upcomingArrival => {
+        upcomingArrivalTimes.forEach(upcomingArrival => {
             screenSections.push(
                 upcomingArrival.minsUntilArrival.toString().padStart(3, ' '),
             );
@@ -103,5 +108,4 @@ const arrivalInfoToScreenLines = (
 
 module.exports = {
     initLcdScreen,
-    getLcdScreenLines, // Deprecated
 };

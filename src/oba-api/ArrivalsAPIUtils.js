@@ -93,7 +93,7 @@ const _getUpcomingArrivalTimes = async (stopId, routeId) => {
 const _updateArrivalInfoOnce = async isManualTrigger => {
     const targetRoutes = constants.TARGET_ROUTES;
     const targetRouteIds = Object.keys(targetRoutes);
-    const arrivalInfo = {};
+    const arrivalInfo = getState('arrivalInfo') || {};
 
     for (let i = 0; i < targetRouteIds.length; ++i) {
         const currentDate = new Date();
@@ -114,12 +114,20 @@ const _updateArrivalInfoOnce = async isManualTrigger => {
             );
         }
 
-        if (upcomingArrivalTimes) {
+        if (upcomingArrivalTimes.length) {
             arrivalInfo[routeId] = {
                 deviceRequestDate: currentDate,
                 routeName,
                 stopName,
                 upcomingArrivalTimes,
+            };
+        } else {
+            log.warn(
+                `No upcoming arrivals for route ${routeId} and stop ${stopId}. Using previous value.`,
+            );
+            arrivalInfo[routeId] = {
+                ...arrivalInfo[routeId],
+                isUsingOldArrivalTimes: true,
             };
         }
 

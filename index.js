@@ -85,15 +85,25 @@ app.get('/', (req, res) => {
 // Endpoint that returns OneBusAway arrival example responses for testing
 app.get('/eg-oba-api-response/:stopId/:exampleResponse', (req, res) => {
     const stopId = req.params.stopId;
-    const egRespName =
-        stopId === constants.TARGET_ROUTES[constants.PRIMARY_ROUTE].stopId
-            ? req.params.exampleResponse
-            : 'default';
-    const egRespPath = `${__dirname}/src/oba-api/example-responses/${stopId}/${egRespName}.json`;
+    const getEgRespPath = egRespName =>
+        `${__dirname}/src/oba-api/example-responses/${stopId}/${egRespName}.json`;
+
+    let egRespName = req.params.exampleResponse;
+    let egRespPath = getEgRespPath(egRespName);
+
+    let egResp;
+    try {
+        egResp = require(egRespPath);
+    } catch (e) {
+        log.warn(
+            `Example OneBusAway response file not found: ${egRespPath} Using default.`,
+        );
+        egRespPath = getEgRespPath('default');
+        egResp = require(egRespPath);
+    }
 
     log.info(`Returning example OneBusAway response from "${egRespPath}"`);
 
-    const egResp = require(egRespPath);
     res.json(egResp);
 });
 

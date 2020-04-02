@@ -42,9 +42,9 @@ const updateLcdScreen = screenLines => {
     }
 };
 
-// Create screen lines from arrival info and dynamic delimeters
+// Create screen lines from arrival info and dynamic delimeters. Alternate
+// between the delimeters each call.
 const getLcdScreenLines = arrivalInfo => {
-    // Animate route delimiter characters, alternating frames between calls
     const ROUTE_DELIMS = [':', '.'];
 
     if (getLcdScreenLinesCount % ROUTE_DELIMS.length) {
@@ -62,10 +62,7 @@ const getLcdScreenLines = arrivalInfo => {
 // lines beyond what the screen supports, ignore any characters beyond
 // what each line supports. `routeDelims` control the the delimiters between the
 // route name and the arrival times.
-const arrivalInfoToScreenLines = (
-    arrivalInfo,
-    routeDelims = Array(SCREEN_LINE_COUNT).fill(':'),
-) => {
+const arrivalInfoToScreenLines = (arrivalInfo, routeDelims) => {
     const routeIds = Object.keys(arrivalInfo).slice(0, SCREEN_LINE_COUNT);
 
     return routeIds.map((routeId, i) => {
@@ -103,5 +100,4 @@ const arrivalInfoToScreenLines = (
 
 module.exports = {
     initLcdScreen,
-    getLcdScreenLines, // Deprecated
 };

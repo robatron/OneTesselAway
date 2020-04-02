@@ -1,10 +1,15 @@
 # **WIP:** How it Works
 
-Work-in-progress section documenting how the device and software work
+Work-in-progress section documenting how the device and software work.
 
-## Hardware Modules
+## Hardware Overview
+
+-   Modules
+-   Circuit diagram
 
 ### LCD Screen
+
+### Stoplight Module
 
 ### Alarm Module
 
@@ -12,9 +17,11 @@ Work-in-progress section documenting how the device and software work
 -   Piezo speaker
 -   Status LED (blue)
 
-### Stoplight Module
+## Software Overview
 
-## Flux-Inspired Data Management and events
+-   Architecture
+
+### Flux-Inspired Data Management
 
 ### Global State
 
@@ -32,8 +39,8 @@ All data is managed by a global state for the entire app, server and client-side
 -   action:playAlarm
 -   action:updateArrivalInfo
 
-## Mock Hardware in Web-Only Mode
+### Simulated hardware in Web UI
+
+### Mock Hardware in Web-Only Mode
 
 Files in [src/hardware/mock-hardware/*] are mocked hardware that can be imported when the device hardware is not present, i.e., when running in "web-only" mode. They simply define the required object, and log info about what _would_ happen if the hardware were present.
-
-## Simulated hardware in Web UI

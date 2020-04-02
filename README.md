@@ -11,17 +11,17 @@ Here's a photo of the device, which is mounted by my front door. The display sho
 
 <img src="./docs/img/device-hero.jpg" width="300"/>
 
-This device includes a web UI where you can view the real-time contents of the display, raw OneBusAway response data, and device logs. By default, it runs on port 8080.
+This device includes a web UI that includes real-time simulated hardware, and advanced device controls. It can also be run in "web only" mode which uses a full set of mocked hardware. By default, it runs on port 8080.
 
 <img src="./docs/img/web-ui.png" width="300"/>
 
 ## Development
 
-Here's how to develop on the OneTesselAway device.
+Here's how to develop on the OneTesselAway device and/or the web UI.
 
 ### Prerequisites
 
-1. [Request](https://www.soundtransit.org/help-contacts/business-information/open-transit-data-otd) a OneBusAway API key.
+1. [Request](https://www.soundtransit.org/help-contacts/business-information/open-transit-data-otd) a OneBusAway API key. (This step can take a few days.)
 
 > To request an API key for the Puget Sound One Bus Away data send an email to oba_api_key@soundtransit.org. Please include the first and last names of the contact person, email address (if different) and acknowledgement that you have read and agree to the Transit Data Terms of Use. Please allow two business days for processing requests.
 
@@ -33,42 +33,32 @@ Here's how to develop on the OneTesselAway device.
 }
 ```
 
-3. Install the [Tessel 2 CLI](https://tessel.gitbooks.io/t2-docs/content/API/CLI.html#installation)
-4. Install [NVM](https://github.com/nvm-sh/nvm)
+3. Install [NVM](https://github.com/nvm-sh/nvm)
+4. Use `nvm use` to activate the latest version of Node supported by the Tessel
+5. Install the [Tessel 2 CLI](https://tessel.gitbooks.io/t2-docs/content/API/CLI.html#installation)
 
-### Run Unit Tests
+### Run the Web UI from your Computer (No Device Required!)
 
-Use the latest version of Node supported by the Tessel:
-
-    nvm use
-
-Run the tests:
-
-    npm test
-
-### Run OneTesselAway on Local Machine
-
-You can run an instance of OneTesselAway on your local machine without the hardware at all.
+You can run the OneTesselAway Web UI from your computer without any hardware at all.
 
     npm start
 
-You can also use the following environment variables to configure how OneTesselAway runs.
+You can use the following environment variables to configure how the Web UI runs.
 
--   `ADDR` - The address on which to run the Web UI
+-   `WEB_UI_ADDRESS` - The address on which to run the Web UI
 -   `WEB_UI_PORT` - The port on which to run the Web UI
--   `DISABLE_DEVICE` - Run in web-only mode (disable device hardware)
 
 E.g., to run the web UI on a different port:
 
     WEB_UI_PORT=8081 npm start
 
-### Run OneTesselAway on Tessel 2 Hardware
+### Start OneTesselAway on the Device from your Computer
 
-You can run an instance of OneTesselAway on the actual Tessel 2 hardware when connected via USB.
+You can run OneTesselAway on the actual Tessel 2 hardware when connected via USB. This will start the device and the Web UI.
 
     npm run start:device
 
-### Deploy to Tessel 2 Hardware
+### Deploy OneTesselAway to the Device
 
 You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by default.)
 
@@ -82,20 +72,10 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   ~~Helper for update events~~
 -   ~~Make mock hardware utils~~
 -   ~~Clean up hardware pins~~
--   Stagger hardware callbacks, or at least let buzzer update on its own
+-   ~~Stagger hardware callbacks, or at least let buzzer update on its own~~
 -   Allow songs to be changed via Web UI
 -   Fix global state updating too much client-side
 -   Fix mobile view for web ui
-
-## Topics to Write About
-
--   Red LED not working on pin 6 when buzzer (pin 7) was playing
--   Buzzer audio library, utilities, and music via PWM
--   Frontend/backend event system
--   Flux data-management pattern
--   Software architecture
--   Async utils
--   Web-only mode, hardware mocking
 
 ## References
 

@@ -114,7 +114,7 @@ const _updateArrivalInfoOnce = async isManualTrigger => {
             );
         }
 
-        if (upcomingArrivalTimes.length) {
+        if (upcomingArrivalTimes && upcomingArrivalTimes.length) {
             arrivalInfo[routeId] = {
                 deviceRequestDate: currentDate,
                 routeName,

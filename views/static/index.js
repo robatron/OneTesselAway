@@ -102,6 +102,7 @@ const initAlarmSimHardware = () => {
     // Set alarm LED on startup
     setLed(ledAlarmEl, globalState.isAlarmEnabled);
 };
+
 // Debug -----------------------------------------------------------------------
 
 const initDebugCtrls = () => {
@@ -147,6 +148,32 @@ const initObaEgExCtrls = () => {
         // Highlight a button if its corresponding state is set
         const handleObaApiEgStateUpdate = obaApiEgState => {
             const isSelected = obaApiEgState === stoplightState;
+            btnObaEgEl.style.color = isSelected ? 'darkred' : 'inherit';
+            btnObaEgEl.style.fontWeight = isSelected ? 'bold' : 'inherit';
+        };
+        onGlobalStateUpdate('obaApiEgState', handleObaApiEgStateUpdate);
+        handleObaApiEgStateUpdate(globalState.obaApiEgState);
+    });
+
+    [11, 12].forEach(routeName => {
+        const noUpcomingArrivalsState = 'no-upcoming-arrivals';
+        const btnObaEgEl = document.querySelector(
+            '.btn-oba-eg-nua-' + routeName,
+        );
+
+        btnObaEgEl.onclick = e => {
+            e.preventDefault();
+            setServerState(
+                'obaApiEgState',
+                globalState.obaApiEgState !== noUpcomingArrivalsState
+                    ? noUpcomingArrivalsState
+                    : null,
+            );
+            emitEvent('action:updateArrivalInfo');
+        };
+
+        const handleObaApiEgStateUpdate = obaApiEgState => {
+            const isSelected = obaApiEgState === noUpcomingArrivalsState;
             btnObaEgEl.style.color = isSelected ? 'darkred' : 'inherit';
             btnObaEgEl.style.fontWeight = isSelected ? 'bold' : 'inherit';
         };

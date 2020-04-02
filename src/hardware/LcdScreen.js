@@ -45,13 +45,18 @@ const updateLcdScreen = screenLines => {
 // Create screen lines from arrival info and dynamic delimeters. Alternate
 // between the delimeters each call.
 const getLcdScreenLines = arrivalInfo => {
+    const OLD_TIME_DELIM = '*';
     const ROUTE_DELIMS = [':', '.'];
 
     if (getLcdScreenLinesCount % ROUTE_DELIMS.length) {
         ROUTE_DELIMS.reverse();
     }
 
-    const screenLines = arrivalInfoToScreenLines(arrivalInfo, ROUTE_DELIMS);
+    const screenLines = arrivalInfoToScreenLines(
+        arrivalInfo,
+        OLD_TIME_DELIM,
+        ROUTE_DELIMS,
+    );
 
     ++getLcdScreenLinesCount;
 
@@ -63,11 +68,7 @@ const getLcdScreenLines = arrivalInfo => {
 // what each line supports. `routeDelims` control the the delimiters between the
 // route name and the arrival times. If a route is using old arrival times,
 // force the delimeter to be `oldTimeDelim`.
-const arrivalInfoToScreenLines = (
-    arrivalInfo,
-    oldTimeDelim = '*',
-    routeDelims = Array(SCREEN_LINE_COUNT).fill(':'),
-) => {
+const arrivalInfoToScreenLines = (arrivalInfo, oldTimeDelim, routeDelims) => {
     const routeIds = Object.keys(arrivalInfo).slice(0, SCREEN_LINE_COUNT);
 
     return routeIds.map((routeId, i) => {

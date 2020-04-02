@@ -90,94 +90,104 @@
             hardware, advanced controls, debug info, and logs.
         </p>
 
-        <h2>Simulated Hardware</h2>
-        <p>
-            This simulated hardware is synchronized with the device state. It
-            should show exactly what is on the device.
-        </p>
-        <h3>LCD Screen</h3>
-        <div>
-            <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
-            <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
-        </div>
-        <h3>Stoplight LEDs</h3>
-        <ul class="component-list">
-            <li class="component-row">
-                <div class="led led-stoplight-ready"></div>
-                <div class="component-label">Ready LED</div>
-            </li>
-            <li class="component-row">
-                <div class="led led-stoplight-steady"></div>
-                <div class="component-label">Steady LED</div>
-            </li>
-            <li class="component-row">
-                <div class="led led-stoplight-miss"></div>
-                <div class="component-label">Miss LED</div>
-            </li>
-        </ul>
-        <h3>Alarm</h3>
-        <ul class="component-list">
-            <li class="component-row">
-                <img class="img-buzzer" src="/static/img/buzzer-off.png" />
-                <div class="component-label">Buzzer</div>
-            </li>
-            <li class="component-row">
-                <div class="led led-alarm"></div>
-                <div class="component-label">Alarm LED</div>
-            </li>
-            <button class="btn-alarm-set">
-                Set alarm
-            </button>
-        </ul>
-
-        <h2>Advanced Device Controls</h2>
-        <p>Additional controls and settings for the device.</p>
-
-        <h3>OneBusAway API Controls</h3>
-        <p>
-            Return an example OneBusAway API response for different traffic
-            light states.
-        </p>
-        <ul class="component-list">
-            <li class="component-row">
-                <button class="btn-oba-eg-ready">Ready (Green LED)</button>
-            </li>
-            <li class="component-row">
-                <button class="btn-oba-eg-steady">Steady (Yellow LED)</button>
-            </li>
-            <li class="component-row">
-                <button class="btn-oba-eg-go">Go (All LEDs)</button>
-            </li>
-            <li class="component-row">
-                <button class="btn-oba-eg-miss">Miss (Red)</button>
-            </li>
-        </ul>
-
-        <h3>Alarm Controls</h3>
-        <ul class="component-list">
-            <li class="component-row">
-                <button class="btn-alarm-play">
-                    Play alarm tune
+        <section class="simulated-hardware">
+            <h2>Simulated Hardware</h2>
+            <p>
+                This simulated hardware is synchronized with the device state.
+                It should show exactly what is on the device.
+            </p>
+            <h3>LCD Screen</h3>
+            <div>
+                <pre class="lcd-screen"><%= lcdScreenLines[0] %></pre>
+                <pre class="lcd-screen"><%= lcdScreenLines[1] %></pre>
+            </div>
+            <h3>Stoplight LEDs</h3>
+            <ul class="component-list">
+                <li class="component-row">
+                    <div class="led led-stoplight-ready"></div>
+                    <div class="component-label">Ready LED</div>
+                </li>
+                <li class="component-row">
+                    <div class="led led-stoplight-steady"></div>
+                    <div class="component-label">Steady LED</div>
+                </li>
+                <li class="component-row">
+                    <div class="led led-stoplight-miss"></div>
+                    <div class="component-label">Miss LED</div>
+                </li>
+            </ul>
+            <h3>Alarm</h3>
+            <ul class="component-list">
+                <li class="component-row">
+                    <img class="img-buzzer" src="/static/img/buzzer-off.png" />
+                    <div class="component-label">Buzzer</div>
+                </li>
+                <li class="component-row">
+                    <div class="led led-alarm"></div>
+                    <div class="component-label">Alarm LED</div>
+                </li>
+                <button class="btn-alarm-set">
+                    Set alarm
                 </button>
-            </li>
-        </ul>
+            </ul>
+        </section>
 
-        <h2>Global State</h2>
-        <p>
-            Contents of the global state
-        </p>
-        <textarea id="global-state" class="text-area">
+        <section class="advanced-device-controls">
+            <h2>Advanced Device Controls</h2>
+            <p>Additional controls and settings for the device.</p>
+
+            <h3>OneBusAway API Controls</h3>
+            <p>
+                Return an example OneBusAway API response for different traffic
+                light states.
+            </p>
+            <ul class="component-list">
+                <li class="component-row">
+                    <button class="btn-oba-eg-ready">Ready (Green LED)</button>
+                </li>
+                <li class="component-row">
+                    <button class="btn-oba-eg-steady">
+                        Steady (Yellow LED)
+                    </button>
+                </li>
+                <li class="component-row">
+                    <button class="btn-oba-eg-go">Go (All LEDs)</button>
+                </li>
+                <li class="component-row">
+                    <button class="btn-oba-eg-miss">Miss (Red)</button>
+                </li>
+            </ul>
+
+            <h3>Alarm Controls</h3>
+            <ul class="component-list">
+                <li class="component-row">
+                    <button class="btn-alarm-play">
+                        Play alarm tune
+                    </button>
+                </li>
+            </ul>
+        </section>
+
+        <section class="debug-info">
+            <h2>Global State</h2>
+            <p>
+                Contents of the global state
+            </p>
+            <textarea id="global-state" class="text-area">
 <%= globalState %>
-        </textarea>
+        </textarea
+            >
 
-        <h2>Device Logs</h2>
-        <p>
-            Device logs from the OneTesselAway program, latest first. Refresh
-            browser to get latest logs.
-        </p>
-        <textarea id="device-logs" class="text-area">
+            <h2>Device Logs</h2>
+            <p>
+                Device logs from the OneTesselAway program, latest first.
+                Refresh browser to get latest logs.
+            </p>
+            <textarea id="device-logs" class="text-area">
 <%= deviceLogs %>
-        </textarea>
+        </textarea
+            >
+        </section>
 
         <!-- This client library is provided by the server -->
         <script src="/socket.io/socket.io.js"></script>

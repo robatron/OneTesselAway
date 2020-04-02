@@ -21,10 +21,11 @@ const _getArrivalsAndDeparturesForStop = async stopId => {
 
     const response = await fetch(apiUrl);
 
-    // If response is not a 200, throw an error
+    // If response is not a 200, log a warning
     if (!response.ok) {
-        throw new Error(
-            'Fetch error. Raw response:' + JSON.stringify(response, null, 2),
+        log.warn(
+            'Error fetching from API. Raw response:' +
+                JSON.stringify(response, null, 2),
         );
     }
 
@@ -35,8 +36,9 @@ const _getArrivalsAndDeparturesForStop = async stopId => {
     try {
         return JSON.parse(responseText);
     } catch (e) {
-        throw new Error(
-            `Unable to parse JSON response. Response text (might be blank): ${responseText}`,
+        log.warn(
+            'Unable to parse JSON response. Response text (might be blank):' +
+                responseText,
         );
     }
 };
@@ -49,9 +51,9 @@ const _getArrivalsForRoute = (arrivalsAndDeparturesForStop, routeId) => {
         arrivalsAndDepartures =
             arrivalsAndDeparturesForStop.data.entry.arrivalsAndDepartures;
     } catch (e) {
-        throw new Error(
-            'Malformed arrivalsAndDeparturesForStop object:',
-            JSON.stringify(arrivalsAndDeparturesForStop, null, 2),
+        log.warn(
+            'Malformed arrivalsAndDeparturesForStop object:' +
+                JSON.stringify(arrivalsAndDeparturesForStop, null, 2),
         );
     }
 

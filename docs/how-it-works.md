@@ -20,8 +20,17 @@ Work-in-progress section documenting how the device and software work.
 ## Software Overview
 
 -   Architecture
+-   Web UI / Device
 
-### Flux-Inspired Data Management
+## Web UI
+
+-   Simulated hardware
+-   Hardware mocking
+
+## Flux-Inspired Data Management
+
+-   Single data store
+-   Events (front-end, backend)
 
 ### Global State
 
@@ -39,8 +48,15 @@ All data is managed by a global state for the entire app, server and client-side
 -   action:playAlarm
 -   action:updateArrivalInfo
 
-### Simulated hardware in Web UI
+## Simulated hardware in Web UI
 
-### Mock Hardware in Web-Only Mode
+## Mock Hardware in Web-Only Mode
 
 Files in [src/hardware/mock-hardware/*] are mocked hardware that can be imported when the device hardware is not present, i.e., when running in "web-only" mode. They simply define the required object, and log info about what _would_ happen if the hardware were present.
+
+## Async Utilities
+
+## Audio Library, Music
+
+-   How audio works (PWM, etc.)
+-   LED not working when on pin 6 b/c of PWM

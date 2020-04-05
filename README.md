@@ -1,19 +1,16 @@
-# OneTesselAway: Transit Status Board
+# OneTesselAway: Public Transit Status Board
 
-> A simple transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with a Tessel 2 and the OneBusAway API.
+> A public transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with Node.js, the OneBusAway API, and a Tessel 2.
 
 I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning, and because I wanted to have some fun learning about hardware programming.
 
-Here's a photo of the device, which is mounted by my front door. The display shows:
+<img src="./docs/device-hero.jpg" width="300"/>
 
--   Bus #11 is coming in -1 minute (left 1 minute ago!), 11 minutes, and 26 minutes
--   Bus #12 is coming in 1 minute, 11 minutes, and 26 minutes
+> Photo of the device. Bus #11 left 2 minutes ago, but there are other ones coming in 11 and 26 minutes
 
-<img src="./docs/img/device-hero.jpg" width="300"/>
+This device includes a web UI that includes real-time simulated hardware, advanced device controls, device logs, and more. It can also be run in "web only" mode which uses a full set of mocked hardware. By default, it runs on port 8080.
 
-This device includes a web UI that includes real-time simulated hardware, and advanced device controls. It can also be run in "web only" mode which uses a full set of mocked hardware. By default, it runs on port 8080.
-
-<img src="./docs/img/web-ui.png" width="300"/>
+<img src="./docs/web-ui.png" width="300"/>
 
 ## Development
 
@@ -73,9 +70,11 @@ You can deploy and run the code on the Tessel 2 hardware. (Deploy is via USB by 
 -   ~~Make mock hardware utils~~
 -   ~~Clean up hardware pins~~
 -   ~~Stagger hardware callbacks, or at least let buzzer update on its own~~
+-   Fix startup tune: LCD message and delayed tune
 -   Allow songs to be changed via Web UI
--   Fix global state updating too much client-side
 -   Fix mobile view for web ui
+-   Docs: Add link to blog post when it's done
+-   Docs: Match title and subtitle w/ blog
 
 ## References
 

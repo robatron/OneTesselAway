@@ -1,6 +1,6 @@
-# OneTesselAway: Public Transit Status Board
+# OneTesselAway: Real-Time Public Transit Status IoT Device
 
-> A public transit status board featuring an LCD screen, status LEDs, and a musical alarm. Built with Node.js, the OneBusAway API, and a Tessel 2.
+> A real-time public transit status device featuring an LCD screen, status LEDs, and a musical alarm. Built with Node.js, the OneBusAway API, and a Tessel 2.
 
 I built a simple real-time transit board based on [OneBusAway](https://onebusaway.org/) and the [Tessel 2](https://tessel.io/). Why? Because I was tired of constantly checking my phone when waiting for the bus every morning, and because I wanted to have some fun learning about hardware programming.
 

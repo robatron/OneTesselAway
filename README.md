@@ -4,7 +4,7 @@
 
 I built a real-time transit IoT device that tells me when my next bus will arrive. Built with Node.js, [OneBusAway](https://onebusaway.org/), and the [Tessel 2](https://tessel.io/). Why? Because constantly checking my phone and the OneBusAway app every morning while waiting for the bus was annoying. I also wanted to challenge myself by learning new hardware programming and electronics assembly skills.
 
-💡 **To learn more about how I built this, please see [OneTesselAway: Building a Real-Time Public Transit Status IoT Device](https://medium.com/@robert.mcgui/onetesselaway-public-transit-status-iot-device-70b80ab8475b)**.
+👉👉 **To learn more about how I built this, please see [OneTesselAway: Building a Real-Time Public Transit Status IoT Device](https://medium.com/@robert.mcgui/onetesselaway-public-transit-status-iot-device-70b80ab8475b)**.
 
 <img src="./docs/device-hero.jpg" width="300"/>
 

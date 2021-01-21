@@ -19,7 +19,7 @@
         "johnny-five": "^1.3.1",
         "logform": "^2.1.2",
         "node-fetch": "^2.6.0",
-        "socket.io": "^2.3.0",
+        "socket.io": "^2.4.0",
         "tessel": "^0.3.25",
         "tessel-io": "^1.3.0",
         "winston": "^3.2.1"
